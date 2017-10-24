@@ -1,0 +1,86 @@
+%%%
+    title           = "Spinel Thread Support"
+    abbrev          = "Spinel Thread"
+    category        = "std"
+    docName         = "draft-rquattle-spinel-thread"
+    ipr             = "trust200902"
+    keyword         = ["Spinel", "IPv6", "NCP", "Thread"]
+    date            = @SOURCE_DATE@
+
+    [pi]
+    editing         = "yes"
+    compact         = "yes"
+    subcompact      = "yes"
+    comments        = "yes"
+
+    [[author]]
+    initials        = "R."
+    surname         = "Quattlebaum"
+    fullname        = "Robert S. Quattlebaum"
+    organization    = "Nest Labs, Inc."
+
+        [author.address]
+        email       = "rquattle@nestlabs.com"
+
+        [author.address.postal]
+        street      = "3400 Hillview Ave."
+        city        = "Palo Alto"
+        region      = "California"
+        code        = "94304"
+        country     = "USA"
+
+    [[author]]
+    initials        = "j.h."
+    surname         = "woodyatt"
+    fullname        = "james woodyatt"
+    organization    = "Nest Labs, Inc."
+    role            = "editor"
+
+        [author.address]
+        email       = "jhw@nestlabs.com"
+
+        [author.address.postal]
+        street      = "3400 Hillview Ave."
+        city        = "Palo Alto"
+        region      = "California"
+        code        = "94304"
+        country     = "USA"
+%%%
+
+.# Abstract
+
+This document specifies a specialization of the Spinel protocol to support Thread(R) networks.
+
+{mainmatter}
+
+# Introduction #
+
+TODO: Writeme.
+
+## Requirements Language and Conventions
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [@!RFC2119].
+
+The layout diagrams in this document that show encodings of data in octet sequences use the convention described in Guide for Internet Standards Writers [@?RFC2360] section 3.1, Packet Diagrams. Specifically, bits in octets are indexed from most significant to least significant, and the least significant bit in a field representing an integer value more than one bit in length is the least significant bit of a the signed or unsigned number, as the case requires.
+
+{{detail-requirements.md}}
+
+{{detail-capabilities.md}}
+
+{{detail-properties.md}}
+
+{{security-considerations.md}}
+
+{{iana-considerations.md}}
+
+{backmatter}
+
+{{glossary.md}}
+
+# Acknowledgments #
+
+Thread is a registered trademark of The Thread Group, Inc.
+
+Special thanks to Nick Banks, Jonathan Hui, Abtin Keshavarzian, Yakun Xu, Piotr Szkotak, Arjuna Sivasithambaresan and Martin Turon for their substantial contributions and feedback related to this document.
+
+This document was prepared using [mmark](https://github.com/miekg/mmark) by (Miek Gieben) and [xml2rfc (version 2)](http://xml2rfc.ietf.org/).

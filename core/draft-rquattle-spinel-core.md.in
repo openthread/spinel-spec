@@ -1,0 +1,109 @@
+%%%
+    title           = "Spinel: A protocol for control and management of IPv6 network interface co-processors"
+    abbrev          = "Spinel Core"
+    category        = "std"
+    docName         = "draft-rquattle-spinel-core"
+    ipr             = "trust200902"
+    keyword         = ["Spinel", "IPv6", "NCP"]
+    date            = @SOURCE_DATE@
+
+    [pi]
+    editing         = "yes"
+    compact         = "yes"
+    subcompact      = "yes"
+    comments        = "yes"
+
+    [[author]]
+    initials        = "R."
+    surname         = "Quattlebaum"
+    fullname        = "Robert S. Quattlebaum"
+    organization    = "Nest Labs, Inc."
+
+        [author.address]
+        email       = "rquattle@nestlabs.com"
+
+        [author.address.postal]
+        street      = "3400 Hillview Ave."
+        city        = "Palo Alto"
+        region      = "California"
+        code        = "94304"
+        country     = "USA"
+
+    [[author]]
+    initials        = "j.h."
+    surname         = "woodyatt"
+    fullname        = "james woodyatt"
+    organization    = "Nest Labs, Inc."
+    role            = "editor"
+
+        [author.address]
+        email       = "jhw@nestlabs.com"
+
+        [author.address.postal]
+        street      = "3400 Hillview Ave."
+        city        = "Palo Alto"
+        region      = "California"
+        code        = "94304"
+        country     = "USA"
+%%%
+
+.# Abstract
+
+This document specifies the core of the Spinel protocol, which facilitates the control and management of IPv6 network interfaces on devices where general purpose application processors offload network functions at their interfaces to network co-processors (NCP) connected by simple communication links like serial data channels. Spinel was initially designed for use with Thread(R) network co-processors, but its core is general purpose and intended to be easily adapted to other types of IPv6 network interface.
+
+{mainmatter}
+
+# Introduction #
+
+Spinel is a host-controller protocol designed to enable interoperation over simple serial connections between general purpose device operating systems (OS) and network co-processors (NCP) for the purpose of controlling and managing their IPv6 network interfaces, achieving the following goals:
+
+*   Adopt a layered approach to the protocol design, allowing future support for other types of IPv6 link.
+*   Minimize the number of required commands/methods by supporting a rich, property-based programming interface.
+*   Support NCPs capable of multiple simultaneous IPv6 interfaces.
+*   Support NCPs capable of communicating simultaneously on more than one physical link.
+*   Gracefully handle the addition of new features and capabilities without necessarily breaking backward compatibility.
+*   Be as minimal and light-weight as possible without unnecessarily sacrificing flexibility.
+
+Beyond this core framework, properties and commands enable various common features of IPv6. In related and forthcoming documents, the Spinel protocol is extended to support NCP implementations for specific IPv6 link types, e.g. Thread(R).
+
+## Requirements Language and Conventions
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [@!RFC2119].
+
+The layout diagrams in this document that show encodings of data in octet sequences use the convention described in Guide for Internet Standards Writers [@?RFC2360] section 3.1, Packet Diagrams. Specifically, bits in octets are indexed from most significant to least significant, and the least significant bit in a field representing an integer value more than one bit in length is the least significant bit of a the signed or unsigned number, as the case requires.
+
+{{intro-properties.md}}
+
+{{intro-frames.md}}
+
+{{intro-encoding.md}}
+
+{{detail-commands.md}}
+
+{{detail-status.md}}
+
+{{detail-capabilities.md}}
+
+{{detail-properties.md}}
+
+{{security-considerations.md}}
+
+{{iana-considerations.md}}
+
+{backmatter}
+
+{{appendix-examples.md}}
+
+{{appendix-framing.md}}
+
+{{appendix-test-vectors.md}}
+
+{{glossary.md}}
+
+# Acknowledgments #
+
+Thread is a registered trademark of The Thread Group, Inc.
+
+Special thanks to Nick Banks, Jonathan Hui, Abtin Keshavarzian, Yakun Xu, Piotr Szkotak, Arjuna Sivasithambaresan and Martin Turon for their substantial contributions and feedback related to this document.
+
+This document was prepared using [mmark](https://github.com/miekg/mmark) by (Miek Gieben) and [xml2rfc (version 2)](http://xml2rfc.ietf.org/).
