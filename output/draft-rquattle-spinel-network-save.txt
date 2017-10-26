@@ -1,0 +1,336 @@
+
+
+
+
+Network Working Group                                     R. Quattlebaum
+Internet-Draft                                               j. woodyatt
+Intended status: Standards Track                         Nest Labs, Inc.
+Expires: April 29, 2018                                 October 26, 2017
+
+
+     Spinel Network Save: Non-Volatile Storage of Network Provision
+               draft-rquattle-spinel-network-save-dd3c1a1
+
+Abstract
+
+   This document specifies an optional feature for Spinel that enables
+   the non-volatile storage of all parameters needed to participate on a
+   specific network.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at http://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on April 29, 2018.
+
+Copyright Notice
+
+   Copyright (c) 2017 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
+   (http://trustee.ietf.org/license-info) in effect on the date of
+   publication of this document.  Please review these documents
+   carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
+   include Simplified BSD License text as described in Section 4.e of
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
+
+
+
+
+Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 1]
+
+Internet-Draft             Spinel Network Save              October 2017
+
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+     1.1.  Requirements Language and Conventions . . . . . . . . . .   2
+   2.  Requirements  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   3.  Commands  . . . . . . . . . . . . . . . . . . . . . . . . . .   3
+     3.1.  CMD 9: (Host->NCP) CMD_NET_SAVE . . . . . . . . . . . . .   3
+     3.2.  CMD 10: (Host->NCP) CMD_NET_CLEAR . . . . . . . . . . . .   3
+     3.3.  CMD 11: (Host->NCP) CMD_NET_RECALL  . . . . . . . . . . .   4
+   4.  Properties  . . . . . . . . . . . . . . . . . . . . . . . . .   4
+     4.1.  PROP 64: PROP_NET_SAVED . . . . . . . . . . . . . . . . .   4
+   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   4
+   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   4
+   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   4
+     7.1.  Normative References  . . . . . . . . . . . . . . . . . .   4
+     7.2.  Informative References  . . . . . . . . . . . . . . . . .   5
+   Appendix A.  Glossary . . . . . . . . . . . . . . . . . . . . . .   5
+   Appendix B.  Acknowledgments  . . . . . . . . . . . . . . . . . .   5
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   5
+
+1.  Introduction
+
+   TODO: Writeme.
+
+1.1.  Requirements Language and Conventions
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+   document are to be interpreted as described in [RFC2119].
+
+   The layout diagrams in this document that show encodings of data in
+   octet sequences use the convention described in Guide for Internet
+   Standards Writers [RFC2360] section 3.1, Packet Diagrams.
+   Specifically, bits in octets are indexed from most significant to
+   least significant, and the least significant bit in a field
+   representing an integer value more than one bit in length is the
+   least significant bit of a the signed or unsigned number, as the case
+   requires.
+
+2.  Requirements
+
+   The network save/recall feature is an OPTIONAL NCP capability that,
+   when present, allows the host to save and recall network credentials
+   and state to and from nonvolatile storage.
+
+   The presence of the save/recall feature can be detected by checking
+   for the presence of the "CAP_NET_SAVE" capability in "PROP_CAPS".
+
+
+
+
+Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 2]
+
+Internet-Draft             Spinel Network Save              October 2017
+
+
+   Network clear feature allows host to erase all network credentials
+   and state from non-volatile memory.
+
+3.  Commands
+
+3.1.  CMD 9: (Host->NCP) CMD_NET_SAVE
+
+                  +---------+----------+----------------+
+                  | Octets: | 1        | 1              |
+                  +---------+----------+----------------+
+                  | Fields: | "HEADER" | "CMD_NET_SAVE" |
+                  +---------+----------+----------------+
+
+   Save network state command.  Saves any current network credentials
+   and state necessary to reconnect to the current network to non-
+   volatile memory.
+
+   This operation affects non-volatile memory only.  The current network
+   information stored in volatile memory is unaffected.
+
+   The response to this command is always a "CMD_PROP_VALUE_IS" for
+   "PROP_LAST_STATUS", indicating the result of the operation.
+
+   This command is only available if the "CAP_NET_SAVE" capability is
+   set.
+
+3.2.  CMD 10: (Host->NCP) CMD_NET_CLEAR
+
+                 +---------+----------+-----------------+
+                 | Octets: | 1        | 1               |
+                 +---------+----------+-----------------+
+                 | Fields: | "HEADER" | "CMD_NET_CLEAR" |
+                 +---------+----------+-----------------+
+
+   Clear saved network settings command.  Erases all network credentials
+   and state from non-volatile memory.  The erased settings include any
+   data saved automatically by the network stack firmware and/or data
+   saved by "CMD_NET_SAVE" operation.
+
+   This operation affects non-volatile memory only.  The current network
+   information stored in volatile memory is unaffected.
+
+   The response to this command is always a "CMD_PROP_VALUE_IS" for
+   "PROP_LAST_STATUS", indicating the result of the operation.
+
+   This command is always available independent of the value of
+   "CAP_NET_SAVE" capability.
+
+
+
+
+Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 3]
+
+Internet-Draft             Spinel Network Save              October 2017
+
+
+3.3.  CMD 11: (Host->NCP) CMD_NET_RECALL
+
+                   +---------+--------+----------------+
+                   | Octets: |   1    |       1        |
+                   +---------+--------+----------------+
+                   | Fields: | HEADER | CMD_NET_RECALL |
+                   +---------+--------+----------------+
+
+   Recall saved network state command.  Recalls any previously saved
+   network credentials and state previously stored by "CMD_NET_SAVE"
+   from non-volatile memory.
+
+   This command will typically generated several unsolicited property
+   updates as the network state is loaded.  At the conclusion of
+   loading, the authoritative response to this command is always a
+   "CMD_PROP_VALUE_IS" for "PROP_LAST_STATUS", indicating the result of
+   the operation.
+
+   This command is only available if the "CAP_NET_SAVE" capability is
+   set.
+
+4.  Properties
+
+4.1.  PROP 64: PROP_NET_SAVED
+
+   o  Type: Read-Only
+   o  Packed-Encoding: "b"
+
+   Returns true if there is a network state stored/saved.
+
+5.  Security Considerations
+
+   EDITOR: Insert verbiage here conforming to RFC Editor guidelines.
+
+6.  IANA Considerations
+
+   EDITOR: insert verbiage here: registry creation forms, et cetera.
+
+7.  References
+
+7.1.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997, <https://www.rfc-
+              editor.org/info/rfc2119>.
+
+
+
+
+
+Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 4]
+
+Internet-Draft             Spinel Network Save              October 2017
+
+
+7.2.  Informative References
+
+   [RFC2360]  Scott, G., "Guide for Internet Standards Writers", BCP 22,
+              RFC 2360, DOI 10.17487/RFC2360, June 1998,
+              <https://www.rfc-editor.org/info/rfc2360>.
+
+7.3.  URIs
+
+   [1] https://github.com/miekg/mmark
+
+   [2] http://xml2rfc.ietf.org/
+
+Appendix A.  Glossary
+
+   NCP
+      Network Control Processor.
+   OS
+      Operating System, i.e. the IPv6 node using Spinel to control and
+      manage one or more of its IPv6 network interfaces.
+   PHY
+      Physical layer.  Refers to characteristics and parameters related
+      to the physical implementation and operation of a networking
+      medium.
+
+Appendix B.  Acknowledgments
+
+   Special thanks to Nick Banks, Jonathan Hui, Abtin Keshavarzian, Yakun
+   Xu, Piotr Szkotak, Arjuna Sivasithambaresan and Martin Turon for
+   their substantial contributions and feedback related to this
+   document.
+
+   This document was prepared using mmark [1] by (Miek Gieben) and
+   xml2rfc (version 2) [2].
+
+Authors' Addresses
+
+   Robert S. Quattlebaum
+   Nest Labs, Inc.
+   3400 Hillview Ave.
+   Palo Alto, California  94304
+   USA
+
+   Email: rquattle@nestlabs.com
+
+
+
+
+
+
+
+
+Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 5]
+
+Internet-Draft             Spinel Network Save              October 2017
+
+
+   james woodyatt
+   Nest Labs, Inc.
+   3400 Hillview Ave.
+   Palo Alto, California  94304
+   USA
+
+   Email: jhw@nestlabs.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 6]

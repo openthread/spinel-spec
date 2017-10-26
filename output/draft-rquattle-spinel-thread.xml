@@ -1,0 +1,670 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rfc SYSTEM 'rfc2629.dtd' []>
+<rfc ipr="trust200902" category="std" docName="draft-rquattle-spinel-thread-dd3c1a1">
+<?rfc toc="yes"?>
+<?rfc symrefs="yes"?>
+<?rfc sortrefs="yes"?>
+<?rfc compact="yes"?>
+<?rfc subcompact="yes"?>
+<?rfc private=""?>
+<?rfc topblock="yes"?>
+<?rfc comments="yes"?>
+<front>
+<title abbrev="Spinel Thread">Spinel Thread Support</title>
+
+<author initials="R." surname="Quattlebaum" fullname="Robert S. Quattlebaum">
+<organization>Nest Labs, Inc.</organization>
+<address>
+<postal>
+<street>3400 Hillview Ave.</street>
+<city>Palo Alto</city>
+<code>94304</code>
+<country>USA</country>
+<region>California</region>
+</postal>
+<phone></phone>
+<email>rquattle@nestlabs.com</email>
+<uri></uri>
+</address>
+</author>
+<author initials="j.h." surname="woodyatt" fullname="james woodyatt">
+<organization>Nest Labs, Inc.</organization>
+<address>
+<postal>
+<street>3400 Hillview Ave.</street>
+<city>Palo Alto</city>
+<code>94304</code>
+<country>USA</country>
+<region>California</region>
+</postal>
+<phone></phone>
+<email>jhw@nestlabs.com</email>
+<uri></uri>
+</address>
+</author>
+<date year="2017" month="October" day="26"/>
+
+<area>Internet</area>
+<workgroup></workgroup>
+<keyword>Spinel</keyword>
+<keyword>IPv6</keyword>
+<keyword>NCP</keyword>
+<keyword>Thread</keyword>
+
+
+<abstract>
+<t>This document specifies a specialization of the Spinel protocol to support Thread(R) networks.
+</t>
+</abstract>
+
+
+</front>
+
+<middle>
+
+<section anchor="introduction" title="Introduction">
+<t>TODO: Writeme.
+</t>
+
+<section anchor="requirements-language-and-conventions" title="Requirements Language and Conventions">
+<t>The key words &quot;MUST&quot;, &quot;MUST NOT&quot;, &quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;, &quot;SHOULD&quot;, &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;,  &quot;MAY&quot;, and &quot;OPTIONAL&quot; in this document are to be interpreted as described in <xref target="RFC2119"/>.
+</t>
+<t>The layout diagrams in this document that show encodings of data in octet sequences use the convention described in Guide for Internet Standards Writers <xref target="RFC2360"/> section 3.1, Packet Diagrams. Specifically, bits in octets are indexed from most significant to least significant, and the least significant bit in a field representing an integer value more than one bit in length is the least significant bit of a the signed or unsigned number, as the case requires.
+</t>
+</section>
+</section>
+
+<section anchor="thread-requirements" title="Requirements">
+<t>Thread(R) NCPs which adhere to this specification MUST also satisfy the following requirements:
+</t>
+<t>
+<list style="symbols">
+<t>The property <spanx style="verb">PROP_INTERFACE_TYPE</spanx> must be 3.</t>
+<t>The non-optional properties in the following sections MUST be
+implemented: CORE, PHY, MAC, NET, and IPV6.</t>
+</list>
+</t>
+<t>All serious implementations of an NCP SHOULD also support the network
+save feature (See draft-rquattle-spinel-network-save).
+</t>
+
+<section anchor="thread-capabilities" title="Capabilities">
+<t>The Thread(R) technology defines the following capabilities:
+</t>
+<t>
+<list style="symbols">
+<t><spanx style="verb">CAP_NET_THREAD_1_0</spanx> - Indicates that the NCP implements v1.0 of the Thread(R) standard.</t>
+<t><spanx style="verb">CAP_NET_THREAD_1_1</spanx> - Indicates that the NCP implements v1.1 of the Thread(R) standard.</t>
+</list>
+</t>
+</section>
+
+<section anchor="thread-properties" title="Properties">
+<t>Properties for Thread(R) are allocated out of Spinel's <spanx style="verb">Tech</spanx> property
+section (see (draft-rquattle-spinel-core#property-sections)).
+</t>
+
+<section anchor="prop-80-propthreadleaderaddr" title="PROP 80: PROP_THREAD_LEADER_ADDR">
+<t>
+<list style="symbols">
+<t>Type: Read-Only</t>
+<t>Packed-Encoding: <spanx style="verb">6</spanx></t>
+</list>
+</t>
+<t>The IPv6 address of the leader. (Note: May change to long and short address of leader)
+</t>
+</section>
+
+<section anchor="prop-81-propthreadparent" title="PROP 81: PROP_THREAD_PARENT">
+<t>
+<list style="symbols">
+<t>Type: Read-Only</t>
+<t>Packed-Encoding: <spanx style="verb">ES</spanx></t>
+<t>LADDR, SADDR</t>
+</list>
+</t>
+<t>The long address and short address of the parent of this node.
+</t>
+</section>
+
+<section anchor="prop-82-propthreadchildtable" title="PROP 82: PROP_THREAD_CHILD_TABLE">
+<t>
+<list style="symbols">
+<t>Type: Read-Only</t>
+<t>Packed-Encoding: <spanx style="verb">A(t(ES))</spanx></t>
+</list>
+</t>
+<t>Table containing the long and short addresses of all
+the children of this node.
+</t>
+</section>
+
+<section anchor="prop-83-propthreadleaderrid" title="PROP 83: PROP_THREAD_LEADER_RID">
+<t>
+<list style="symbols">
+<t>Type: Read-Only</t>
+<t>Packed-Encoding: <spanx style="verb">C</spanx></t>
+</list>
+</t>
+<t>The router-id of the current leader.
+</t>
+</section>
+
+<section anchor="prop-84-propthreadleaderweight" title="PROP 84: PROP_THREAD_LEADER_WEIGHT">
+<t>
+<list style="symbols">
+<t>Type: Read-Only</t>
+<t>Packed-Encoding: <spanx style="verb">C</spanx></t>
+</list>
+</t>
+<t>The leader weight of the current leader.
+</t>
+</section>
+
+<section anchor="prop-85-propthreadlocalleaderweight" title="PROP 85: PROP_THREAD_LOCAL_LEADER_WEIGHT">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding: <spanx style="verb">C</spanx></t>
+</list>
+</t>
+<t>The leader weight for this node.
+</t>
+</section>
+
+<section anchor="prop-86-propthreadnetworkdata" title="PROP 86: PROP_THREAD_NETWORK_DATA">
+<t>
+<list style="symbols">
+<t>Type: Read-Only</t>
+<t>Packed-Encoding: <spanx style="verb">D</spanx></t>
+</list>
+</t>
+<t>The local network data.
+</t>
+</section>
+
+<section anchor="prop-87-propthreadnetworkdataversion" title="PROP 87: PROP_THREAD_NETWORK_DATA_VERSION">
+<t>
+<list style="symbols">
+<t>Type: Read-Only</t>
+<t>Packed-Encoding: <spanx style="verb">S</spanx></t>
+</list>
+</t>
+</section>
+
+<section anchor="prop-88-propthreadstablenetworkdata" title="PROP 88: PROP_THREAD_STABLE_NETWORK_DATA">
+<t>
+<list style="symbols">
+<t>Type: Read-Only</t>
+<t>Packed-Encoding: <spanx style="verb">D</spanx></t>
+</list>
+</t>
+<t>The local stable network data.
+</t>
+</section>
+
+<section anchor="prop-89-propthreadstablenetworkdataversion" title="PROP 89: PROP_THREAD_STABLE_NETWORK_DATA_VERSION">
+<t>
+<list style="symbols">
+<t>Type: Read-Only</t>
+<t>Packed-Encoding: <spanx style="verb">S</spanx></t>
+</list>
+</t>
+</section>
+
+<section anchor="prop-90-propthreadonmeshnets" title="PROP 90: PROP_THREAD_ON_MESH_NETS">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding: <spanx style="verb">A(t(6CbCbS))</spanx></t>
+</list>
+</t>
+<t>Data per item is:
+</t>
+<t>
+<list style="symbols">
+<t><spanx style="verb">6</spanx>: IPv6 Prefix</t>
+<t><spanx style="verb">C</spanx>: Prefix length in bits</t>
+<t><spanx style="verb">b</spanx>: Stable flag</t>
+<t><spanx style="verb">C</spanx>: TLV flags</t>
+<t><spanx style="verb">b</spanx>: &quot;Is defined locally&quot; flag. Set if this network was locally
+defined. Assumed to be true for set, insert and replace. Clear if
+the on mesh network was defined by another node.</t>
+<t><spanx style="verb">S</spanx>: The RLOC16 of the device that registered this on-mesh prefix entry.
+This value is not used and ignored when adding an on-mesh prefix.</t>
+</list>
+</t>
+</section>
+
+<section anchor="prop-91-propthreadoffmeshroutes" title="PROP 91: PROP_THREAD_OFF_MESH_ROUTES">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding: <spanx style="verb">A(t(6CbCbbS))</spanx></t>
+</list>
+</t>
+<t>Data per item is:
+</t>
+<t>
+<list style="symbols">
+<t><spanx style="verb">6</spanx>: Route Prefix</t>
+<t><spanx style="verb">C</spanx>: Prefix length in bits</t>
+<t><spanx style="verb">b</spanx>: Stable flag</t>
+<t><spanx style="verb">C</spanx>: Route preference flags</t>
+<t><spanx style="verb">b</spanx>: &quot;Is defined locally&quot; flag. Set if this route info was locally
+defined as part of local network data. Assumed to be true for set,
+insert and replace. Clear if the route is part of partition's network
+data.</t>
+<t><spanx style="verb">b</spanx>: &quot;Next hop is this device&quot; flag. Set if the next hop for the
+route is this device itself (i.e., route was added by this device)
+This value is ignored when adding an external route. For any added
+route the next hop is this device.</t>
+<t><spanx style="verb">S</spanx>: The RLOC16 of the device that registered this route entry.
+This value is not used and ignored when adding a route.</t>
+</list>
+</t>
+</section>
+
+<section anchor="prop-92-propthreadassistingports" title="PROP 92: PROP_THREAD_ASSISTING_PORTS">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding: <spanx style="verb">A(S)</spanx></t>
+</list>
+</t>
+</section>
+
+<section anchor="prop-93-propthreadallowlocalnetdatachange" title="PROP 93: PROP_THREAD_ALLOW_LOCAL_NET_DATA_CHANGE">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding: <spanx style="verb">b</spanx></t>
+</list>
+</t>
+<t>Set to true before changing local net data. Set to false when finished.
+This allows changes to be aggregated into single events.
+</t>
+</section>
+
+<section anchor="prop-94-propthreadmode" title="PROP 94: PROP_THREAD_MODE">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding: <spanx style="verb">C</spanx></t>
+</list>
+</t>
+<t>This property contains the value of the mode
+TLV for this node. The meaning of the bits in this
+bitfield are defined by section 4.5.2 of the Thread(R)
+specification.
+</t>
+</section>
+
+<section anchor="prop-5376-propthreadchildtimeout" title="PROP 5376: PROP_THREAD_CHILD_TIMEOUT">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding: <spanx style="verb">L</spanx></t>
+</list>
+</t>
+<t>Used when operating in the Child role.
+</t>
+</section>
+
+<section anchor="prop-5377-propthreadrloc16" title="PROP 5377: PROP_THREAD_RLOC16">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding: <spanx style="verb">S</spanx></t>
+</list>
+</t>
+</section>
+
+<section anchor="prop-5378-propthreadrouterupgradethreshold" title="PROP 5378: PROP_THREAD_ROUTER_UPGRADE_THRESHOLD">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding: <spanx style="verb">C</spanx></t>
+</list>
+</t>
+</section>
+
+<section anchor="prop-5379-propthreadcontextreusedelay" title="PROP 5379: PROP_THREAD_CONTEXT_REUSE_DELAY">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding: <spanx style="verb">L</spanx></t>
+</list>
+</t>
+</section>
+
+<section anchor="prop-5380-propthreadnetworkidtimeout" title="PROP 5380: PROP_THREAD_NETWORK_ID_TIMEOUT">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding: <spanx style="verb">C</spanx></t>
+</list>
+</t>
+<t>Allows you to get or set the Thread(R) <spanx style="verb">NETWORK_ID_TIMEOUT</spanx> constant, as
+defined by the Thread(R) specification.
+</t>
+</section>
+
+<section anchor="prop-5381-propthreadactiverouterids" title="PROP 5381: PROP_THREAD_ACTIVE_ROUTER_IDS">
+<t>
+<list style="symbols">
+<t>Type: Read-Write/Write-Only</t>
+<t>Packed-Encoding: <spanx style="verb">A(C)</spanx> (List of active thread router ids)</t>
+</list>
+</t>
+<t>Note that some implementations may not support <spanx style="verb">CMD_GET_VALUE</spanx>
+router ids, but may support <spanx style="verb">CMD_REMOVE_VALUE</spanx> when the node is
+a leader.
+</t>
+</section>
+
+<section anchor="prop-5382-propthreadrloc16debugpassthru" title="PROP 5382: PROP_THREAD_RLOC16_DEBUG_PASSTHRU">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding: <spanx style="verb">b</spanx></t>
+</list>
+</t>
+<t>Allow the HOST to directly observe all IPv6 packets received by the NCP,
+including ones sent to the RLOC16 address.
+</t>
+<t>Default value is <spanx style="verb">false</spanx>.
+</t>
+</section>
+
+<section anchor="prop-5383-propthreadrouterroleenabled" title="PROP 5383: PROP_THREAD_ROUTER_ROLE_ENABLED">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding: <spanx style="verb">b</spanx></t>
+</list>
+</t>
+<t>Allow the HOST to indicate whether or not the router role is enabled.
+If current role is a router, setting this property to <spanx style="verb">false</spanx> starts
+a re-attach process as an end-device.
+</t>
+</section>
+
+<section anchor="prop-5384-propthreadrouterdowngradethreshold" title="PROP 5384: PROP_THREAD_ROUTER_DOWNGRADE_THRESHOLD">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding: <spanx style="verb">C</spanx></t>
+</list>
+</t>
+</section>
+
+<section anchor="prop-5385-propthreadrouterselectionjitter" title="PROP 5385: PROP_THREAD_ROUTER_SELECTION_JITTER">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding: <spanx style="verb">C</spanx></t>
+</list>
+</t>
+<t>Specifies the self imposed random delay in seconds a REED waits before
+registering to become an Active Router.
+</t>
+</section>
+
+<section anchor="prop-5386-propthreadpreferredrouterid" title="PROP 5386: PROP_THREAD_PREFERRED_ROUTER_ID">
+<t>
+<list style="symbols">
+<t>Type: Write-Only</t>
+<t>Packed-Encoding: <spanx style="verb">C</spanx></t>
+</list>
+</t>
+<t>Specifies the preferred Router Id. Upon becoming a router/leader the node
+attempts to use this Router Id. If the preferred Router Id is not set or
+if it can not be used, a randomly generated router id is picked. This
+property can be set only when the device role is either detached or
+disabled.
+</t>
+</section>
+
+<section anchor="prop-5387-propthreadneighbortable" title="PROP 5387: PROP_THREAD_NEIGHBOR_TABLE">
+<t>
+<list style="symbols">
+<t>Type: Read-Only</t>
+<t>Packed-Encoding: <spanx style="verb">A(t(ESLCcCbLL))</spanx></t>
+</list>
+</t>
+<t>Data per item is:
+</t>
+<t>
+<list style="symbols">
+<t><spanx style="verb">E</spanx>: Extended/long address</t>
+<t><spanx style="verb">S</spanx>: RLOC16</t>
+<t><spanx style="verb">L</spanx>: Age</t>
+<t><spanx style="verb">C</spanx>: Link Quality In</t>
+<t><spanx style="verb">c</spanx>: Average RSS</t>
+<t><spanx style="verb">C</spanx>: Mode (bit-flags)</t>
+<t><spanx style="verb">b</spanx>: <spanx style="verb">true</spanx> if neighbor is a child, <spanx style="verb">false</spanx> otherwise.</t>
+<t><spanx style="verb">L</spanx>: Link Frame Counter</t>
+<t><spanx style="verb">L</spanx>: MLE Frame Counter</t>
+</list>
+</t>
+</section>
+
+<section anchor="prop-5388-propthreadchildcountmax" title="PROP 5388: PROP_THREAD_CHILD_COUNT_MAX">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding: <spanx style="verb">C</spanx></t>
+</list>
+</t>
+<t>Specifies the maximum number of children currently allowed.
+This parameter can only be set when Thread(R) protocol operation
+has been stopped.
+</t>
+</section>
+
+<section anchor="prop-5389-propthreadleadernetworkdata" title="PROP 5389: PROP_THREAD_LEADER_NETWORK_DATA">
+<t>
+<list style="symbols">
+<t>Type: Read-Only</t>
+<t>Packed-Encoding: <spanx style="verb">D</spanx></t>
+</list>
+</t>
+<t>The leader network data.
+</t>
+</section>
+
+<section anchor="prop-5390-propthreadstableleadernetworkdata" title="PROP 5390: PROP_THREAD_STABLE_LEADER_NETWORK_DATA">
+<t>
+<list style="symbols">
+<t>Type: Read-Only</t>
+<t>Packed-Encoding: <spanx style="verb">D</spanx></t>
+</list>
+</t>
+<t>The stable leader network data.
+</t>
+</section>
+
+<section anchor="prop-thread-joiners" title="PROP 5391: PROP_THREAD_JOINERS">
+<t>
+<list style="symbols">
+<t>Type: Insert/Remove Only (optionally Read-Write)</t>
+<t>Packed-Encoding: <spanx style="verb">A(t(ULE))</spanx></t>
+<t>Required capability: <spanx style="verb">CAP_THREAD_COMMISSIONER</spanx></t>
+</list>
+</t>
+<t>Data per item is:
+</t>
+<t>
+<list style="symbols">
+<t><spanx style="verb">U</spanx>: PSKd</t>
+<t><spanx style="verb">L</spanx>: Timeout in seconds</t>
+<t><spanx style="verb">E</spanx>: Extended/long address (optional)</t>
+</list>
+</t>
+<t>Passess Pre-Shared Key for the Device to the NCP in the commissioning process.
+When the Extended address is ommited all Devices which provided a valid PSKd
+are allowed to join the Thread(R) Network.
+</t>
+</section>
+
+<section anchor="prop-thread-commissioner-enabled" title="PROP 5392: PROP_THREAD_COMMISSIONER_ENABLED">
+<t>
+<list style="symbols">
+<t>Type: Write only (optionally Read-Write)</t>
+<t>Packed-Encoding: <spanx style="verb">b</spanx></t>
+<t>Required capability: <spanx style="verb">CAP_THREAD_COMMISSIONER</spanx></t>
+</list>
+</t>
+<t>Set to true to enable the native commissioner. It is mandatory before adding the joiner to the network.
+</t>
+</section>
+
+<section anchor="prop-thread-tmf-proxy-enabled" title="PROP 5393: PROP_THREAD_TMF_PROXY_ENABLED">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding: <spanx style="verb">b</spanx></t>
+<t>Required capability: <spanx style="verb">CAP_THREAD_TMF_PROXY</spanx></t>
+</list>
+</t>
+<t>Set to true to enable the TMF proxy.
+</t>
+</section>
+
+<section anchor="prop-thread-tmf-proxy-stream" title="PROP 5394: PROP_THREAD_TMF_PROXY_STREAM">
+<t>
+<list style="symbols">
+<t>Type: Read-Write-Stream</t>
+<t>Packed-Encoding: <spanx style="verb">dSS</spanx></t>
+<t>Required capability: <spanx style="verb">CAP_THREAD_TMF_PROXY</spanx></t>
+</list>
+</t>
+<t>Data per item is:
+</t>
+<t>
+<list style="symbols">
+<t><spanx style="verb">d</spanx>: CoAP frame</t>
+<t><spanx style="verb">S</spanx>: source/destination RLOC/ALOC</t>
+<t><spanx style="verb">S</spanx>: source/destination port</t>
+</list>
+</t>
+<texttable>
+<ttcol align="center">Octects:</ttcol>
+<ttcol align="center">2</ttcol>
+<ttcol align="center">n</ttcol>
+<ttcol align="center">2</ttcol>
+<ttcol align="center">2</ttcol>
+
+<c>Fields:</c><c>Length</c><c>CoAP</c><c>locator</c><c>port</c>
+</texttable>
+<t>This property allows the host to send and receive TMF messages from
+the NCP's RLOC address and support Thread-specific border router functions.
+</t>
+</section>
+
+<section anchor="prop-thread-discovery-scan-joiner-flag" title="PROP 5395: PROP_THREAD_DISOVERY_SCAN_JOINER_FLAG">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding:: <spanx style="verb">b</spanx></t>
+</list>
+</t>
+<t>This property specifies the value used in Thread(R) MLE Discovery Request
+TLV during discovery scan operation. Default value is <spanx style="verb">false</spanx>.
+</t>
+</section>
+
+<section anchor="prop-thread-discovery-scan-enable-filtering" title="PROP 5396: PROP_THREAD_DISCOVERY_SCAN_ENABLE_FILTERING">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding:: <spanx style="verb">b</spanx></t>
+</list>
+</t>
+<t>This property is used to enable/disable EUI64 filtering during discovery
+scan operation. Default value is <spanx style="verb">false</spanx>.
+</t>
+</section>
+
+<section anchor="prop-thread-discovery-scan-panid" title="PROP 5397: PROP_THREAD_DISCOVERY_SCAN_PANID">
+<t>
+<list style="symbols">
+<t>Type: Read-write</t>
+<t>Packed-Encoding:: <spanx style="verb">S</spanx></t>
+</list>
+</t>
+<t>This property specifies the PANID used for filtering during discovery
+scan operation. Default value is <spanx style="verb">0xffff</spanx> (broadcast PANID) which disables
+PANID filtering.
+</t>
+</section>
+
+<section anchor="prop-thread-steering-data" title="PROP 5398: PROP_THREAD_STEERING_DATA">
+<t>
+<list style="symbols">
+<t>Type: Write-Only</t>
+<t>Packed-Encoding: <spanx style="verb">E</spanx></t>
+<t>Required capability: <spanx style="verb">CAP_OOB_STEERING_DATA</spanx></t>
+</list>
+</t>
+<t>This property can be used to set the steering data for MLE Discovery
+Response messages.
+</t>
+<t>
+<list style="symbols">
+<t>All zeros to clear the steering data (indicating no steering data).</t>
+<t>All 0xFFs to set the steering data (bloom filter) to accept/allow all.</t>
+<t>A specific EUI64 which is then added to steering data/bloom filter.</t>
+</list>
+</t>
+</section>
+</section>
+</section>
+
+<section anchor="security-considerations" title="Security Considerations">
+<t>EDITOR: Insert verbiage here conforming to RFC Editor guidelines.
+</t>
+</section>
+
+<section anchor="iana-considerations" title="IANA Considerations">
+<t>EDITOR: insert verbiage here: registry creation forms, et cetera.
+</t>
+</section>
+
+</middle>
+<back>
+<references title="Normative References">
+<?rfc include="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml"?>
+</references>
+<references title="Informative References">
+<?rfc include="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2360.xml"?>
+</references>
+
+<section anchor="glossary" title="Glossary">
+<t>
+<list style="hanging">
+<t hangText="NCP">
+<vspace />
+Network Control Processor.</t>
+<t hangText="OS">
+<vspace />
+Operating System, i.e. the IPv6 node using Spinel to control and manage one or more of its IPv6 network interfaces.</t>
+<t hangText="PHY">
+<vspace />
+Physical layer. Refers to characteristics and parameters related to the physical implementation and operation of a networking medium.</t>
+</list>
+</t>
+</section>
+
+<section anchor="acknowledgments" title="Acknowledgments">
+<t>Thread is a registered trademark of The Thread Group, Inc.
+</t>
+<t>Special thanks to Nick Banks, Jonathan Hui, Abtin Keshavarzian, Yakun Xu, Piotr Szkotak, Arjuna Sivasithambaresan and Martin Turon for their substantial contributions and feedback related to this document.
+</t>
+<t>This document was prepared using <eref target="https://github.com/miekg/mmark">mmark</eref> by (Miek Gieben) and <eref target="http://xml2rfc.ietf.org/">xml2rfc (version 2)</eref>.
+</t>
+</section>
+
+</back>
+</rfc>
