@@ -1,5 +1,5 @@
 %%%
-    title           = "Spinel: A protocol for control and management of IPv6 network interface co-processors"
+    title           = "Spinel: A protocol for control and management of IPv6 network co-processors"
     abbrev          = "Spinel Core"
     category        = "std"
     docName         = "draft-rquattle-spinel-core"
@@ -49,28 +49,66 @@
 
 .# Abstract
 
-This document specifies the core of the Spinel protocol, which facilitates the control and management of IPv6 network interfaces on devices where general purpose application processors offload network functions at their interfaces to network co-processors (NCP) connected by simple communication links like serial data channels. Spinel was initially designed for use with Thread(R) network co-processors, but its core is general purpose and intended to be easily adapted to other types of IPv6 network interface.
+This document specifies the core of the Spinel host-controller
+protocol, which enables a general purpose application processor to
+manage, control, and offload IPv6 network functions to a Network
+Co-Processor (NCP) connected via a simple communication link(such as
+UART, SPI, or USB).
+
+Spinel was initially designed for use with Thread(R) network
+co-processors, but the core of the protocol is general purpose and
+intended to be easily adapted to other types of low-power IPv6
+networking technologies.
 
 {mainmatter}
 
 # Introduction #
 
-Spinel is a host-controller protocol designed to enable interoperation over simple serial connections between general purpose device operating systems (OS) and network co-processors (NCP) for the purpose of controlling and managing their IPv6 network interfaces, achieving the following goals:
+IEEE 802.15.4 based low-power wireless networks are quickly becoming
+ubiquitous, and with the introduction of 6LoWPAN[@RFC4944],
+IPv6[@!RFC8200] connectivity is now possible on these networks.
+6LoWPAN-based network technologies such as Thread(R) and ZigBee(R) IP
+additionally provide additional features such as network security,
+mesh-networking, and ultra-low-power operation. To fully realize
+low-power operation, a great deal of the IPv6 network and routing
+stack needs to be implemented directly on a NCP (Network
+Co-Processor). With that, we again find ourselves with a question of
+how best to communicate with and manage this new class of peripheral.
 
-*   Adopt a layered approach to the protocol design, allowing future support for other types of IPv6 link.
-*   Minimize the number of required commands/methods by supporting a rich, property-based programming interface.
-*   Support NCPs capable of multiple simultaneous IPv6 interfaces.
-*   Support NCPs capable of communicating simultaneously on more than one physical link.
-*   Gracefully handle the addition of new features and capabilities without necessarily breaking backward compatibility.
-*   Be as minimal and light-weight as possible without unnecessarily sacrificing flexibility.
+The problem of needing to communicate with and manage an NCP is not
+new: However, the current existing and proposed approaches have severe
+drawbacks (See (#appendix-comparison)).
 
-Beyond this core framework, properties and commands enable various common features of IPv6. In related and forthcoming documents, the Spinel protocol is extended to support NCP implementations for specific IPv6 link types, e.g. Thread(R).
+Spinel is a host-controller protocol designed to address the drawbacks
+of existing protocols and lower implementation and deployment burdens
+by providing a standardized mechanism for the management and control
+of IPv6-based NCPs by general purpose device operating systems (OS).
 
-## Requirements Language and Conventions
+## Objectives ##
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [@!RFC2119].
+Spinel was designed to satisfy the following objectives:
 
-The layout diagrams in this document that show encodings of data in octet sequences use the convention described in Guide for Internet Standards Writers [@?RFC2360] section 3.1, Packet Diagrams. Specifically, bits in octets are indexed from most significant to least significant, and the least significant bit in a field representing an integer value more than one bit in length is the least significant bit of a the signed or unsigned number, as the case requires.
+1.  The protocol must allow for managing the network interface at the
+    network layer.
+2.  The protocol must allow for multiple data streams, including IPv6
+    traffic, debug messages, and raw sniffed traffic.
+3.  The protocol must be link agnostic: should work efficiently over
+    UART, SPI, USB or other busses and links.
+4.  The protocol must be relatively straightforward to understand and
+    implement.
+5.  The protocol must gracefully handle the addition of new features
+    and capabilities without necessarily breaking backward
+    compatibility.
+6.  The protocol must support multiple conceptually independent
+    network interfaces.
+7.  The protocol must be reasonably compact and lightweight.
+
+Beyond this core framework, properties and commands enable various
+common features of IPv6. In related and forthcoming documents, the
+Spinel protocol is extended to support NCP implementations for
+specific IPv6 link types, e.g. Thread(R).
+
+{{terminology.md}}
 
 {{intro-properties.md}}
 
@@ -90,6 +128,9 @@ The layout diagrams in this document that show encodings of data in octet sequen
 
 {{iana-considerations.md}}
 
+[-@RFC1055]
+[-@I-D.bormann-t2trg-slipmux#01]
+
 {backmatter}
 
 {{appendix-examples.md}}
@@ -98,7 +139,7 @@ The layout diagrams in this document that show encodings of data in octet sequen
 
 {{appendix-test-vectors.md}}
 
-{{glossary.md}}
+{{appendix-comparison.md}}
 
 # Acknowledgments #
 

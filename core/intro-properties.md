@@ -1,27 +1,53 @@
 # Property Overview #
 
-Spinel is largely a property-based protocol between an Operating System (OS) and one or more Network Control Processors (NCP). Its theory of operation is similar to representational state transfer (REST), with a property defined for every attribute of the operational state of a network interface for which an IPv6 node may need the typical operators, i.e. Create, Read, Update, Delete and Alert.
+Spinel is largely a property-based protocol. The NCP exposes various
+properties that the host can manipulate to control its behavior. The
+theory of operation is similar to representational state transfer
+(REST)(TODO:CITE), with a property defined for every attribute of the operational
+state of a network interface for which an IPv6 node may need the
+typical operators, i.e. Create, Read, Update, Delete and Alert.
 
-The inspiration of the approach used in Spinel was memory-mapped hardware registers for peripherals. The goal is to avoid, as much as possible, the use of large complicated structures and/or method argument lists. The reason for avoiding these is because they have a tendency to change, especially early in development. Adding or removing a property from a structure can render the entire protocol incompatible. By using properties, conforming to a well-designed information model, extending the protocol is usually as simple as an additional property.
+The inspiration of the approach used in Spinel was the concept of
+hardware registers for peripherals. The goal was to avoid, as much as
+possible, the use of large complicated structures and/or method
+argument lists. The reason for avoiding these is because they have a
+tendency to change in incompatible ways, especially early in
+development. For example, adding or removing an argument from a
+command will render the entire protocol incompatible. By using
+properties and conforming to a well-designed information model,
+extending the protocol is usually as simple as an additional property.
 
-Almost all features and capabilities are implemented using properties. Most new features that are initially proposed as operators can be adapted to be property-based instead.
+Almost all features and capabilities are implemented using properties.
+Most new features that are initially proposed as explicit commands can
+be satisfactorily adapted to be property-based instead. In cases where
+doing so is particularly awkward, explicit commands are used instead
+(See (#commands)).
 
-In Spinel, properties are identified by unsigned integer between 0 and 2,097,151 (See (#packed-unsigned-integer)) called "keys" because they are unique to each defined property, and they are recorded in a registry (EDITOR: proposal is to create an IANA registry) with some ranges already reserved for future expansion of the core and other ranges available for profile specialization.
+Properties are identified by a unique unsigned integer value between 0
+and 2,097,151 (See (#packed-unsigned-integer)) called a "property
+key". Property keys are recorded in the Spinel property key registry
+(EDITOR: proposal is to create an IANA registry) with some ranges
+already reserved for future expansion of the core and other ranges
+available for profile specialization.
+
+What follows is a overview of how properties work.
 
 ## Property Operators ##
 
-Each property is defined with a value type (see (#property-types)), and one or more of the following synchronous operators that an OS apply with values of that defined type:
+Conceptually, the following operations are used by the OS to query or change a property's value:
 
 *   `VALUE_GET`
 *   `VALUE_SET`
 *   `VALUE_INSERT`
 *   `VALUE_REMOVE`
 
-In addition, each property may all define one or more of the following operators that NCP apply for the purpose of notifying the OS, either synchronously or asynchronously, of changes to the value of that property.
+In addition, the following operations can be used by the NCP to indicate changes to the value of a property:
 
 *   `VALUE_IS`
 *   `VALUE_INSERTED`
 *   `VALUE_REMOVED`
+
+Not all properties support all of the above operations. Which operations are supported is generally determined by two things: what type of property it is and that property's readability/writability.
 
 ## Property Types ##
 
@@ -41,7 +67,7 @@ Single-value properties are properties that have a simple representation of a si
 *   Network name (Represented as a UTF-8 encoded string)
 *   802\.15.4 PAN ID (Represented as a unsigned 16-bit integer)
 
-The valid operators on these sorts of properties are `GET` and `SET`.
+The valid operators on these sorts of properties are `VALUE_GET` and `VALUE_SET`.
 
 ### Multiple-Value Properties ###
 
@@ -53,22 +79,27 @@ Multiple-Value Properties have more than one value associated with them. Example
 
 The valid operators on these sorts of properties are `VALUE_GET`, `VALUE_SET`, `VALUE_INSERT`, and `VALUE_REMOVE`.
 
-When the value is fetched using `VALUE_GET`, the returned value is the concatenation of all of the individual values in the list. If the length of the value for an individual item in the list is not defined by the type then each item returned in the list is prepended with a length (See (#arrays)). The order of the returned items, unless explicitly defined for that specific property, is undefined.
+When the value is fetched using `VALUE_GET`, an individual property will return the entire list of items as either of the following:
 
-`VALUE_SET` provides a way to completely replace all previous values. Calling `VALUE_SET` with an empty value effectively instructs the NCP to clear the value of that property.
+1. The concatenation of all of the individual values. This is used in cases where the length of an individual item is fixed.
+2. The concatenation of all of the individual values, each prefixed by a 16-bit big-endian integer describing the length of the individual item. This would be used in cases where the length of an individual item is not constant.
 
-`VALUE_INSERT` and `VALUE_REMOVE` provide mechanisms for the insertion or removal of individual items *by value*. The payload for these operators is a plain single value.
+The order of the returned items, unless explicitly defined for that specific property, is undefined.
+
+`VALUE_SET` provides a way to completely replace all previous values, with the item format matching what would be used for `VALUE_GET`. Calling `VALUE_SET` with an empty value effectively instructs the NCP to empty that property.
+
+`VALUE_INSERT` and `VALUE_REMOVE` provide mechanisms for the insertion or removal of individual items *by value*. The payload for these operators is a single item.
 
 ### Stream Properties ###
 
-Stream properties represent dynamic streams of data. Examples would be:
+Stream properties represent dynamic streams of data rather than a specific value. Examples would be:
 
 *   Network packet stream ((#prop-stream-net))
 *   Raw packet stream ((#prop-stream-raw))
 *   Debug message stream ((#prop-stream-debug))
 
-All such properties emit changes asynchronously using the `VALUE_IS` operator, sent from the NCP to the OS. For example, as IPv6 traffic is received by the NCP, the IPv6 packets are sent to the OS by way of asynchronous `VALUE_IS` operations.
+All such properties emit changes asynchronously using the `VALUE_IS` operator, sent from the NCP to the OS. For example, as IPv6 traffic is received by the NCP, the IPv6 packets are sent to the OS by way of asynchronous `VALUE_IS` operations for the network packet stream property.
 
-Some of these properties also support the OS sending data back to the NCP. For example, this is how the OS sends IPv6 traffic to the NCP.
+Some of these properties also support the OS sending data back to the NCP using the `VALUE_SET` operation. For example, this is how the OS sends IPv6 traffic to the NCP.
 
-Neither the `GET` and `VALUE_GET` operators, nor the `SET`, `VALUE_SET`, `VALUE_INSERT` and `VALUE_REMOVE` operators, are generally defined for stream properties.
+The behavior and meaning of the `VALUE_GET`, `VALUE_INSERT`, `VALUE_REMOVE`, `VALUE_INSERTED`, and `VALUE_REMOVED` operations for stream properties is undefined and SHOULD NOT be used.

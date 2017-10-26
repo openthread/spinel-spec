@@ -18,10 +18,10 @@ Status Code Range     | Reservation Policy
 
 The Spinel core protoocol defines some standard status codes. Their names, assigned numbers and a short description of their operational semantics are shown in the following table:
 
-Status Code | Name                              | Description
+Code        | Name                              | Description
 :-----------|:----------------------------------|:----------------------------------------------------------------------------
   0         | `STATUS_OK`                       | Operation has completed successfully.
-  1         | `STATUS_FAILURE`                  | Operation has failed for some undefined reason.
+  1         | `STATUS_FAILURE`                  | Operation has failed for an unspecified reason.
   2         | `STATUS_UNIMPLEMENTED`            | The given operation has not been implemented.
   3         | `STATUS_INVALID_ARGUMENT`         | An argument to the given operation is invalid.
   4         | `STATUS_INVALID_STATE`            | The given operation is invalid for the current state of the device.
@@ -52,4 +52,3 @@ Status Code | Name                              | Description
 119         | `STATUS_RESET_UNKNOWN`            | Failure while recovering cause of reset.
 120         | `STATUS_RESET_WATCHDOG`           | Software failed to make sufficient progress.
 
-EDITOR: The `STATUS_CCA_FAILURE` status is a technology-specific status code. Should not be in the core protocol.

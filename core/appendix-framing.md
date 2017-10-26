@@ -1,5 +1,5 @@
 
-# Framing Protocol
+# Recommended Framing Protocols {#appendix-framing}
 
 Since this NCP protocol is defined independently of the physical transport or framing, any number of transports and framing protocols could be used successfully. However, in the interests of compatibility, this document provides some recommendations.
 

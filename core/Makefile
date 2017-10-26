@@ -35,21 +35,22 @@ include ../mmark.make
 
 draft-rquattle-spinel-core.xml: \
 	draft-rquattle-spinel-core.md \
+	appendix-comparison.md \
 	appendix-examples.md \
 	appendix-framing.md \
 	appendix-test-vectors.md \
 	detail-capabilities.md \
 	detail-commands.md \
-	detail-properties.md \
 	detail-properties-core.md \
 	detail-properties-debug.md \
 	detail-properties-ipv6.md \
 	detail-properties-net.md \
+	detail-properties.md \
 	detail-status.md \
-	glossary.md \
 	iana-considerations.md \
 	intro-encoding.md \
 	intro-frames.md \
 	intro-properties.md \
 	security-considerations.md \
+	terminology.md \
 	$(NULL)

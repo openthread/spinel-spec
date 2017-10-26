@@ -1,10 +1,13 @@
 # Data Packing
 
+**NOTE**:
+	This section will be removed from this draft shortly.
+
 Data serialization for properties is performed using a light-weight data packing format which was loosely inspired by [the D-Bus][DBUS] developed by the X Desktop Group.
 
 [DBUS]: https://www.freedesktop.org/wiki/Software/dbus/
 
-As with the D-Bus, the Spinel data packing format also defines a terse modeling language for describing the format of data packed for interchange between the OS and the NCP. With Spinel, however, the modeling language is an optional notational convenience, mainly of use in protocol definitions. As most NCP programming environments are highly constrained, it is not necessary to implement a structured validating parser for Spinel packed data to implement the Spinel protocol.
+As with D-Bus, the Spinel data packing format also defines a terse modeling language for describing the format of data packed for interchange between the OS and the NCP. With Spinel, however, the modeling language is an optional notational convenience, mainly of use in protocol definitions. As most NCP programming environments are highly constrained, it is not necessary to implement a structured validating parser for Spinel packed data to implement the Spinel protocol.
 
 Goals:
 
@@ -40,11 +43,9 @@ Char | Name                 | Description
  `e` | DATATYPE_EUI48       | EUI-48 Address. (Big-endian)
  `D` | DATATYPE_DATA        | Arbitrary data. See (#data-blobs).
  `d` | DATATYPE_DATA_WLEN   | Arbitrary data with prepended length. See (#data-blobs).
- `U` | DATATYPE_UTF8        | A text string encoded in [modified UTF-8][MUTF8] and terminated by U+0000 NUL character.
+ `U` | DATATYPE_UTF8        | A text string encoded in UTF8 and terminated by a trailing zero byte.
  `t(...)` | DATATYPE_STRUCT | Structured datatype with prepended length. See (#structured-data).
  `A(...)` | DATATYPE_ARRAY  | Array of datatypes. Compound type. See (#arrays).
-
-[MUTF8]: http://docs.oracle.com/javase/8/docs/api/java/io/DataInput.html#modified-utf-8
 
 All multi-octet values are little-endian unless explicitly stated otherwise.
 
