@@ -35,3 +35,8 @@ clean:
 	$(MAKE) -C core clean
 	$(MAKE) -C thread clean
 	$(MAKE) -C network-save clean
+
+update:
+	$(MAKE) -C core update
+	$(MAKE) -C thread update
+	$(MAKE) -C network-save update

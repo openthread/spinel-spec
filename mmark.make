@@ -48,10 +48,16 @@ XML   := $(patsubst %.md,%.xml,$(patsubst %.md.in,%.xml,$(SRC)))
 TXT   := $(patsubst %.md,%.txt,$(patsubst %.md.in,%.txt,$(SRC)))
 HTML  := $(patsubst %.md,%.html,$(patsubst %.md.in,%.html,$(SRC)))
 
+OUTPUT_DIR ?= ../output
+
 all: $(XML) $(TXT) $(HTML)
 
 clean:
 	$(RM_F) $(XML) $(TXT) $(HTML) $(patsubst %.md.in,%.md,$(wildcard draft-*.md.in))
+
+update: $(XML) $(TXT) $(HTML)
+	mkdir -p $(OUTPUT_DIR)
+	cp $(XML) $(TXT) $(HTML) $(OUTPUT_DIR)
 
 $(XML2RFC_CACHE_DIR):
 	$(MKDIR_P) "$(XML2RFC_CACHE_DIR)"

@@ -2,7 +2,7 @@
     title           = "Spinel Thread Support"
     abbrev          = "Spinel Thread"
     category        = "std"
-    docName         = "draft-rquattle-spinel-thread"
+    docName         = "draft-rquattle-spinel-thread-@SOURCE_VERSION@"
     ipr             = "trust200902"
     keyword         = ["Spinel", "IPv6", "NCP", "Thread"]
     date            = @SOURCE_DATE@

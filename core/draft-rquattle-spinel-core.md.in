@@ -2,7 +2,7 @@
     title           = "Spinel: A protocol for control and management of IPv6 network co-processors"
     abbrev          = "Spinel Core"
     category        = "std"
-    docName         = "draft-rquattle-spinel-core"
+    docName         = "draft-rquattle-spinel-core-@SOURCE_VERSION@"
     ipr             = "trust200902"
     keyword         = ["Spinel", "IPv6", "NCP"]
     date            = @SOURCE_DATE@

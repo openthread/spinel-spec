@@ -2,7 +2,7 @@
     title           = "Spinel Network Save: Non-Volatile Storage of Network Provision"
     abbrev          = "Spinel Network Save"
     category        = "std"
-    docName         = "draft-rquattle-spinel-network-save"
+    docName         = "draft-rquattle-spinel-network-save-@SOURCE_VERSION@"
     ipr             = "trust200902"
     keyword         = ["Spinel", "network provision", "non-volatile"]
     date            = @SOURCE_DATE@
