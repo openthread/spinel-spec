@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rfc SYSTEM 'rfc2629.dtd' []>
-<rfc ipr="trust200902" category="std" docName="draft-rquattle-spinel-core-dd3c1a1">
+<rfc ipr="trust200902" category="std" docName="draft-rquattle-spinel-core-45f170f">
 <?rfc toc="yes"?>
 <?rfc symrefs="yes"?>
 <?rfc sortrefs="yes"?>
@@ -42,7 +42,7 @@
 <uri></uri>
 </address>
 </author>
-<date year="2017" month="October" day="26"/>
+<date year="2017" month="October" day="27"/>
 
 <area>Internet</area>
 <workgroup></workgroup>
@@ -996,35 +996,75 @@ represent the given value.
 </section>
 
 <section anchor="properties" title="Properties">
-<t>This section defines the syntax and operational semantics of the Spinel properties common to the core protocol.
-</t>
-<t>Spinel NCP implementations MAY send any of the following commands, at any time, using any of the <spanx style="verb">PROP_ID</spanx> values defined for the core protocol:
-</t>
-<t>
-<list style="symbols">
-<t><spanx style="verb">CMD_PROP_VALUE_IS</spanx></t>
-<t><spanx style="verb">CMD_PROP_VALUE_INSERTED</spanx></t>
-<t><spanx style="verb">CMD_PROP_VALUE_REMOVED</spanx></t>
-<t><spanx style="verb">CMD_PROP_VALUE_ARE</spanx></t>
-</list>
-</t>
-<t>Spinel OS implementations MAY send any of the following commands, at any time, using any of the <spanx style="verb">PROP_ID</spanx> values defined for the core protocol:
-</t>
-<t>
-<list style="symbols">
-<t><spanx style="verb">CMD_PROP_VALUE_GET</spanx></t>
-<t><spanx style="verb">CMD_PROP_VALUE_SET</spanx></t>
-<t><spanx style="verb">CMD_PROP_VALUE_INSERT</spanx></t>
-<t><spanx style="verb">CMD_PROP_VALUE_REMOVE</spanx></t>
-<t><spanx style="verb">CMD_PROP_VALUE_MULTI_GET</spanx></t>
-<t><spanx style="verb">CMD_PROP_VALUE_MULTI_SET</spanx></t>
-</list>
-</t>
-<t>Spinel NCP implementations SHOULD implement the operational semantics for all the properties defined here, except where noted that a property is REQUIRED for the NCP to implement. If the NCP implementation receives one of the commands above with a <spanx style="verb">PROP_ID</spanx> value that it does not implement, then it MUST reply with a <spanx style="verb">CMD_PROP_VALUE_IS</spanx> for the <spanx style="verb">PROP_LAST_STATUS</spanx> property identifier with a <spanx style="verb">STATUS</spanx> value of <spanx style="verb">STATUS_PROP_NOT_FOUND</spanx>.
+<t>This section defines the syntax and specific operational details
+of the Spinel properties common to the core protocol.
 </t>
 
+<section anchor="command-semantics" title="Command Semantics">
+<t>Individual properties MAY support one or more of the following
+commands:
+</t>
+<t>
+<list style="symbols">
+<t><spanx style="verb">CMD_PROP_VALUE_GET</spanx> (<xref target="cmd-prop-value-get"/>)</t>
+<t><spanx style="verb">CMD_PROP_VALUE_SET</spanx> (<xref target="cmd-prop-value-set"/>)</t>
+<t><spanx style="verb">CMD_PROP_VALUE_INSERT</spanx> (<xref target="cmd-prop-value-insert"/>)</t>
+<t><spanx style="verb">CMD_PROP_VALUE_REMOVE</spanx> (<xref target="cmd-prop-value-remove"/>)</t>
+</list>
+</t>
+<t>Upon an error condition, the NCP SHALL respond in the typical
+fasion of indicating the error code via a <spanx style="verb">CMD_PROP_VALUE_IS</spanx> command
+with the appropriate status code(See @detail-status).
+</t>
+<t>Unless otherwise specified, an NCP MUST NOT emit a
+<spanx style="verb">PROP_LAST_STATUS</spanx> of <spanx style="verb">STATUS_OK</spanx> in response to the successful
+execution of any of the above commands.
+</t>
+<t>Upon successful execution of one of the property manipulation commands, the
+NCP SHALL send one of the following commands (with the same property key that
+was used for the sending command) to indicate success:
+</t>
+<t>
+<list style="symbols">
+<t><spanx style="verb">CMD_PROP_VALUE_IS</spanx> (<xref target="cmd-prop-value-is"/>)</t>
+<t><spanx style="verb">CMD_PROP_VALUE_INSERTED</spanx> (<xref target="cmd-prop-value-inserted"/>)</t>
+<t><spanx style="verb">CMD_PROP_VALUE_REMOVED</spanx> (<xref target="cmd-prop-value-removed"/>)</t>
+</list>
+</t>
+<t>When an NCP has successfully handled a <spanx style="verb">CMD_PROP_VALUE_INSERT</spanx> or
+<spanx style="verb">CMD_PROP_VALUE_REMOVE</spanx> command on a multi-value property, the NCP
+SHOULD respond with a <spanx style="verb">CMD_PROP_VALUE_INSERTED</spanx> or
+<spanx style="verb">CMD_PROP_VALUE_REMOVED</spanx>, respectfully. However, if doing so is
+prohibitively complex, the NCP MAY instead respond with a
+<spanx style="verb">CMD_PROP_VALUE_IS</spanx> containing the entire list of items.
+</t>
+<t>The reason for the above behavior is that the NCP is the ultimate
+authority on the value of all properties. By always indicating success
+by responding with the value of the property, we can make sure that
+the software running on the host is in sync with the behavior of the NCP.
+</t>
+</section>
+
+<section anchor="asynchronous-updates" title="Asynchronous Updates">
+<t>Some properties support indicating changes in their state asynchronously
+by sending the following commands with a TID value of 0:
+</t>
+<t>
+<list style="symbols">
+<t><spanx style="verb">CMD_PROP_VALUE_IS</spanx> (<xref target="cmd-prop-value-is"/>)</t>
+<t><spanx style="verb">CMD_PROP_VALUE_INSERTED</spanx> (<xref target="cmd-prop-value-inserted"/>)</t>
+<t><spanx style="verb">CMD_PROP_VALUE_REMOVED</spanx> (<xref target="cmd-prop-value-removed"/>)</t>
+</list>
+</t>
+<t>Asynchronous updates for specific properties can be enabled or disabled
+using <spanx style="verb">PROP_UNSOL_UPDATE_FILTER</spanx>, documented in <xref target="prop-unsol-update-filter"/>.
+</t>
+</section>
+
 <section anchor="property-identifiers" title="Property Identifiers">
-<t>IANA maintains a registry of Spinel <spanx style="verb">PROP_ID</spanx> property identifier numbers, with varying registration policies assigned for different ranges according to the following table:
+<t>IANA maintains a registry of Spinel <spanx style="verb">PROP_ID</spanx> property identifier
+numbers, with varying registration policies assigned for different
+ranges according to the following table:
 </t>
 <texttable>
 <ttcol align="left">Property ID Range</ttcol>
@@ -1042,7 +1082,8 @@ represent the given value.
 </section>
 
 <section anchor="property-identifier-sections" title="Property Identifier Sections">
-<t>Standard property identifier numbers are assigned in a hierarchy according to their purpose, as shown in the table below:
+<t>Standard property identifier numbers are assigned in a hierarchy
+according to their purpose, as shown in the table below:
 </t>
 <texttable>
 <ttcol align="left">Name</ttcol>
@@ -1054,12 +1095,15 @@ represent the given value.
 <c>PHY</c><c>32 - 47</c><c>4,608 - 4,863</c><c>Physical (PHY) layer specific</c>
 <c>MAC</c><c>48 - 63</c><c>4,864 - 5,119</c><c>Media access (MAC) layer specific</c>
 <c>NET</c><c>64 - 79</c><c>5,120 - 5,375</c><c><xref target="prop-net"/></c>
-<c>Tech</c><c>80 - 95</c><c>5,376 - 5,631</c><c>Technology specific</c>
+<c>Tech</c><c>80 - 95</c><c>5,376 - 5,631</c><c><xref target="prop-interface-type"/></c>
 <c>IPv6</c><c>96 - 111</c><c>5,632 - 5,887</c><c><xref target="prop-ipv6"/></c>
 <c>Stream</c><c>112 - 127</c><c>5,888 - 6,143</c><c><xref target="prop-core"/></c>
 <c>Debug</c><c>no primary</c><c>16,384 - 17,407</c><c><xref target="prop-debug"/></c>
 </texttable>
-<t>Note: most of the property identifier sections have two reserved ranges: a &quot;primary&quot; range (which is encoded as a single octet) and an &quot;extended&quot; range (which is encoded as two octets). Properties used very frequently are generally allocated from the &quot;primary&quot; range.
+<t>Note: most of the property identifier sections have two reserved
+ranges: a &quot;primary&quot; range (which is encoded as a single octet) and an
+&quot;extended&quot; range (which is encoded as two octets). Properties used
+very frequently are generally allocated from the &quot;primary&quot; range.
 </t>
 <t>EDITOR: the IANA registration template for Spinel standard properties identifiers requires the &quot;Section Name&quot; and &quot;Range Identifier&quot; parameters to facilitate the assignment of a suitable number from the appropriate range.
 </t>
@@ -1070,19 +1114,33 @@ represent the given value.
 <section anchor="prop-last-status" title="PROP 0: PROP_LAST_STATUS">
 <t>
 <list style="symbols">
-<t>Type: Read-Only</t>
-<t>Encoding: <spanx style="verb">i</spanx></t>
+<t>Type: Single-Value, Read-Only</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required: Yes</t>
+<t>Post-Reset Value: Reset Reason Code</t>
 </list>
 </t>
 <texttable>
-<ttcol align="right">Octets:</ttcol>
+<ttcol align="right">Bytes:</ttcol>
 <ttcol align="center">1-3</ttcol>
 
+<c>Format:</c><c>PUI</c>
 <c>Fields:</c><c><spanx style="verb">STATUS_CODE</spanx></c>
 </texttable>
-<t>Describes the status of the last NCP operation. Encoded as a packed unsigned integer.
+<t>This property describes the status code of the last NCP operation. For
+many commands, failure is indicated by emitting this property with the
+TID matching the failing command. It is generally not necessary to
+ever fetch the value of this property explicitly, as it is often
+emitted directly as an error response. It is also occasionally emitted
+as a success response with a value of <spanx style="verb">STATUS_OK</spanx>.
 </t>
-<t>This property is emitted often to indicate the result status of pretty much any OS-to-NCP operation. It is also emitted automatically at NCP startup with a value indicating the reset reason.
+<t>Upon NCP reset, this property MUST be emitted with a status code
+indicating the reset reason.
+</t>
+<t>Upon receiving an update to PROP<spanx style="emph">LAST</spanx>STATUS with a status code that
+indicates a reset, the host SHALL assume that the NCP has been reset
+and that all properties have reverted to their defined after-reset
+values.
 </t>
 <t>See <xref target="status-codes"/> for the complete list of status codes.
 </t>
@@ -1091,62 +1149,100 @@ represent the given value.
 <section anchor="prop-protocol-version" title="PROP 1: PROP_PROTOCOL_VERSION">
 <t>
 <list style="symbols">
-<t>Type: Read-Only</t>
-<t>Encoding: <spanx style="verb">ii</spanx></t>
+<t>Type: Single-Value, Constant</t>
+<t>Asynchronous Updates: No</t>
+<t>Required: Yes</t>
+<t>Post-Reset Value: 4, 3</t>
 </list>
 </t>
 <texttable>
-<ttcol align="center">Octets:</ttcol>
+<ttcol align="center">Bytes:</ttcol>
 <ttcol align="center">1-3</ttcol>
 <ttcol align="center">1-3</ttcol>
 
+<c>Format:</c><c>PUI</c><c>PUI</c>
 <c>Fields:</c><c><spanx style="verb">MAJOR_VERSION</spanx></c><c><spanx style="verb">MINOR_VERSION</spanx></c>
 </texttable>
-<t>Describes the protocol version information. This property contains four fields, each encoded as a packed unsigned integer:
+<t>Describes the spinel protocol version information. This property
+contains four fields, each encoded as a packed unsigned integer:
 </t>
 <t>
-<list style="symbols">
-<t>Major Version Number</t>
-<t>Minor Version Number</t>
+<list style="hanging">
+<t hangText="MAJOR_VERSION">
+<vspace />
+The major version number is used to identify backward incompatible
+differences between protocol versions. The OS MUST enter a
+FAULT(TODO: Define this) state if the given major version number is
+unsupportable.</t>
+<t hangText="MINOR_VERSION">
+<vspace />
+The minor version number is used to identify backward-compatible
+differences between protocol versions. A mismatch between the
+advertised minor version number and the minor version that is
+supported by the OS SHOULD NOT be fatal to the operation of the
+OS.</t>
 </list>
 </t>
-<t>This document describes major version 4, minor version 3 of this protocol.
+<t>This document describes major version 4, minor version 3 of this
+protocol. (TODO: UPDATE THIS)
 </t>
-<t>The OS MUST use NLI 0 with commands using this property. The NCP SHOULD NOT process commands using this property if NLI is not zero. The operational semantics of this property when NLI is not zero are not specified.
+<t>If a NCP supports multiple NLIs, the value of this property MUST
+be identical across all implemented NLIs.
 </t>
-
-<section anchor="major-version-number" title="Major Version Number">
-<t>The major version number is used to identify backward incompatible differences between protocol versions.
-</t>
-<t>The OS MUST enter a FAULT state if the given major version number is unsupportable.
-</t>
-</section>
-
-<section anchor="minor-version-number" title="Minor Version Number">
-<t>The minor version number is used to identify backward-compatible differences between protocol versions. A mismatch between the advertised minor version number and the minor version that is supported by the OS SHOULD NOT be fatal to the operation of the OS.
-</t>
-</section>
 </section>
 
 <section anchor="prop-ncp-version" title="PROP 2: PROP_NCP_VERSION">
 <t>
 <list style="symbols">
-<t>Type: Read-Only</t>
-<t>Packed-Encoding: <spanx style="verb">U</spanx></t>
+<t>Type: Single-Value, Constant</t>
+<t>Asynchronous Updates: No</t>
+<t>Required: Yes</t>
+<t>Scope: Firmware</t>
+<t>Post-Reset Value: Implementation-Specific</t>
 </list>
 </t>
 <texttable>
-<ttcol align="center">Octets:</ttcol>
+<ttcol align="right">Bytes:</ttcol>
 <ttcol align="center">n</ttcol>
+<ttcol align="center">1</ttcol>
 
-<c>Fields:</c><c><spanx style="verb">NCP_VESION_STRING</spanx></c>
+<c>Format:</c><c>ASCII</c><c>CONST</c>
+<c>Fields:</c><c><spanx style="verb">NCP_VERSION</spanx></c><c>0x00</c>
 </texttable>
-<t>Contains a string which describes the firmware currently running on the NCP. Encoded as a zero-terminated UTF-8 string.
+<t>Contains a zero-terminated ASCII string which describes the firmware
+currently running on the NCP.
 </t>
-<t>The format of the string is not strictly defined, but it is intended to present similarly to the &quot;User-Agent&quot; string from HTTP. The
-RECOMMENDED format of the string is as follows:
+<t>The value of this string MUST be different for every firmware
+release.
 </t>
-<t><spanx style="verb">STACK-NAME/STACK-VERSION[BUILD_INFO][; OTHER_INFO]; BUILD_DATE</spanx>
+<t>The format of the string is not strictly defined, but it is intended
+to present similarly to the &quot;User-Agent&quot; string from HTTP. The
+following format is RECOMMENDED:
+</t>
+<t><spanx style="verb">STACK-NAME/STACK-VERSION[BUILD-INFO][; OTHER-INFO][; BUILD-DATE]</spanx>
+</t>
+<t>Where:
+</t>
+<t>
+<list style="hanging">
+<t hangText="STACK-NAME">
+<vspace />
+The name of the software running on the NCP.</t>
+<t hangText="STACK-VERSION">
+<vspace />
+The version number of the software running on the NCP, like <spanx style="verb">1.0</spanx> or
+<spanx style="verb">3.2.6</spanx></t>
+<t hangText="BUILD-INFO">
+<vspace />
+Optional information indicating a specific build, like <spanx style="verb">b125</spanx> or
+<spanx style="verb">d26-25-gb684c7f</spanx>.</t>
+<t hangText="OTHER-INFO">
+<vspace />
+Other optional information about the build.</t>
+<t hangText="BUILD-DATE">
+<vspace />
+OPTIONAL build date.</t>
+</list>
 </t>
 <t>Examples:
 </t>
@@ -1156,24 +1252,32 @@ RECOMMENDED format of the string is as follows:
 <t><spanx style="verb">ConnectIP/2.0b125 s1 ALPHA; Sept 24 2015 20:49:19</spanx></t>
 </list>
 </t>
-<t>The OS MUST use NLI 0 with commands using this property. The NCP SHOULD NOT process commands using this property if NLI is not zero. The operational semantics of this property when NLI is not zero are not specified.
+<t>If a NCP supports multiple NLIs, the value of this property MUST be
+identical across all implemented NLIs.
 </t>
 </section>
 
 <section anchor="prop-interface-type" title="PROP 3: PROP_INTERFACE_TYPE">
 <t>
 <list style="symbols">
-<t>Type: Read-Only</t>
-<t>Encoding: <spanx style="verb">i</spanx></t>
+<t>Type: Single-Value, Constant</t>
+<t>Asynchronous Updates: No</t>
+<t>Required: Yes</t>
+<t>Post-Reset Value: Implementation-Specific</t>
 </list>
 </t>
 <texttable>
-<ttcol align="left">Octets:</ttcol>
-<ttcol align="left">1-3</ttcol>
+<ttcol align="right">Bytes:</ttcol>
+<ttcol align="center">1-3</ttcol>
 
+<c>Format:</c><c>PUI</c>
 <c>Fields:</c><c><spanx style="verb">INTERFACE_TYPE</spanx></c>
 </texttable>
-<t>This unsigned packed integer identifies the network protocol implemented by this NCP. A registry of network interface type codes is maintained by IANA with a reservation policy of Specification Required. The initial content of the registry is shown in the table below:
+<t>This unsigned packed integer identifies the network protocol
+implemented by this NCP. A registry of network interface type codes is
+maintained by IANA with a reservation policy of Specification
+Required. The initial content of the registry is shown in the table
+below:
 </t>
 <texttable>
 <ttcol align="left">Code</ttcol>
@@ -1183,195 +1287,317 @@ RECOMMENDED format of the string is as follows:
 <c>2</c><c>ZigBee IP(TM)</c>
 <c>3</c><c>Thread(R)</c>
 </texttable>
-<t>The OS MUST enter a FAULT state if it does not recognize the network protocol given by the NCP.
+<t>The OS MUST enter a FAULT state if it does not recognize the
+network protocol given by the NCP.
 </t>
 </section>
 
 <section anchor="prop-interface-vendor-id" title="PROP 4: PROP_INTERFACE_VENDOR_ID">
 <t>
 <list style="symbols">
-<t>Type: Read-Only</t>
-<t>Encoding: <spanx style="verb">i</spanx></t>
+<t>Type: Single-Value, Constant</t>
+<t>Asynchronous Updates: No</t>
+<t>Required: Yes</t>
+<t>Post-Reset Value: Implementation-Specific</t>
 </list>
 </t>
 <texttable>
-<ttcol align="left">Octets:</ttcol>
-<ttcol align="left">1-3</ttcol>
+<ttcol align="right">Bytes:</ttcol>
+<ttcol align="center">1-3</ttcol>
 
+<c>Format:</c><c>PUI</c>
 <c>Fields:</c><c><spanx style="verb">VENDOR_ID</spanx></c>
 </texttable>
-<t>Vendor identifier.
-</t>
-<t>EDITOR: I have no idea how to write the IANA registry creation text for this.
-</t>
+<t><cref source="JW">I have no idea how to write the IANA registry creation text for this. --</cref></t>
+<t><cref source="RQ">Maybe we should switch this over to be a string instead? --</cref></t>
 </section>
 
 <section anchor="prop-caps" title="PROP 5: PROP_CAPS">
 <t>
 <list style="symbols">
-<t>Type: Read-Only</t>
-<t>Packed-Encoding: <spanx style="verb">A(i)</spanx></t>
+<t>Type: Multiple-Value, Constant</t>
+<t>Asynchronous Updates: No</t>
+<t>Required: Yes</t>
+<t>Post-Reset Value: Implementation-Specific</t>
 </list>
 </t>
 <texttable>
-<ttcol align="left">Octets:</ttcol>
-<ttcol align="left">1-3</ttcol>
-<ttcol align="left">1-3</ttcol>
-<ttcol align="left">...</ttcol>
+<ttcol align="right">Bytes:</ttcol>
+<ttcol align="center">1-3</ttcol>
+<ttcol align="center">1-3</ttcol>
+<ttcol align="center">...</ttcol>
 
+<c>Format:</c><c>PUI</c><c>PUI</c><c>...</c>
 <c>Fields:</c><c><spanx style="verb">CAP</spanx></c><c><spanx style="verb">CAP</spanx></c><c>...</c>
 </texttable>
-<t>Describes the supported capabilities of this NCP. Encoded as a list of packed unsigned integers. See <xref target="capabilities"/> for a list of values.
+<t>Describes the supported capabilities of this NCP. Encoded as a list of
+packed unsigned integers. See <xref target="capabilities"/> for a list of values.
 </t>
 </section>
 
 <section anchor="prop-interface-count" title="PROP 6: PROP_INTERFACE_COUNT">
 <t>
 <list style="symbols">
-<t>Type: Read-Only</t>
-<t>Packed-Encoding: <spanx style="verb">C</spanx></t>
+<t>Type: Single-Value, Constant</t>
+<t>Asynchronous Updates: No</t>
+<t>Required: Yes</t>
+<t>Post-Reset Value: 1-4</t>
 </list>
 </t>
 <texttable>
-<ttcol align="left">Octets:</ttcol>
-<ttcol align="left">1</ttcol>
+<ttcol align="right">Bytes:</ttcol>
+<ttcol align="center">1</ttcol>
 
+<c>Format:</c><c>INT</c>
 <c>Fields:</c><c><spanx style="verb">INTERFACE_COUNT</spanx></c>
 </texttable>
-<t>Describes the number of concurrent interfaces supported by this NCP. Since the concurrent interface mechanism is still TBD, this value MUST always be one.
+<t>Describes the number of concurrent interfaces supported by this NCP.
+Since the concurrent interface mechanism is still TBD, this value
+MUST always be one.
 </t>
-<t>This value is encoded as an unsigned 8-bit integer.
-</t>
-<t>The OS MUST use NLI 0 with commands using this property. The NCP SHOULD NOT process commands using this property if NLI is not zero. The operational semantics of this property when NLI is not zero are not specified.
+<t>If a NCP supports multiple NLIs, the value of this property MUST be
+identical across all implemented NLIs.
 </t>
 </section>
 
 <section anchor="prop-power-state" title="PROP 7: PROP_POWER_STATE">
 <t>
 <list style="symbols">
-<t>Type: Read-Write</t>
-<t>Packed-Encoding: <spanx style="verb">C</spanx></t>
+<t>Type: Single-Value, Read/Write</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required:
+<list style="symbols">
+<t>Read: Yes</t>
+<t>Write: RECOMENDED</t>
+</list></t>
+<t>Post-Reset Value: <spanx style="verb">POWER_STATE_ONLINE</spanx></t>
+<t>Related Capabilities: <spanx style="verb">CAP_POWER_STATE</spanx>(writable)</t>
 </list>
 </t>
 <texttable>
-<ttcol align="left">Octets:</ttcol>
-<ttcol align="left">1</ttcol>
+<ttcol align="right">Bytes:</ttcol>
+<ttcol align="center">1</ttcol>
 
+<c>Format:</c><c>INT</c>
 <c>Fields:</c><c><spanx style="verb">POWER_STATE</spanx></c>
 </texttable>
-<t>A single octet coded that indicates the current power state of the NCP. Setting this property allows controls of the current NCP power state. The following table enumerates the standard codes and their significance.
+<t>A single octet coded that indicates the current power state of the
+NCP. Setting this property allows controls of the current NCP power
+state. The following table enumerates the standard codes and their
+significance.
 </t>
 <texttable>
 <ttcol align="left">Code</ttcol>
 <ttcol align="left">Name</ttcol>
-<ttcol align="left">Significance</ttcol>
 
-<c>0</c><c><spanx style="verb">POWER_STATE_OFFLINE</spanx></c><c>NCP is physically powered off. (Enumerated for completeness sake, not expected on the wire)</c>
-<c>1</c><c><spanx style="verb">POWER_STATE_DEEP_SLEEP</spanx></c><c>NCP is not powered to detect any events on physical network media.</c>
-<c>2</c><c><spanx style="verb">POWER_STATE_STANDBY</spanx></c><c>NCP is powered only to detect certain events on physical network media that signal to wake.</c>
-<c>3</c><c><spanx style="verb">POWER_STATE_LOW_POWER</spanx></c><c>NCP is powered only for limited responsiveness for power conservation purposes.</c>
-<c>4</c><c><spanx style="verb">POWER_STATE_ONLINE</spanx></c><c>NCP is powered for full responsiveness.</c>
+<c>0</c><c><spanx style="verb">POWER_STATE_OFFLINE</spanx></c>
+<c>1</c><c><spanx style="verb">POWER_STATE_DEEP_SLEEP</spanx></c>
+<c>2</c><c><spanx style="verb">POWER_STATE_STANDBY</spanx></c>
+<c>3</c><c><spanx style="verb">POWER_STATE_LOW_POWER</spanx></c>
+<c>4</c><c><spanx style="verb">POWER_STATE_ONLINE</spanx></c>
 </texttable>
-<t>EDITOR: We should consider reversing the numbering here so that 0 is <spanx style="verb">POWER_STATE_ONLINE</spanx>. We may also want to include some extra values between the defined values for future expansion, so that we can preserve the ordered relationship.
+<t><cref source="JW">TODO: We should consider reversing the numbering here so
+     that 0 is `POWER_STATE_ONLINE`. We may also want to include
+     some extra values between the defined values for future
+     expansion, so that we can preserve the ordered relationship.
+  --</cref></t>
+<t>
+<list style="hanging">
+<t hangText="POWER_STATE_OFFLINE">
+<vspace />
+NCP is physically powered off.</t>
+<t hangText="POWER_STATE_DEEP_SLEEP">
+<vspace />
+NCP is not powered to detect any events on physical network media.</t>
+<t hangText="POWER_STATE_STANDBY">
+<vspace />
+NCP is powered only to detect certain events on physical network media that signal to wake.</t>
+<t hangText="POWER_STATE_LOW_POWER">
+<vspace />
+NCP is powered only for limited responsiveness for power conservation purposes.</t>
+<t hangText="POWER_STATE_ONLINE">
+<vspace />
+NCP is powered for full responsiveness.</t>
+</list>
 </t>
 </section>
 
 <section anchor="prop-hwaddr" title="PROP 8: PROP_HWADDR">
 <t>
 <list style="symbols">
-<t>Type: Read-Only</t>
-<t>Packed-Encoding: <spanx style="verb">E</spanx></t>
+<t>Type: Single-Value, Read-Only</t>
+<t>Asynchronous Updates: No</t>
+<t>Post-Reset Value: Determined by Factory</t>
+<t>Required: Yes</t>
 </list>
 </t>
 <texttable>
-<ttcol align="left">Octets:</ttcol>
-<ttcol align="left">8</ttcol>
+<ttcol align="right">Bytes:</ttcol>
+<ttcol align="center">8</ttcol>
 
+<c>Format:</c><c>EUI-64-BE</c>
 <c>Fields:</c><c><spanx style="verb">HWADDR</spanx></c>
 </texttable>
-<t>The EUI-64 format of the link-layer address of the device.
+<t>The EUI-64 (TODO:CITE) format of the link-layer address of the device.
+MAY be different across multiple NLIs.
 </t>
 </section>
 
 <section anchor="prop-lock" title="PROP 9: PROP_LOCK">
 <t>
 <list style="symbols">
-<t>Type: Read-Write</t>
-<t>Packed-Encoding: <spanx style="verb">b</spanx></t>
+<t>Type: Single-Value, Read-Write</t>
+<t>Asynchronous Updates: No</t>
+<t>Required: No</t>
+<t>Post-Reset Value: 0</t>
+<t>Required Capability: <spanx style="verb">CAP_LOCK</spanx></t>
 </list>
 </t>
 <texttable>
-<ttcol align="left">Octets:</ttcol>
-<ttcol align="left">1</ttcol>
+<ttcol align="right">Bytes:</ttcol>
+<ttcol align="center">1</ttcol>
 
+<c>Format:</c><c>Boolean</c>
 <c>Fields:</c><c><spanx style="verb">LOCK</spanx></c>
 </texttable>
-<t>Property transaction lock. Used for grouping transactional changes to several properties for simultaneous commit, or to temporarily prevent the automatic updating of property values. When this property is set, the execution of the NCP is effectively frozen until it is cleared. There is no support for transaction rollback.
+<t>Property transaction lock. Used for grouping transactional changes to
+several properties for simultaneous commit, or to temporarily prevent
+the automatic updating of property values. When this property is set,
+all non-Spinel-related operations of the NCP are effectively frozen
+until it is cleared. There is no support for transaction rollback.
 </t>
-<t>This property is only supported if the <spanx style="verb">CAP_LOCK</spanx> capability is present.
+<t>This property is only supported if the <spanx style="verb">CAP_LOCK</spanx> capability is
+present.
 </t>
-<t>Unlike most other properties, setting this property to true when the value of the property is already true MUST fail with a last status of <spanx style="verb">STATUS_ALREADY</spanx>.
+<t>Unlike most other properties, setting this property to true when the
+value of the property is already true SHALL fail with a last status
+of <spanx style="verb">STATUS_ALREADY</spanx>.
 </t>
 </section>
 
 <section anchor="prop-host-power-state" title="PROP 10: PROP_HOST_POWER_STATE">
 <t>
 <list style="symbols">
-<t>Type: Read-Write</t>
-<t>Packed-Encoding: <spanx style="verb">C</spanx></t>
-<t>Default value: 4</t>
+<t>Type: Single-Value, Read-Write</t>
+<t>Asynchronous Updates: No</t>
+<t>Required: No</t>
+<t>Post-Reset Value: <spanx style="verb">HOST_POWER_STATE_ONLINE</spanx></t>
+<t>Required Capability: <spanx style="verb">???</spanx> (TODO: Assign a capability)</t>
 </list>
 </t>
-<t>Octets: |        1
-:-------:------------------
-Fields: | <spanx style="verb">HOST_POWER_STATE</spanx>
-</t>
-<t>Describes the current power state of the <spanx style="emph">OS</spanx>. This property is used by the OS to inform the NCP when it has changed power states. The NCP can then use this state to determine which properties need asynchronous updates. Enumeration is encoded as a single unsigned octet.
+<texttable>
+<ttcol align="right">Bytes:</ttcol>
+<ttcol align="center">1</ttcol>
+
+<c>Format:</c><c>INT</c>
+<c>Fields:</c><c><spanx style="verb">HOST_POWER_STATE</spanx></c>
+</texttable>
+<t>Describes the current power state of the <spanx style="emph">OS</spanx>. This property is used
+by the OS to inform the NCP when it has changed power states. The NCP
+can then use this state to determine which properties need
+asynchronous updates. Enumeration is encoded as a single unsigned
+octet.
 </t>
 <t>The following table enumerates the standard codes and their significance.
 </t>
 <texttable>
 <ttcol align="left">Code</ttcol>
 <ttcol align="left">Name</ttcol>
-<ttcol align="left">Significance</ttcol>
 
-<c>0</c><c><spanx style="verb">HOST_POWER_STATE_OFFLINE</spanx></c><c>OS is physically powered off and cannot be awakened by the NCP.</c>
-<c>1</c><c><spanx style="verb">HOST_POWER_STATE_DEEP_SLEEP</spanx></c><c>OS is in a deep low power state and will require a long time to wake.</c>
-<c>3</c><c><spanx style="verb">HOST_POWER_STATE_LOW_POWER</spanx></c><c>OS is in a low power state and can be awakened quickly.</c>
-<c>4</c><c><spanx style="verb">HOST_POWER_STATE_ONLINE</spanx></c><c>OS is powered for full responsiveness.</c>
+<c>0</c><c><spanx style="verb">HOST_POWER_STATE_OFFLINE</spanx></c>
+<c>1</c><c><spanx style="verb">HOST_POWER_STATE_DEEP_SLEEP</spanx></c>
+<c>3</c><c><spanx style="verb">HOST_POWER_STATE_LOW_POWER</spanx></c>
+<c>4</c><c><spanx style="verb">HOST_POWER_STATE_ONLINE</spanx></c>
 </texttable>
-<t>EDITOR: We should consider reversing the numbering here so that 0 is <spanx style="verb">POWER_STATE_ONLINE</spanx>. We may also want to include some additional reserved values between the defined values for future expansion, so that we can preserve the ordered relationship. See the similar editorial comment at <xref target="prop-power-state"/>.
+<t><cref source="JW">EDITOR: We should consider reversing the numbering here so that 0
+     is `POWER_STATE_ONLINE`. We may also want to include some additional
+     reserved values between the defined values for future expansion, so
+     that we can preserve the ordered relationship. See the similar
+     editorial comment at (#prop-power-state).
+  --</cref></t>
+<t>
+<list style="hanging">
+<t hangText="HOST_POWER_STATE_OFFLINE">
+<vspace />
+OS is physically powered off and cannot be awakened by the NCP.</t>
+<t hangText="HOST_POWER_STATE_DEEP_SLEEP">
+<vspace />
+OS is in a deep low power state and will require a long time to
+wake. In this state, the NCP MUST NOT send any commands, including
+any commands that contain network packets, prior to signaling the host
+explicitly to awaken and receiving a signal to update the state to
+<spanx style="verb">HOST_POWER_STATE_ONLINE</spanx>.</t>
+<t hangText="HOST_POWER_STATE_LOW_POWER">
+<vspace />
+OS is in a low power state and can be awakened quickly.</t>
+<t hangText="HOST_POWER_STATE_ONLINE">
+<vspace />
+OS is powered for full responsiveness.</t>
+</list>
 </t>
-<t>After the OS sends <spanx style="verb">CMD_PROP_VALUE_SET</spanx> for this property with a value other than <spanx style="verb">HOST_POWER_STATE_ONLINE</spanx>, it SHOULD wait for the NCP to acknowledge the property update (with a <spanx style="verb">CMD_VALUE_IS</spanx> command) before entering the specified power state.
+<t>After the OS sends <spanx style="verb">CMD_PROP_VALUE_SET</spanx> for this property with a value
+other than <spanx style="verb">HOST_POWER_STATE_ONLINE</spanx>, it SHOULD wait for the NCP
+to acknowledge the property update (with a <spanx style="verb">CMD_VALUE_IS</spanx> command)
+before entering the specified power state.
 </t>
-<t>On the NCP receiving any command when the state is not <spanx style="verb">HOST_POWER_STATE_ONLINE</spanx>, it MUST silently update the state to the <spanx style="verb">HOST_POWER_STATE_ONLINE</spanx> value.
+<t>Upon the NCP receiving any command when the state is not
+<spanx style="verb">HOST_POWER_STATE_ONLINE</spanx>, it MUST silently update the state to
+the <spanx style="verb">HOST_POWER_STATE_ONLINE</spanx> value.
 </t>
-<t>When the state is not <spanx style="verb">HOST_POWER_STATE_ONLINE</spanx>, the NCP SHOULD NOT send any commands except important notifications that warrant awakening the OS host, and the NCP MUST NOT send any informative messages on the debug stream.
+<t>When the state is not <spanx style="verb">HOST_POWER_STATE_ONLINE</spanx>, the NCP <spanx style="strong">SHOULD
+NOT</spanx> send any commands except important notifications that warrant
+awakening the OS host, and the NCP MUST NOT send any informative
+messages on <spanx style="verb">PROP_DEBUG_STREAM</spanx>.
 </t>
-<t>When the state is <spanx style="verb">HOST_POWER_STATE_DEEP_SLEEP</spanx>, the NCP MUST NOT send any commands, including any commands that contain network packets, prior to signaling the host explicitly to awaken and receiving a signal to update the state to <spanx style="verb">HOST_POWER_STATE_ONLINE</spanx>. As noted above, reception of any Spinel command is a signal to set the state to <spanx style="verb">HOST_POWER_STATE_ONLINE</spanx>.
+<t>The OS MUST NOT send a value of <spanx style="verb">HOST_POWER_STATE</spanx> other than one
+of the standard codes defined here. If the NCP receives a value other
+than a standard code, then it SHOULD set the state to
+<spanx style="verb">HOST_POWER_STATE_LOW_POWER</spanx>.
 </t>
-<t>The OS MUST NOT send a value of <spanx style="verb">HOST_POWER_STATE</spanx> other than one of the standard codes defined here. If the NCP receives a value other than a standard code, then it SHOULD set the state to <spanx style="verb">HOST_POWER_STATE_LOW_POWER</spanx>.
+<t>If the NCP has the <spanx style="verb">CAP_UNSOL_UPDATE_FILTER</spanx> capability, any
+unsolicited property updates masked by <spanx style="verb">PROP_UNSOL_UPDATE_FILTER</spanx>
+should be honored while the OS indicates it is in a low-power state.
+After resuming to the <spanx style="verb">HOST_POWER_STATE_ONLINE</spanx> state, the value of
+<spanx style="verb">PROP_UNSOL_UPDATE_FILTER</spanx> MUST be unchanged from the value
+assigned prior to the OS indicating it was entering a low-power state.
 </t>
-<t>If the NCP has the <spanx style="verb">CAP_UNSOL_UPDATE_FILTER</spanx> capability, any unsolicited property updates masked by <spanx style="verb">PROP_UNSOL_UPDATE_FILTER</spanx> should be honored while the OS indicates it is in a low-power state. After resuming to the <spanx style="verb">HOST_POWER_STATE_ONLINE</spanx> state, the value of <spanx style="verb">PROP_UNSOL_UPDATE_FILTER</spanx> MUST be unchanged from the value assigned prior to the OS indicating it was entering a low-power state.
-</t>
-<t>The OS MUST use NLI 0 with commands using this property. The NCP SHOULD NOT process commands using this property if NLI is not zero. The operational semantics of this property when NLI is not zero are not specified.
+<t>The OS MUST use NLI 0 with commands using this property. The NCP
+SHOULD explicitly fail to process commands setting this property
+if NLI is not zero. The operational semantics of this property when
+NLI is not zero are not specified.
 </t>
 </section>
 
 <section anchor="prop-unsol-update-filter" title="PROP 4104: PROP_UNSOL_UPDATE_FILTER">
 <t>
 <list style="symbols">
-<t>Required only if <spanx style="verb">CAP_UNSOL_UPDATE_FILTER</spanx> is set.</t>
-<t>Type: Read-Write</t>
-<t>Packed-Encoding: <spanx style="verb">A(I)</spanx></t>
-<t>Default value: Empty.</t>
+<t>Type: Multi-Value, Read-Write</t>
+<t>Asynchronous Updates: No</t>
+<t>Required: No</t>
+<t>Post-Reset Value: Empty</t>
+<t>Scope: NCP</t>
+<t>Required Capability: <spanx style="verb">CAP_UNSOL_UPDATE_FILTER</spanx></t>
 </list>
 </t>
-<t>Contains a list of properties which are <spanx style="emph">excluded</spanx> from generating unsolicited value updates. This property MUST be empty after NCP reset.
+<texttable>
+<ttcol align="right">Bytes:</ttcol>
+<ttcol align="center">1-3</ttcol>
+<ttcol align="center">1-3</ttcol>
+<ttcol align="center">...</ttcol>
+
+<c>Format:</c><c>PUI</c><c>PUI</c><c>...</c>
+<c>Fields:</c><c><spanx style="verb">PROP_ID</spanx></c><c><spanx style="verb">PROP_ID</spanx></c><c>...</c>
+</texttable>
+<t>Contains a list of property IDs which are <spanx style="emph">excluded</spanx> from generating
+unsolicited value updates. This property MUST be empty after NCP
+reset.
 </t>
-<t>In other words, the OS may opt-out of unsolicited property updates for a specific property by adding that property id to this list.
+<t>In other words, the OS may opt-out of unsolicited property updates for
+a specific property by adding that property id to this list.
 </t>
-<t>The OS SHOULD NOT add properties to this list which are not present in <spanx style="verb">PROP_UNSOL_UPDATE_LIST</spanx>. If such properties are added, the NCP MUST ignore the unsupported properties.
+<t>The OS SHOULD NOT add properties to this list which are not
+present in <spanx style="verb">PROP_UNSOL_UPDATE_LIST</spanx>. If such properties are added, the
+NCP MUST ignore the unsupported properties.
 </t>
 <t><cref source="RQ">The justification for the above behavior is to attempt to avoid possible
      future interop problems by explicitly making sure that unknown
@@ -1386,44 +1612,41 @@ Fields: | <spanx style="verb">HOST_POWER_STATE</spanx>
      right then it needs to make sure that it checks
      PROP\_UNSOL\_UPDATE\_LIST first.
   --</cref></t>
-<t>The NCP is REQUIRED to support and use the following commands with this property:
-</t>
-<t>
-<list style="symbols">
-<t><spanx style="verb">CMD_PROP_VALUE_GET</spanx> (<xref target="cmd-prop-value-get"/>)</t>
-<t><spanx style="verb">CMD_PROP_VALUE_SET</spanx> (<xref target="cmd-prop-value-set"/>)</t>
-<t><spanx style="verb">CMD_PROP_VALUE_IS</spanx> (<xref target="cmd-prop-value-is"/>)</t>
-</list>
-</t>
-<t>If the NCP advertises the <spanx style="verb">CAP_CMD_MULTI</spanx> capability, then it SHOULD also support and use the following commands with this property:
-</t>
-<t>
-<list style="symbols">
-<t><spanx style="verb">CMD_PROP_VALUE_INSERT</spanx> (<xref target="cmd-prop-value-insert"/>)</t>
-<t><spanx style="verb">CMD_PROP_VALUE_REMOVE</spanx> (<xref target="cmd-prop-value-remove"/>)</t>
-<t><spanx style="verb">CMD_PROP_VALUE_INSERTED</spanx> (<xref target="cmd-prop-value-inserted"/>)</t>
-<t><spanx style="verb">CMD_PROP_VALUE_REMOVED</spanx> (<xref target="cmd-prop-value-removed"/>)</t>
-</list>
-</t>
-<t>The value of this property MUST NOT depend on the NLI used.
-</t>
 </section>
 
 <section anchor="prop-unsol-update-list" title="PROP 4105: PROP_UNSOL_UPDATE_LIST">
 <t>
 <list style="symbols">
-<t>Required only if <spanx style="verb">CAP_UNSOL_UPDATE_FILTER</spanx> is set.</t>
-<t>Type: Read-Only</t>
-<t>Packed-Encoding: <spanx style="verb">A(I)</spanx></t>
+<t>Type: Multi-Value, Constant</t>
+<t>Asynchronous Updates: No</t>
+<t>Required: No</t>
+<t>Post-Reset Value: Implementation Specific</t>
+<t>Scope: Firmware</t>
+<t>Required Capability: <spanx style="verb">CAP_UNSOL_UPDATE_FILTER</spanx></t>
 </list>
 </t>
-<t>Contains a list of properties which are capable of generating unsolicited value updates. This list can be used when populating <spanx style="verb">PROP_UNSOL_UPDATE_FILTER</spanx> to disable all unsolicited property updates.
+<texttable>
+<ttcol align="right">Bytes:</ttcol>
+<ttcol align="center">1-3</ttcol>
+<ttcol align="center">1-3</ttcol>
+<ttcol align="center">...</ttcol>
+
+<c>Format:</c><c>PUI</c><c>PUI</c><c>...</c>
+<c>Fields:</c><c><spanx style="verb">PROP_ID</spanx></c><c><spanx style="verb">PROP_ID</spanx></c><c>...</c>
+</texttable>
+<t>Contains a list of properties which are capable of generating
+unsolicited value updates. This list can be used when populating
+<spanx style="verb">PROP_UNSOL_UPDATE_FILTER</spanx> to disable all unsolicited property
+updates.
 </t>
-<t>The NCP MUST NOT change the value of this property after sending a <spanx style="verb">CMD_VALUE_IS</spanx> for <spanx style="verb">PROP_LAST_STATUS</spanx> with any of the <spanx style="verb">STATUS_RESET_xxxxx</spanx> status codes.
+<t>The NCP MUST NOT change the value of this property after sending a
+<spanx style="verb">CMD_VALUE_IS</spanx> for <spanx style="verb">PROP_LAST_STATUS</spanx> with any of the
+<spanx style="verb">STATUS_RESET_xxxxx</spanx> status codes.
 </t>
-<t>Note: not all properties that support unsolicited updates need to be listed here. Some properties, network media scan results for example, are only generated due to direct action on the part of the OS, so those properties SHOULD NOT not be included in this list.
-</t>
-<t>The value of this property MAY depend on the NLI used.
+<t>Note: not all properties that support unsolicited updates need to be
+listed here. Some properties, network media scan results for example,
+are only generated due to direct action on the part of the OS, so
+those properties SHOULD NOT not be included in this list.
 </t>
 </section>
 </section>
@@ -1433,52 +1656,78 @@ Fields: | <spanx style="verb">HOST_POWER_STATE</spanx>
 <section anchor="prop-stream-debug" title="PROP 112: PROP_STREAM_DEBUG">
 <t>
 <list style="symbols">
-<t>Type: Read-Only-Stream</t>
-<t>Packed-Encoding: <spanx style="verb">D</spanx></t>
+<t>Type: Character-Stream, Output-Only</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required: No</t>
+<t>Scope: NLI</t>
 </list>
 </t>
 <texttable>
-<ttcol align="left">Octets:</ttcol>
-<ttcol align="left">n</ttcol>
+<ttcol align="right">Bytes:</ttcol>
+<ttcol align="center">n</ttcol>
 
-<c>Fields:</c><c><spanx style="verb">UTF8_DATA</spanx></c>
+<c>Format:</c><c>UTF8</c>
+<c>Fields:</c><c><spanx style="verb">DEBUG_DATA</spanx></c>
 </texttable>
-<t>This property is a streaming property, meaning that you cannot explicitly fetch the value of this property. The stream provides human-readable debugging output which may be displayed in the OS logs.
+<t>This stream provides human-readable debugging output which may be
+displayed in the OS logs. It is intended to be treated as a one-way
+virtual serial stream. The OS MUST NOT assume that each emission
+of this property is self-contained, instead the OS must use newline
+characters for that purpose.
 </t>
-<t>The location of newline characters is not assumed by the OS: it is the NCP's responsibility to insert newline characters where needed, just like with any other text stream.
+<t>The location of newline characters MUST NOT not assumed by the
+OS: it is the NCP's responsibility to insert newline characters
+where needed, just like with any other text stream.
 </t>
-<t>To receive the debugging stream entails the OS waiting for <spanx style="verb">CMD_PROP_VALUE_IS</spanx> commands from the NCP for this property.
-</t>
-<t>The value of this property MUST NOT depend on the NLI used.
+<t>The emitted data is UTF8-encoded without any zero termination. Note
+that the last UTF8 character MAY possibly be truncated. If the
+last UTF8 character is truncated, the truncated bytes MUST be the
+first bytes of the next emission from this stream.
 </t>
 </section>
 
 <section anchor="prop-stream-raw" title="PROP 113: PROP_STREAM_RAW">
 <t>
 <list style="symbols">
-<t>Type: Read-Write-Stream</t>
-<t>Packed-Encoding: <spanx style="verb">dD</spanx></t>
+<t>Type: Packet-Stream, Input/Output</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required: No</t>
+<t>Scope: NLI</t>
+<t>Related Capabilities:
+<list style="symbols">
+<t><spanx style="verb">CAP_WRITABLE_RAW_STREAM</spanx>: Can be written to if present.</t>
+</list></t>
 </list>
 </t>
 <texttable>
-<ttcol align="left">Octets:</ttcol>
+<ttcol align="left">Bytes:</ttcol>
 <ttcol align="left">2</ttcol>
 <ttcol align="left">n</ttcol>
 <ttcol align="left">n</ttcol>
 
+<c>Format:</c><c>UINT16-LE</c><c>DATA</c><c>OPTIONAL DATA</c>
 <c>Fields:</c><c>FRAME_DATA_LEN</c><c>FRAME_DATA</c><c>FRAME_METADATA</c>
 </texttable>
-<t>This stream provides the capability of sending and receiving raw packets to and from the network. The exact format of the frame metadata and data is dependent on the MAC and PHY being used.
+<t>This stream provides the capability of sending and receiving raw
+packets to and from the network. The exact format of the frame
+metadata and data is dependent on the MAC and PHY being used.
 </t>
-<t>This property is a streaming property, meaning that you cannot explicitly fetch the value of this property. To receive traffic entails the OS wait foring <spanx style="verb">CMD_PROP_VALUE_IS</spanx> commands with this property identifier from the NCP.
+<t>Implementations MAY support the ability to transmit arbitrary raw
+packets. Support for this feature is indicated by the presence of the
+<spanx style="verb">CAP_WRITABLE_RAW_STREAM</spanx> capability.
 </t>
-<t>Implementations MAY support the ability to transmit arbitrary raw packets. Support for this feature is indicated by the presence of the <spanx style="verb">CAP_WRITABLE_RAW_STREAM</spanx> capability.
-</t>
-<t>If the capability <spanx style="verb">CAP_WRITABLE_RAW_STREAM</spanx> is set, then packets written to this stream with <spanx style="verb">CMD_PROP_VALUE_SET</spanx> will be sent out over the radio. This allows the caller to use the network directly, with the full network layer stack being implemented on the OS instead of the NCP.
+<t>If the capability <spanx style="verb">CAP_WRITABLE_RAW_STREAM</spanx> is set, then packets
+written to this stream with <spanx style="verb">CMD_PROP_VALUE_SET</spanx> will be sent out over
+the radio. This allows the caller to use the network directly, with
+the full network layer stack being implemented on the OS instead of
+the NCP.
 </t>
 
 <section anchor="frame-metadata-format" title="Frame Metadata Format">
-<t>Any data past the end of <spanx style="verb">FRAME_DATA_LEN</spanx> is considered metadata and is OPTIONAL. Frame metadata MAY be empty or partially specified. The operational semantics of using frame metadata is not specified in the core protocol, i.e. the specification of metadata formats is left to specializations of Spinel for specific network technologies.
+<t>Any data past the end of <spanx style="verb">FRAME_DATA_LEN</spanx> is considered metadata and
+is OPTIONAL. Frame metadata MAY be empty or partially
+specified. The operational semantics of using frame metadata is not
+specified in the core protocol.
 </t>
 </section>
 </section>
@@ -1486,50 +1735,53 @@ Fields: | <spanx style="verb">HOST_POWER_STATE</spanx>
 <section anchor="prop-stream-net" title="PROP 114: PROP_STREAM_NET">
 <t>
 <list style="symbols">
-<t>Type: Read-Write-Stream</t>
-<t>Packed-Encoding: <spanx style="verb">dD</spanx></t>
+<t>Type: Packet-Stream, Input/Output</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required: Yes</t>
+<t>Scope: NLI</t>
 </list>
 </t>
 <texttable>
-<ttcol align="left">Octets:</ttcol>
+<ttcol align="left">Bytes:</ttcol>
 <ttcol align="left">2</ttcol>
-<ttcol align="center">n</ttcol>
-<ttcol align="center">n</ttcol>
+<ttcol align="left">n</ttcol>
+<ttcol align="left">n</ttcol>
 
-<c>Fields:</c><c><spanx style="verb">FRAME_DATA_LEN</spanx></c><c><spanx style="verb">FRAME_DATA</spanx></c><c><spanx style="verb">FRAME_METADATA</spanx></c>
+<c>Format:</c><c>UINT16-LE</c><c>IPv6</c><c>OPTIONAL DATA</c>
+<c>Fields:</c><c>FRAME_DATA_LEN</c><c>FRAME_DATA</c><c>FRAME_METADATA</c>
 </texttable>
-<t>This stream provides the capability of sending and receiving data packets to and from the currently attached network. The exact format of the frame metadata and data is dependent on the network protocol being used.
+<t>This stream provides the capability of sending and receiving data
+packets to and from the currently attached network.
 </t>
-<t>This property is a streaming property, meaning that you cannot explicitly fetch the value of this property. To receive traffic entails to OS waiting for <spanx style="verb">CMD_PROP_VALUE_IS</spanx> commands with this property identifier from the NCP.
-</t>
-<t>To transmit network packets entails the OS sending <spanx style="verb">CMD_PROP_VALUE_SET</spanx> on this property with the value of the packet.
-</t>
-<t>Any data past the end of <spanx style="verb">FRAME_DATA_LEN</spanx> is considered metadata, the format of which is described in <xref target="frame-metadata-format"/>.
+<t>Any data past the end of <spanx style="verb">FRAME_DATA_LEN</spanx> is considered metadata, the
+format of which is described in <xref target="frame-metadata-format"/>.
 </t>
 </section>
 
 <section anchor="prop-stream-net-insecure" title="PROP 115: PROP_STREAM_NET_INSECURE">
 <t>
 <list style="symbols">
-<t>Type: Read-Write-Stream</t>
-<t>Packed-Encoding: <spanx style="verb">dD</spanx></t>
+<t>Type: Packet-Stream, Input/Output</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required: Yes</t>
+<t>Scope: NLI</t>
 </list>
 </t>
 <texttable>
-<ttcol align="left">Octets:</ttcol>
+<ttcol align="left">Bytes:</ttcol>
 <ttcol align="left">2</ttcol>
-<ttcol align="center">n</ttcol>
-<ttcol align="center">n</ttcol>
+<ttcol align="left">n</ttcol>
+<ttcol align="left">n</ttcol>
 
-<c>Fields:</c><c><spanx style="verb">FRAME_DATA_LEN</spanx></c><c><spanx style="verb">FRAME_DATA</spanx></c><c><spanx style="verb">FRAME_METADATA</spanx></c>
+<c>Format:</c><c>UINT16-LE</c><c>IPv6</c><c>OPTIONAL DATA</c>
+<c>Fields:</c><c>FRAME_DATA_LEN</c><c>FRAME_DATA</c><c>FRAME_METADATA</c>
 </texttable>
-<t>This stream provides the capability of sending and receiving plaintext non-authenticated data packets to and from the currently attached network. The exact format of the frame metadata and data is dependent on the network protocol being used.
+<t>This stream provides the capability of sending and receiving plaintext
+non-authenticated data packets to and from the currently attached
+network.
 </t>
-<t>This property is a streaming property, meaning that you cannot explicitly fetch the value of this property. To receive traffic entails to OS waiting for <spanx style="verb">CMD_PROP_VALUE_IS</spanx> commands with this property identifier from the NCP.
-</t>
-<t>To transmit network packets entails the OS sending <spanx style="verb">CMD_PROP_VALUE_SET</spanx> on this property with the value of the packet.
-</t>
-<t>Any data past the end of <spanx style="verb">FRAME_DATA_LEN</spanx> is considered metadata, the format of which is described in <xref target="frame-metadata-format"/>.
+<t>Any data past the end of <spanx style="verb">FRAME_DATA_LEN</spanx> is considered metadata, the
+format of which is described in <xref target="frame-metadata-format"/>.
 </t>
 </section>
 </section>

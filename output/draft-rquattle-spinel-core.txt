@@ -5,12 +5,12 @@
 Network Working Group                                     R. Quattlebaum
 Internet-Draft                                               j. woodyatt
 Intended status: Standards Track                         Nest Labs, Inc.
-Expires: April 29, 2018                                 October 26, 2017
+Expires: April 30, 2018                                 October 27, 2017
 
 
    Spinel: A protocol for control and management of IPv6 network co-
                                processors
-                   draft-rquattle-spinel-core-dd3c1a1
+                   draft-rquattle-spinel-core-45f170f
 
 Abstract
 
@@ -40,7 +40,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on April 29, 2018.
+   This Internet-Draft will expire on April 30, 2018.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 1]
+Quattlebaum & woodyatt   Expires April 30, 2018                 [Page 1]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 2]
+Quattlebaum & woodyatt   Expires April 30, 2018                 [Page 2]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -117,114 +117,116 @@ Internet-Draft                 Spinel Core                  October 2017
    6.  Status Codes  . . . . . . . . . . . . . . . . . . . . . . . .  24
    7.  Capabilities  . . . . . . . . . . . . . . . . . . . . . . . .  27
    8.  Properties  . . . . . . . . . . . . . . . . . . . . . . . . .  28
-     8.1.  Property Identifiers  . . . . . . . . . . . . . . . . . .  29
-     8.2.  Property Identifier Sections  . . . . . . . . . . . . . .  29
-     8.3.  Core Properties . . . . . . . . . . . . . . . . . . . . .  30
-       8.3.1.  PROP 0: PROP_LAST_STATUS  . . . . . . . . . . . . . .  30
-       8.3.2.  PROP 1: PROP_PROTOCOL_VERSION . . . . . . . . . . . .  31
-       8.3.3.  PROP 2: PROP_NCP_VERSION  . . . . . . . . . . . . . .  31
-       8.3.4.  PROP 3: PROP_INTERFACE_TYPE . . . . . . . . . . . . .  32
-       8.3.5.  PROP 4: PROP_INTERFACE_VENDOR_ID  . . . . . . . . . .  33
-       8.3.6.  PROP 5: PROP_CAPS . . . . . . . . . . . . . . . . . .  33
-       8.3.7.  PROP 6: PROP_INTERFACE_COUNT  . . . . . . . . . . . .  33
-       8.3.8.  PROP 7: PROP_POWER_STATE  . . . . . . . . . . . . . .  34
-       8.3.9.  PROP 8: PROP_HWADDR . . . . . . . . . . . . . . . . .  35
-       8.3.10. PROP 9: PROP_LOCK . . . . . . . . . . . . . . . . . .  35
-       8.3.11. PROP 10: PROP_HOST_POWER_STATE  . . . . . . . . . . .  36
-       8.3.12. PROP 4104: PROP_UNSOL_UPDATE_FILTER . . . . . . . . .  37
-       8.3.13. PROP 4105: PROP_UNSOL_UPDATE_LIST . . . . . . . . . .  38
-     8.4.  Stream Properties . . . . . . . . . . . . . . . . . . . .  39
-       8.4.1.  PROP 112: PROP_STREAM_DEBUG . . . . . . . . . . . . .  39
-       8.4.2.  PROP 113: PROP_STREAM_RAW . . . . . . . . . . . . . .  39
-       8.4.3.  PROP 114: PROP_STREAM_NET . . . . . . . . . . . . . .  40
-       8.4.4.  PROP 115: PROP_STREAM_NET_INSECURE  . . . . . . . . .  41
-     8.5.  PHY Properties  . . . . . . . . . . . . . . . . . . . . .  41
-       8.5.1.  PROP 32: PROP_PHY_ENABLED . . . . . . . . . . . . . .  41
-       8.5.2.  PROP 33: PROP_PHY_CHAN  . . . . . . . . . . . . . . .  41
-       8.5.3.  PROP 34: PROP_PHY_CHAN_SUPPORTED  . . . . . . . . . .  42
-       8.5.4.  PROP 35: PROP_PHY_FREQ  . . . . . . . . . . . . . . .  42
-       8.5.5.  PROP 36: PROP_PHY_CCA_THRESHOLD . . . . . . . . . . .  42
-       8.5.6.  PROP 37: PROP_PHY_TX_POWER  . . . . . . . . . . . . .  42
-       8.5.7.  PROP 38: PROP_PHY_RSSI  . . . . . . . . . . . . . . .  42
-       8.5.8.  PROP 39: PROP_PHY_RX_SENSITIVITY  . . . . . . . . . .  43
-     8.6.  MAC Properties  . . . . . . . . . . . . . . . . . . . . .  43
-       8.6.1.  PROP 48: PROP_MAC_SCAN_STATE  . . . . . . . . . . . .  43
-       8.6.2.  PROP 49: PROP_MAC_SCAN_MASK . . . . . . . . . . . . .  43
-       8.6.3.  PROP 50: PROP_MAC_SCAN_PERIOD . . . . . . . . . . . .  44
-       8.6.4.  PROP 51: PROP_MAC_SCAN_BEACON . . . . . . . . . . . .  44
-       8.6.5.  PROP 52: PROP_MAC_15_4_LADDR  . . . . . . . . . . . .  45
-       8.6.6.  PROP 53: PROP_MAC_15_4_SADDR  . . . . . . . . . . . .  45
-       8.6.7.  PROP 54: PROP_MAC_15_4_PANID  . . . . . . . . . . . .  45
-       8.6.8.  PROP 55: PROP_MAC_RAW_STREAM_ENABLED  . . . . . . . .  45
-       8.6.9.  PROP 56: PROP_MAC_PROMISCUOUS_MODE  . . . . . . . . .  45
-       8.6.10. PROP 57: PROP_MAC_ENERGY_SCAN_RESULT  . . . . . . . .  46
-       8.6.11. PROP 58: PROP_MAC_DATA_POLL_PERIOD {#prop-mac-data-
-               poll-period . . . . . . . . . . . . . . . . . . . . .  46
-       8.6.12. PROP 4864: PROP_MAC_WHITELIST . . . . . . . . . . . .  46
-       8.6.13. PROP 4865: PROP_MAC_WHITELIST_ENABLED . . . . . . . .  47
+     8.1.  Command Semantics . . . . . . . . . . . . . . . . . . . .  28
+     8.2.  Asynchronous Updates  . . . . . . . . . . . . . . . . . .  29
+     8.3.  Property Identifiers  . . . . . . . . . . . . . . . . . .  29
+     8.4.  Property Identifier Sections  . . . . . . . . . . . . . .  30
+     8.5.  Core Properties . . . . . . . . . . . . . . . . . . . . .  31
+       8.5.1.  PROP 0: PROP_LAST_STATUS  . . . . . . . . . . . . . .  31
+       8.5.2.  PROP 1: PROP_PROTOCOL_VERSION . . . . . . . . . . . .  31
+       8.5.3.  PROP 2: PROP_NCP_VERSION  . . . . . . . . . . . . . .  32
+       8.5.4.  PROP 3: PROP_INTERFACE_TYPE . . . . . . . . . . . . .  33
+       8.5.5.  PROP 4: PROP_INTERFACE_VENDOR_ID  . . . . . . . . . .  34
+       8.5.6.  PROP 5: PROP_CAPS . . . . . . . . . . . . . . . . . .  34
+       8.5.7.  PROP 6: PROP_INTERFACE_COUNT  . . . . . . . . . . . .  35
+       8.5.8.  PROP 7: PROP_POWER_STATE  . . . . . . . . . . . . . .  35
+       8.5.9.  PROP 8: PROP_HWADDR . . . . . . . . . . . . . . . . .  36
+       8.5.10. PROP 9: PROP_LOCK . . . . . . . . . . . . . . . . . .  36
+       8.5.11. PROP 10: PROP_HOST_POWER_STATE  . . . . . . . . . . .  37
+       8.5.12. PROP 4104: PROP_UNSOL_UPDATE_FILTER . . . . . . . . .  39
+       8.5.13. PROP 4105: PROP_UNSOL_UPDATE_LIST . . . . . . . . . .  39
+     8.6.  Stream Properties . . . . . . . . . . . . . . . . . . . .  40
+       8.6.1.  PROP 112: PROP_STREAM_DEBUG . . . . . . . . . . . . .  40
+       8.6.2.  PROP 113: PROP_STREAM_RAW . . . . . . . . . . . . . .  41
+       8.6.3.  PROP 114: PROP_STREAM_NET . . . . . . . . . . . . . .  41
+       8.6.4.  PROP 115: PROP_STREAM_NET_INSECURE  . . . . . . . . .  42
+     8.7.  PHY Properties  . . . . . . . . . . . . . . . . . . . . .  42
+       8.7.1.  PROP 32: PROP_PHY_ENABLED . . . . . . . . . . . . . .  42
+       8.7.2.  PROP 33: PROP_PHY_CHAN  . . . . . . . . . . . . . . .  43
+       8.7.3.  PROP 34: PROP_PHY_CHAN_SUPPORTED  . . . . . . . . . .  43
+       8.7.4.  PROP 35: PROP_PHY_FREQ  . . . . . . . . . . . . . . .  43
+       8.7.5.  PROP 36: PROP_PHY_CCA_THRESHOLD . . . . . . . . . . .  43
+       8.7.6.  PROP 37: PROP_PHY_TX_POWER  . . . . . . . . . . . . .  43
+       8.7.7.  PROP 38: PROP_PHY_RSSI  . . . . . . . . . . . . . . .  44
+       8.7.8.  PROP 39: PROP_PHY_RX_SENSITIVITY  . . . . . . . . . .  44
+     8.8.  MAC Properties  . . . . . . . . . . . . . . . . . . . . .  44
+       8.8.1.  PROP 48: PROP_MAC_SCAN_STATE  . . . . . . . . . . . .  44
+       8.8.2.  PROP 49: PROP_MAC_SCAN_MASK . . . . . . . . . . . . .  45
+       8.8.3.  PROP 50: PROP_MAC_SCAN_PERIOD . . . . . . . . . . . .  45
+       8.8.4.  PROP 51: PROP_MAC_SCAN_BEACON . . . . . . . . . . . .  45
+       8.8.5.  PROP 52: PROP_MAC_15_4_LADDR  . . . . . . . . . . . .  46
+       8.8.6.  PROP 53: PROP_MAC_15_4_SADDR  . . . . . . . . . . . .  46
+       8.8.7.  PROP 54: PROP_MAC_15_4_PANID  . . . . . . . . . . . .  46
+       8.8.8.  PROP 55: PROP_MAC_RAW_STREAM_ENABLED  . . . . . . . .  46
+       8.8.9.  PROP 56: PROP_MAC_PROMISCUOUS_MODE  . . . . . . . . .  46
+       8.8.10. PROP 57: PROP_MAC_ENERGY_SCAN_RESULT  . . . . . . . .  47
+       8.8.11. PROP 58: PROP_MAC_DATA_POLL_PERIOD {#prop-mac-data-
+               poll-period . . . . . . . . . . . . . . . . . . . . .  47
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 3]
+Quattlebaum & woodyatt   Expires April 30, 2018                 [Page 3]
 
 Internet-Draft                 Spinel Core                  October 2017
 
 
-       8.6.14. PROP 4867: SPINEL_PROP_MAC_SRC_MATCH_ENABLED  . . . .  47
-       8.6.15. PROP 4868: SPINEL_PROP_MAC_SRC_MATCH_SHORT_ADDRESSES   47
-       8.6.16. PROP 4869:
-               SPINEL_PROP_MAC_SRC_MATCH_EXTENDED_ADDRESSES  . . . .  47
-       8.6.17. PROP 4870: PROP_MAC_BLACKLIST . . . . . . . . . . . .  48
-       8.6.18. PROP 4871: PROP_MAC_BLACKLIST_ENABLED . . . . . . . .  48
-     8.7.  NET Properties  . . . . . . . . . . . . . . . . . . . . .  48
-       8.7.1.  PROP 65: PROP_NET_IF_UP . . . . . . . . . . . . . . .  48
-       8.7.2.  PROP 66: PROP_NET_STACK_UP  . . . . . . . . . . . . .  48
-     8.8.  IPv6 Properties . . . . . . . . . . . . . . . . . . . . .  48
-       8.8.1.  PROP 96: PROP_IPV6_LL_ADDR  . . . . . . . . . . . . .  49
-       8.8.2.  PROP 99: PROP_IPV6_ADDRESS_TABLE  . . . . . . . . . .  49
-       8.8.3.  PROP 101: PROP_IPv6_ICMP_PING_OFFLOAD . . . . . . . .  49
-       8.8.4.  PROP 102: SPINEL_PROP_IPV6_MULTICAST_ADDRESS_TABLE  .  49
-     8.9.  Debug Properties  . . . . . . . . . . . . . . . . . . . .  50
-       8.9.1.  PROP 16384: PROP_DEBUG_TEST_ASSERT  . . . . . . . . .  50
-       8.9.2.  PROP 16385: PROP_DEBUG_NCP_LOG_LEVEL  . . . . . . . .  50
-   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  50
-     9.1.  Raw Application Access  . . . . . . . . . . . . . . . . .  50
-   10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  51
-   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  51
-     11.1.  Normative References . . . . . . . . . . . . . . . . . .  51
-     11.2.  Informative References . . . . . . . . . . . . . . . . .  51
-     11.3.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  52
-   Appendix A.  Example Sessions . . . . . . . . . . . . . . . . . .  52
-     A.1.  NCP Initialization  . . . . . . . . . . . . . . . . . . .  52
-     A.2.  Attaching to a network  . . . . . . . . . . . . . . . . .  53
-     A.3.  Detaching from a network  . . . . . . . . . . . . . . . .  53
-     A.4.  Attaching to a saved network  . . . . . . . . . . . . . .  53
-     A.5.  NCP Software Reset  . . . . . . . . . . . . . . . . . . .  54
-   Appendix B.  Recommended Framing Protocols  . . . . . . . . . . .  54
-     B.1.  UART Recommendations  . . . . . . . . . . . . . . . . . .  54
-       B.1.1.  UART Bit Rate Detection . . . . . . . . . . . . . . .  55
-       B.1.2.  HDLC-Lite . . . . . . . . . . . . . . . . . . . . . .  55
-     B.2.  SPI Recommendations . . . . . . . . . . . . . . . . . . .  56
-       B.2.1.  SPI Framing Protocol  . . . . . . . . . . . . . . . .  57
-     B.3.  I2C Recommendations . . . . . . . . . . . . . . . . . . .  58
-     B.4.  Native USB Recommendations  . . . . . . . . . . . . . . .  59
-   Appendix C.  Test Vectors . . . . . . . . . . . . . . . . . . . .  59
-     C.1.  Test Vector: Packed Unsigned Integer  . . . . . . . . . .  59
-     C.2.  Test Vector: Reset Command  . . . . . . . . . . . . . . .  59
-     C.3.  Test Vector: Reset Notification . . . . . . . . . . . . .  59
-     C.4.  Test Vector: Inbound IPv6 Packet  . . . . . . . . . . . .  60
-     C.5.  Test Vector: Outbound IPv6 Packet . . . . . . . . . . . .  60
-   Appendix D.  Comparison with other protocols  . . . . . . . . . .  60
-   Appendix E.  Acknowledgments  . . . . . . . . . . . . . . . . . .  61
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  62
+       8.8.12. PROP 4864: PROP_MAC_WHITELIST . . . . . . . . . . . .  47
+       8.8.13. PROP 4865: PROP_MAC_WHITELIST_ENABLED . . . . . . . .  48
+       8.8.14. PROP 4867: SPINEL_PROP_MAC_SRC_MATCH_ENABLED  . . . .  48
+       8.8.15. PROP 4868: SPINEL_PROP_MAC_SRC_MATCH_SHORT_ADDRESSES   48
+       8.8.16. PROP 4869:
+               SPINEL_PROP_MAC_SRC_MATCH_EXTENDED_ADDRESSES  . . . .  48
+       8.8.17. PROP 4870: PROP_MAC_BLACKLIST . . . . . . . . . . . .  49
+       8.8.18. PROP 4871: PROP_MAC_BLACKLIST_ENABLED . . . . . . . .  49
+     8.9.  NET Properties  . . . . . . . . . . . . . . . . . . . . .  49
+       8.9.1.  PROP 65: PROP_NET_IF_UP . . . . . . . . . . . . . . .  49
+       8.9.2.  PROP 66: PROP_NET_STACK_UP  . . . . . . . . . . . . .  49
+     8.10. IPv6 Properties . . . . . . . . . . . . . . . . . . . . .  49
+       8.10.1.  PROP 96: PROP_IPV6_LL_ADDR . . . . . . . . . . . . .  50
+       8.10.2.  PROP 99: PROP_IPV6_ADDRESS_TABLE . . . . . . . . . .  50
+       8.10.3.  PROP 101: PROP_IPv6_ICMP_PING_OFFLOAD  . . . . . . .  50
+       8.10.4.  PROP 102: SPINEL_PROP_IPV6_MULTICAST_ADDRESS_TABLE .  50
+     8.11. Debug Properties  . . . . . . . . . . . . . . . . . . . .  51
+       8.11.1.  PROP 16384: PROP_DEBUG_TEST_ASSERT . . . . . . . . .  51
+       8.11.2.  PROP 16385: PROP_DEBUG_NCP_LOG_LEVEL . . . . . . . .  51
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  51
+     9.1.  Raw Application Access  . . . . . . . . . . . . . . . . .  51
+   10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  52
+   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  52
+     11.1.  Normative References . . . . . . . . . . . . . . . . . .  52
+     11.2.  Informative References . . . . . . . . . . . . . . . . .  52
+     11.3.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  53
+   Appendix A.  Example Sessions . . . . . . . . . . . . . . . . . .  53
+     A.1.  NCP Initialization  . . . . . . . . . . . . . . . . . . .  53
+     A.2.  Attaching to a network  . . . . . . . . . . . . . . . . .  54
+     A.3.  Detaching from a network  . . . . . . . . . . . . . . . .  54
+     A.4.  Attaching to a saved network  . . . . . . . . . . . . . .  54
+     A.5.  NCP Software Reset  . . . . . . . . . . . . . . . . . . .  55
+   Appendix B.  Recommended Framing Protocols  . . . . . . . . . . .  55
+     B.1.  UART Recommendations  . . . . . . . . . . . . . . . . . .  55
+       B.1.1.  UART Bit Rate Detection . . . . . . . . . . . . . . .  56
+       B.1.2.  HDLC-Lite . . . . . . . . . . . . . . . . . . . . . .  56
+     B.2.  SPI Recommendations . . . . . . . . . . . . . . . . . . .  57
+       B.2.1.  SPI Framing Protocol  . . . . . . . . . . . . . . . .  58
+     B.3.  I2C Recommendations . . . . . . . . . . . . . . . . . . .  59
+     B.4.  Native USB Recommendations  . . . . . . . . . . . . . . .  60
+   Appendix C.  Test Vectors . . . . . . . . . . . . . . . . . . . .  60
+     C.1.  Test Vector: Packed Unsigned Integer  . . . . . . . . . .  60
+     C.2.  Test Vector: Reset Command  . . . . . . . . . . . . . . .  60
+     C.3.  Test Vector: Reset Notification . . . . . . . . . . . . .  60
+     C.4.  Test Vector: Inbound IPv6 Packet  . . . . . . . . . . . .  61
+     C.5.  Test Vector: Outbound IPv6 Packet . . . . . . . . . . . .  61
+   Appendix D.  Comparison with other protocols  . . . . . . . . . .  61
+   Appendix E.  Acknowledgments  . . . . . . . . . . . . . . . . . .  62
 
 
 
-
-Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 4]
+Quattlebaum & woodyatt   Expires April 30, 2018                 [Page 4]
 
 Internet-Draft                 Spinel Core                  October 2017
 
+
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  64
 
 1.  Introduction
 
@@ -275,9 +277,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-
-
-Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 5]
+Quattlebaum & woodyatt   Expires April 30, 2018                 [Page 5]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -333,7 +333,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 6]
+Quattlebaum & woodyatt   Expires April 30, 2018                 [Page 6]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -389,7 +389,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 7]
+Quattlebaum & woodyatt   Expires April 30, 2018                 [Page 7]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -445,7 +445,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 8]
+Quattlebaum & woodyatt   Expires April 30, 2018                 [Page 8]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -472,9 +472,9 @@ Internet-Draft                 Spinel Core                  October 2017
    Stream properties represent dynamic streams of data rather than a
    specific value.  Examples would be:
 
-   o  Network packet stream (Section 8.4.3)
-   o  Raw packet stream (Section 8.4.2)
-   o  Debug message stream (Section 8.4.1)
+   o  Network packet stream (Section 8.6.3)
+   o  Raw packet stream (Section 8.6.2)
+   o  Debug message stream (Section 8.6.1)
 
    All such properties emit changes asynchronously using the "VALUE_IS"
    operator, sent from the NCP to the OS.  For example, as IPv6 traffic
@@ -501,7 +501,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 9]
+Quattlebaum & woodyatt   Expires April 30, 2018                 [Page 9]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -557,7 +557,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 10]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 10]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -613,7 +613,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 11]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 11]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -669,7 +669,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 12]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 12]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -725,7 +725,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 13]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 13]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -781,7 +781,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 14]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 14]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -837,7 +837,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 15]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 15]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -893,7 +893,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 16]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 16]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -949,7 +949,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 17]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 17]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -1005,7 +1005,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 18]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 18]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -1061,7 +1061,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 19]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 19]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -1117,7 +1117,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 20]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 20]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -1173,7 +1173,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 21]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 21]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -1229,7 +1229,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 22]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 22]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -1285,7 +1285,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 23]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 23]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -1341,12 +1341,12 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 24]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 24]
 
 Internet-Draft                 Spinel Core                  October 2017
 
 
-   See Section 8.3.1 for more information on "PROP_LAST_STATUS".
+   See Section 8.5.1 for more information on "PROP_LAST_STATUS".
 
    IANA maintains a registry of Spinel "STATUS_CODE" numbers, with
    varying registration policies assigned for different ranges according
@@ -1397,7 +1397,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 25]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 25]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -1453,7 +1453,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 26]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 26]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -1474,7 +1474,7 @@ Internet-Draft                 Spinel Core                  October 2017
    behaviors and functionalities.  They can be fetched via the
    "PROP_CAPS" property.
 
-   See Section 8.3.6 for more information on "PROP_CAPS".
+   See Section 8.5.6 for more information on "PROP_CAPS".
 
    A registry of capability codes is maintained by IANA with various
    reservation policies in effect for different ranges of values as
@@ -1509,7 +1509,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 27]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 27]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -1518,7 +1518,7 @@ Internet-Draft                 Spinel Core                  October 2017
    | Cod | Name                     | Description                      |
    | e   |                          |                                  |
    +-----+--------------------------+----------------------------------+
-   | 1   | "CAP_LOCK"               | See Section 8.3.10               |
+   | 1   | "CAP_LOCK"               | See Section 8.5.10               |
    | 2   | "CAP_NET_SAVE"           | draft-rquattle-spinel-network-   |
    |     |                          | save                             |
    | 3   | "CAP_HBO"                | draft-rquattle-spinel-hbo        |
@@ -1531,8 +1531,8 @@ Internet-Draft                 Spinel Core                  October 2017
    | 10  | "CAP_TRNG"               | draft-rquattle-spinel-trng       |
    | 11  | "CAP_CMD_MULTI"          | See Section 5.13, Section 5.14,  |
    |     |                          | Section 5.15                     |
-   | 12  | "CAP_UNSOL_UPDATE_FILTER | See Section 8.3.12, Section      |
-   |     | "                        | 8.3.13                           |
+   | 12  | "CAP_UNSOL_UPDATE_FILTER | See Section 8.5.12, Section      |
+   |     | "                        | 8.5.13                           |
    | 48  | "CAP_ROLE_ROUTER"        | EDITOR: to be provided.          |
    | 49  | "CAP_ROLE_SLEEPY"        | EDITOR: to be provided.          |
    | 512 | "CAP_MAC_WHITELIST"      | EDITOR: to be provided.          |
@@ -1542,50 +1542,89 @@ Internet-Draft                 Spinel Core                  October 2017
 
 8.  Properties
 
-   This section defines the syntax and operational semantics of the
-   Spinel properties common to the core protocol.
+   This section defines the syntax and specific operational details of
+   the Spinel properties common to the core protocol.
 
-   Spinel NCP implementations MAY send any of the following commands, at
-   any time, using any of the "PROP_ID" values defined for the core
-   protocol:
+8.1.  Command Semantics
 
-   o  "CMD_PROP_VALUE_IS"
-   o  "CMD_PROP_VALUE_INSERTED"
-   o  "CMD_PROP_VALUE_REMOVED"
-   o  "CMD_PROP_VALUE_ARE"
+   Individual properties MAY support one or more of the following
+   commands:
 
-   Spinel OS implementations MAY send any of the following commands, at
-   any time, using any of the "PROP_ID" values defined for the core
-   protocol:
+   o  "CMD_PROP_VALUE_GET" (Section 5.3)
+   o  "CMD_PROP_VALUE_SET" (Section 5.4)
+   o  "CMD_PROP_VALUE_INSERT" (Section 5.5)
+   o  "CMD_PROP_VALUE_REMOVE" (Section 5.6)
 
-   o  "CMD_PROP_VALUE_GET"
-   o  "CMD_PROP_VALUE_SET"
-   o  "CMD_PROP_VALUE_INSERT"
-   o  "CMD_PROP_VALUE_REMOVE"
+   Upon an error condition, the NCP SHALL respond in the typical fasion
+   of indicating the error code via a "CMD_PROP_VALUE_IS" command with
+   the appropriate status code(See @detail-status).
+
+   Unless otherwise specified, an NCP MUST NOT emit a "PROP_LAST_STATUS"
+   of "STATUS_OK" in response to the successful execution of any of the
+   above commands.
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 28]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 28]
 
 Internet-Draft                 Spinel Core                  October 2017
 
 
-   o  "CMD_PROP_VALUE_MULTI_GET"
-   o  "CMD_PROP_VALUE_MULTI_SET"
+   Upon successful execution of one of the property manipulation
+   commands, the NCP SHALL send one of the following commands (with the
+   same property key that was used for the sending command) to indicate
+   success:
 
-   Spinel NCP implementations SHOULD implement the operational semantics
-   for all the properties defined here, except where noted that a
-   property is REQUIRED for the NCP to implement.  If the NCP
-   implementation receives one of the commands above with a "PROP_ID"
-   value that it does not implement, then it MUST reply with a
-   "CMD_PROP_VALUE_IS" for the "PROP_LAST_STATUS" property identifier
-   with a "STATUS" value of "STATUS_PROP_NOT_FOUND".
+   o  "CMD_PROP_VALUE_IS" (Section 5.7)
+   o  "CMD_PROP_VALUE_INSERTED" (Section 5.8)
+   o  "CMD_PROP_VALUE_REMOVED" (Section 5.9)
 
-8.1.  Property Identifiers
+   When an NCP has successfully handled a "CMD_PROP_VALUE_INSERT" or
+   "CMD_PROP_VALUE_REMOVE" command on a multi-value property, the NCP
+   SHOULD respond with a "CMD_PROP_VALUE_INSERTED" or
+   "CMD_PROP_VALUE_REMOVED", respectfully.  However, if doing so is
+   prohibitively complex, the NCP MAY instead respond with a
+   "CMD_PROP_VALUE_IS" containing the entire list of items.
+
+   The reason for the above behavior is that the NCP is the ultimate
+   authority on the value of all properties.  By always indicating
+   success by responding with the value of the property, we can make
+   sure that the software running on the host is in sync with the
+   behavior of the NCP.
+
+8.2.  Asynchronous Updates
+
+   Some properties support indicating changes in their state
+   asynchronously by sending the following commands with a TID value of
+   0:
+
+   o  "CMD_PROP_VALUE_IS" (Section 5.7)
+   o  "CMD_PROP_VALUE_INSERTED" (Section 5.8)
+   o  "CMD_PROP_VALUE_REMOVED" (Section 5.9)
+
+   Asynchronous updates for specific properties can be enabled or
+   disabled using "PROP_UNSOL_UPDATE_FILTER", documented in
+   Section 8.5.12.
+
+8.3.  Property Identifiers
 
    IANA maintains a registry of Spinel "PROP_ID" property identifier
    numbers, with varying registration policies assigned for different
    ranges according to the following table:
+
+
+
+
+
+
+
+
+
+
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 29]
+
+Internet-Draft                 Spinel Core                  October 2017
+
 
                +-----------------------+------------------+
                | Property ID Range     | Description      |
@@ -1600,45 +1639,24 @@ Internet-Draft                 Spinel Core                  October 2017
                | 2,000,000 - 2,097,151 | Experimental Use |
                +-----------------------+------------------+
 
-8.2.  Property Identifier Sections
+8.4.  Property Identifier Sections
 
    Standard property identifier numbers are assigned in a hierarchy
    according to their purpose, as shown in the table below:
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 29]
-
-Internet-Draft                 Spinel Core                  October 2017
-
-
    +--------+-----------+---------------+------------------------------+
    | Name   | Primary   | Extended      | Documentation                |
    +--------+-----------+---------------+------------------------------+
-   | Core   | 0 - 31    | 4,096 - 4,607 | Section 8.3                  |
+   | Core   | 0 - 31    | 4,096 - 4,607 | Section 8.5                  |
    | PHY    | 32 - 47   | 4,608 - 4,863 | Physical (PHY) layer         |
    |        |           |               | specific                     |
    | MAC    | 48 - 63   | 4,864 - 5,119 | Media access (MAC) layer     |
    |        |           |               | specific                     |
-   | NET    | 64 - 79   | 5,120 - 5,375 | Section 8.7                  |
-   | Tech   | 80 - 95   | 5,376 - 5,631 | Technology specific          |
-   | IPv6   | 96 - 111  | 5,632 - 5,887 | Section 8.8                  |
-   | Stream | 112 - 127 | 5,888 - 6,143 | Section 8.3                  |
-   | Debug  | no        | 16,384 -      | Section 8.9                  |
+   | NET    | 64 - 79   | 5,120 - 5,375 | Section 8.9                  |
+   | Tech   | 80 - 95   | 5,376 - 5,631 | Section 8.5.4                |
+   | IPv6   | 96 - 111  | 5,632 - 5,887 | Section 8.10                 |
+   | Stream | 112 - 127 | 5,888 - 6,143 | Section 8.5                  |
+   | Debug  | no        | 16,384 -      | Section 8.11                 |
    |        | primary   | 17,407        |                              |
    +--------+-----------+---------------+------------------------------+
 
@@ -1652,125 +1670,164 @@ Internet-Draft                 Spinel Core                  October 2017
    parameters to facilitate the assignment of a suitable number from the
    appropriate range.
 
-8.3.  Core Properties
 
-8.3.1.  PROP 0: PROP_LAST_STATUS
 
-   o  Type: Read-Only
-   o  Encoding: "i"
+
+
+
+
+
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 30]
+
+Internet-Draft                 Spinel Core                  October 2017
+
+
+8.5.  Core Properties
+
+8.5.1.  PROP 0: PROP_LAST_STATUS
+
+   o  Type: Single-Value, Read-Only
+   o  Asynchronous Updates: Yes
+   o  Required: Yes
+   o  Post-Reset Value: Reset Reason Code
 
                         +---------+---------------+
-                        | Octets: |      1-3      |
+                        |  Bytes: |      1-3      |
                         +---------+---------------+
+                        | Format: |      PUI      |
                         | Fields: | "STATUS_CODE" |
                         +---------+---------------+
 
-   Describes the status of the last NCP operation.  Encoded as a packed
-   unsigned integer.
+   This property describes the status code of the last NCP operation.
+   For many commands, failure is indicated by emitting this property
+   with the TID matching the failing command.  It is generally not
+   necessary to ever fetch the value of this property explicitly, as it
+   is often emitted directly as an error response.  It is also
+   occasionally emitted as a success response with a value of
+   "STATUS_OK".
 
-   This property is emitted often to indicate the result status of
-   pretty much any OS-to-NCP operation.  It is also emitted
-   automatically at NCP startup with a value indicating the reset
-   reason.
+   Upon NCP reset, this property MUST be emitted with a status code
+   indicating the reset reason.
+
+   Upon receiving an update to PROP_LAST_STATUS with a status code that
+   indicates a reset, the host SHALL assume that the NCP has been reset
+   and that all properties have reverted to their defined after-reset
+   values.
 
    See Section 6 for the complete list of status codes.
 
+8.5.2.  PROP 1: PROP_PROTOCOL_VERSION
 
-
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 30]
-
-Internet-Draft                 Spinel Core                  October 2017
-
-
-8.3.2.  PROP 1: PROP_PROTOCOL_VERSION
-
-   o  Type: Read-Only
-   o  Encoding: "ii"
+   o  Type: Single-Value, Constant
+   o  Asynchronous Updates: No
+   o  Required: Yes
+   o  Post-Reset Value: 4, 3
 
               +---------+-----------------+-----------------+
-              | Octets: |       1-3       |       1-3       |
+              |  Bytes: |       1-3       |       1-3       |
               +---------+-----------------+-----------------+
+              | Format: |       PUI       |       PUI       |
               | Fields: | "MAJOR_VERSION" | "MINOR_VERSION" |
               +---------+-----------------+-----------------+
 
-   Describes the protocol version information.  This property contains
-   four fields, each encoded as a packed unsigned integer:
-
-   o  Major Version Number
-   o  Minor Version Number
-
-   This document describes major version 4, minor version 3 of this
-   protocol.
-
-   The OS MUST use NLI 0 with commands using this property.  The NCP
-   SHOULD NOT process commands using this property if NLI is not zero.
-   The operational semantics of this property when NLI is not zero are
-   not specified.
-
-8.3.2.1.  Major Version Number
-
-   The major version number is used to identify backward incompatible
-   differences between protocol versions.
-
-   The OS MUST enter a FAULT state if the given major version number is
-   unsupportable.
-
-8.3.2.2.  Minor Version Number
-
-   The minor version number is used to identify backward-compatible
-   differences between protocol versions.  A mismatch between the
-   advertised minor version number and the minor version that is
-   supported by the OS SHOULD NOT be fatal to the operation of the OS.
-
-8.3.3.  PROP 2: PROP_NCP_VERSION
-
-   o  Type: Read-Only
-   o  Packed-Encoding: "U"
 
 
 
-
-
-
-
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 31]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 31]
 
 Internet-Draft                 Spinel Core                  October 2017
 
 
-                     +---------+---------------------+
-                     | Octets: |          n          |
-                     +---------+---------------------+
-                     | Fields: | "NCP_VESION_STRING" |
-                     +---------+---------------------+
+   Describes the spinel protocol version information.  This property
+   contains four fields, each encoded as a packed unsigned integer:
 
-   Contains a string which describes the firmware currently running on
-   the NCP.  Encoded as a zero-terminated UTF-8 string.
+   MAJOR_VERSION
+      The major version number is used to identify backward incompatible
+      differences between protocol versions.  The OS MUST enter a
+      FAULT(TODO: Define this) state if the given major version number
+      is unsupportable.
+   MINOR_VERSION
+      The minor version number is used to identify backward-compatible
+      differences between protocol versions.  A mismatch between the
+      advertised minor version number and the minor version that is
+      supported by the OS SHOULD NOT be fatal to the operation of the
+      OS.
+
+   This document describes major version 4, minor version 3 of this
+   protocol.  (TODO: UPDATE THIS)
+
+   If a NCP supports multiple NLIs, the value of this property MUST be
+   identical across all implemented NLIs.
+
+8.5.3.  PROP 2: PROP_NCP_VERSION
+
+   o  Type: Single-Value, Constant
+   o  Asynchronous Updates: No
+   o  Required: Yes
+   o  Scope: Firmware
+   o  Post-Reset Value: Implementation-Specific
+
+                    +---------+---------------+-------+
+                    |  Bytes: |       n       |   1   |
+                    +---------+---------------+-------+
+                    | Format: |     ASCII     | CONST |
+                    | Fields: | "NCP_VERSION" |  0x00 |
+                    +---------+---------------+-------+
+
+   Contains a zero-terminated ASCII string which describes the firmware
+   currently running on the NCP.
+
+   The value of this string MUST be different for every firmware
+   release.
 
    The format of the string is not strictly defined, but it is intended
    to present similarly to the "User-Agent" string from HTTP.  The
-   RECOMMENDED format of the string is as follows:
+   following format is RECOMMENDED:
 
-   "STACK-NAME/STACK-VERSION[BUILD_INFO][; OTHER_INFO]; BUILD_DATE"
+   "STACK-NAME/STACK-VERSION[BUILD-INFO][; OTHER-INFO][; BUILD-DATE]"
+
+
+
+
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 32]
+
+Internet-Draft                 Spinel Core                  October 2017
+
+
+   Where:
+
+   STACK-NAME
+      The name of the software running on the NCP.
+   STACK-VERSION
+      The version number of the software running on the NCP, like "1.0"
+      or "3.2.6"
+   BUILD-INFO
+      Optional information indicating a specific build, like "b125" or
+      "d26-25-gb684c7f".
+   OTHER-INFO
+      Other optional information about the build.
+   BUILD-DATE
+      OPTIONAL build date.
 
    Examples:
 
    o  "OpenThread/1.0d26-25-gb684c7f; DEBUG; May 9 2016 18:22:04"
    o  "ConnectIP/2.0b125 s1 ALPHA; Sept 24 2015 20:49:19"
 
-   The OS MUST use NLI 0 with commands using this property.  The NCP
-   SHOULD NOT process commands using this property if NLI is not zero.
-   The operational semantics of this property when NLI is not zero are
-   not specified.
+   If a NCP supports multiple NLIs, the value of this property MUST be
+   identical across all implemented NLIs.
 
-8.3.4.  PROP 3: PROP_INTERFACE_TYPE
+8.5.4.  PROP 3: PROP_INTERFACE_TYPE
 
-   o  Type: Read-Only
-   o  Encoding: "i"
+   o  Type: Single-Value, Constant
+   o  Asynchronous Updates: No
+   o  Required: Yes
+   o  Post-Reset Value: Implementation-Specific
 
                       +---------+------------------+
-                      | Octets: | 1-3              |
+                      |  Bytes: |       1-3        |
                       +---------+------------------+
+                      | Format: |       PUI        |
                       | Fields: | "INTERFACE_TYPE" |
                       +---------+------------------+
 
@@ -1788,8 +1845,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 32]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 33]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -1805,54 +1861,62 @@ Internet-Draft                 Spinel Core                  October 2017
    The OS MUST enter a FAULT state if it does not recognize the network
    protocol given by the NCP.
 
-8.3.5.  PROP 4: PROP_INTERFACE_VENDOR_ID
+8.5.5.  PROP 4: PROP_INTERFACE_VENDOR_ID
 
-   o  Type: Read-Only
-   o  Encoding: "i"
+   o  Type: Single-Value, Constant
+   o  Asynchronous Updates: No
+   o  Required: Yes
+   o  Post-Reset Value: Implementation-Specific
 
                          +---------+-------------+
-                         | Octets: | 1-3         |
+                         |  Bytes: |     1-3     |
                          +---------+-------------+
+                         | Format: |     PUI     |
                          | Fields: | "VENDOR_ID" |
                          +---------+-------------+
 
-   Vendor identifier.
+   [CREF3]
 
-   EDITOR: I have no idea how to write the IANA registry creation text
-   for this.
+   [CREF4]
 
-8.3.6.  PROP 5: PROP_CAPS
+8.5.6.  PROP 5: PROP_CAPS
 
-   o  Type: Read-Only
-   o  Packed-Encoding: "A(i)"
+   o  Type: Multiple-Value, Constant
+   o  Asynchronous Updates: No
+   o  Required: Yes
+   o  Post-Reset Value: Implementation-Specific
 
                      +---------+-------+-------+-----+
-                     | Octets: | 1-3   | 1-3   | ... |
+                     |  Bytes: |  1-3  |  1-3  | ... |
                      +---------+-------+-------+-----+
+                     | Format: |  PUI  |  PUI  | ... |
                      | Fields: | "CAP" | "CAP" | ... |
                      +---------+-------+-------+-----+
 
    Describes the supported capabilities of this NCP.  Encoded as a list
    of packed unsigned integers.  See Section 7 for a list of values.
 
-8.3.7.  PROP 6: PROP_INTERFACE_COUNT
-
-   o  Type: Read-Only
-   o  Packed-Encoding: "C"
 
 
 
 
 
-
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 33]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 34]
 
 Internet-Draft                 Spinel Core                  October 2017
 
 
+8.5.7.  PROP 6: PROP_INTERFACE_COUNT
+
+   o  Type: Single-Value, Constant
+   o  Asynchronous Updates: No
+   o  Required: Yes
+   o  Post-Reset Value: 1-4
+
                       +---------+-------------------+
-                      | Octets: | 1                 |
+                      |  Bytes: |         1         |
                       +---------+-------------------+
+                      | Format: |        INT        |
                       | Fields: | "INTERFACE_COUNT" |
                       +---------+-------------------+
 
@@ -1860,21 +1924,24 @@ Internet-Draft                 Spinel Core                  October 2017
    Since the concurrent interface mechanism is still TBD, this value
    MUST always be one.
 
-   This value is encoded as an unsigned 8-bit integer.
+   If a NCP supports multiple NLIs, the value of this property MUST be
+   identical across all implemented NLIs.
 
-   The OS MUST use NLI 0 with commands using this property.  The NCP
-   SHOULD NOT process commands using this property if NLI is not zero.
-   The operational semantics of this property when NLI is not zero are
-   not specified.
+8.5.8.  PROP 7: PROP_POWER_STATE
 
-8.3.8.  PROP 7: PROP_POWER_STATE
+   o  Type: Single-Value, Read/Write
+   o  Asynchronous Updates: Yes
+   o  Required:
 
-   o  Type: Read-Write
-   o  Packed-Encoding: "C"
+      *  Read: Yes
+      *  Write: RECOMENDED
+   o  Post-Reset Value: "POWER_STATE_ONLINE"
+   o  Related Capabilities: "CAP_POWER_STATE"(writable)
 
                         +---------+---------------+
-                        | Octets: | 1             |
+                        |  Bytes: |       1       |
                         +---------+---------------+
+                        | Format: |      INT      |
                         | Fields: | "POWER_STATE" |
                         +---------+---------------+
 
@@ -1890,98 +1957,104 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 34]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 35]
 
 Internet-Draft                 Spinel Core                  October 2017
 
 
-   +------+--------------------------+---------------------------------+
-   | Code | Name                     | Significance                    |
-   +------+--------------------------+---------------------------------+
-   | 0    | "POWER_STATE_OFFLINE"    | NCP is physically powered off.  |
-   |      |                          | (Enumerated for completeness    |
-   |      |                          | sake, not expected on the wire) |
-   | 1    | "POWER_STATE_DEEP_SLEEP" | NCP is not powered to detect    |
-   |      |                          | any events on physical network  |
-   |      |                          | media.                          |
-   | 2    | "POWER_STATE_STANDBY"    | NCP is powered only to detect   |
-   |      |                          | certain events on physical      |
-   |      |                          | network media that signal to    |
-   |      |                          | wake.                           |
-   | 3    | "POWER_STATE_LOW_POWER"  | NCP is powered only for limited |
-   |      |                          | responsiveness for power        |
-   |      |                          | conservation purposes.          |
-   | 4    | "POWER_STATE_ONLINE"     | NCP is powered for full         |
-   |      |                          | responsiveness.                 |
-   +------+--------------------------+---------------------------------+
+                    +------+--------------------------+
+                    | Code | Name                     |
+                    +------+--------------------------+
+                    | 0    | "POWER_STATE_OFFLINE"    |
+                    | 1    | "POWER_STATE_DEEP_SLEEP" |
+                    | 2    | "POWER_STATE_STANDBY"    |
+                    | 3    | "POWER_STATE_LOW_POWER"  |
+                    | 4    | "POWER_STATE_ONLINE"     |
+                    +------+--------------------------+
 
-   EDITOR: We should consider reversing the numbering here so that 0 is
-   "POWER_STATE_ONLINE".  We may also want to include some extra values
-   between the defined values for future expansion, so that we can
-   preserve the ordered relationship.
+   [CREF5]
 
-8.3.9.  PROP 8: PROP_HWADDR
+   POWER_STATE_OFFLINE
+      NCP is physically powered off.
+   POWER_STATE_DEEP_SLEEP
+      NCP is not powered to detect any events on physical network media.
+   POWER_STATE_STANDBY
+      NCP is powered only to detect certain events on physical network
+      media that signal to wake.
+   POWER_STATE_LOW_POWER
+      NCP is powered only for limited responsiveness for power
+      conservation purposes.
+   POWER_STATE_ONLINE
+      NCP is powered for full responsiveness.
 
-   o  Type: Read-Only
-   o  Packed-Encoding: "E"
+8.5.9.  PROP 8: PROP_HWADDR
 
-                          +---------+----------+
-                          | Octets: | 8        |
-                          +---------+----------+
-                          | Fields: | "HWADDR" |
-                          +---------+----------+
+   o  Type: Single-Value, Read-Only
+   o  Asynchronous Updates: No
+   o  Post-Reset Value: Determined by Factory
+   o  Required: Yes
 
-   The EUI-64 format of the link-layer address of the device.
+                          +---------+-----------+
+                          |  Bytes: |     8     |
+                          +---------+-----------+
+                          | Format: | EUI-64-BE |
+                          | Fields: |  "HWADDR" |
+                          +---------+-----------+
 
-8.3.10.  PROP 9: PROP_LOCK
+   The EUI-64 (TODO:CITE) format of the link-layer address of the
+   device.  MAY be different across multiple NLIs.
 
-   o  Type: Read-Write
-   o  Packed-Encoding: "b"
+8.5.10.  PROP 9: PROP_LOCK
 
-                           +---------+--------+
-                           | Octets: | 1      |
-                           +---------+--------+
-                           | Fields: | "LOCK" |
-                           +---------+--------+
-
+   o  Type: Single-Value, Read-Write
+   o  Asynchronous Updates: No
+   o  Required: No
+   o  Post-Reset Value: 0
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 35]
+
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 36]
 
 Internet-Draft                 Spinel Core                  October 2017
 
+
+   o  Required Capability: "CAP_LOCK"
+
+                           +---------+---------+
+                           |  Bytes: |    1    |
+                           +---------+---------+
+                           | Format: | Boolean |
+                           | Fields: |  "LOCK" |
+                           +---------+---------+
 
    Property transaction lock.  Used for grouping transactional changes
    to several properties for simultaneous commit, or to temporarily
    prevent the automatic updating of property values.  When this
-   property is set, the execution of the NCP is effectively frozen until
-   it is cleared.  There is no support for transaction rollback.
+   property is set, all non-Spinel-related operations of the NCP are
+   effectively frozen until it is cleared.  There is no support for
+   transaction rollback.
 
    This property is only supported if the "CAP_LOCK" capability is
    present.
 
    Unlike most other properties, setting this property to true when the
-   value of the property is already true MUST fail with a last status of
-   "STATUS_ALREADY".
+   value of the property is already true SHALL fail with a last status
+   of "STATUS_ALREADY".
 
-8.3.11.  PROP 10: PROP_HOST_POWER_STATE
+8.5.11.  PROP 10: PROP_HOST_POWER_STATE
 
-   o  Type: Read-Write
-   o  Packed-Encoding: "C"
-   o  Default value: 4
+   o  Type: Single-Value, Read-Write
+   o  Asynchronous Updates: No
+   o  Required: No
+   o  Post-Reset Value: "HOST_POWER_STATE_ONLINE"
+   o  Required Capability: "???" (TODO: Assign a capability)
 
-   Octets: | 1 :-------:------------------ Fields: | "HOST_POWER_STATE"
+                     +---------+--------------------+
+                     |  Bytes: |         1          |
+                     +---------+--------------------+
+                     | Format: |        INT         |
+                     | Fields: | "HOST_POWER_STATE" |
+                     +---------+--------------------+
 
    Describes the current power state of the _OS_. This property is used
    by the OS to inform the NCP when it has changed power states.  The
@@ -1992,56 +2065,52 @@ Internet-Draft                 Spinel Core                  October 2017
    The following table enumerates the standard codes and their
    significance.
 
-   +------+-------------------------------+----------------------------+
-   | Code | Name                          | Significance               |
-   +------+-------------------------------+----------------------------+
-   | 0    | "HOST_POWER_STATE_OFFLINE"    | OS is physically powered   |
-   |      |                               | off and cannot be awakened |
-   |      |                               | by the NCP.                |
-   | 1    | "HOST_POWER_STATE_DEEP_SLEEP" | OS is in a deep low power  |
-   |      |                               | state and will require a   |
-   |      |                               | long time to wake.         |
-   | 3    | "HOST_POWER_STATE_LOW_POWER"  | OS is in a low power state |
-   |      |                               | and can be awakened        |
-   |      |                               | quickly.                   |
-   | 4    | "HOST_POWER_STATE_ONLINE"     | OS is powered for full     |
-   |      |                               | responsiveness.            |
-   +------+-------------------------------+----------------------------+
-
-   EDITOR: We should consider reversing the numbering here so that 0 is
-   "POWER_STATE_ONLINE".  We may also want to include some additional
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 36]
+
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 37]
 
 Internet-Draft                 Spinel Core                  October 2017
 
 
-   reserved values between the defined values for future expansion, so
-   that we can preserve the ordered relationship.  See the similar
-   editorial comment at Section 8.3.8.
+                 +------+-------------------------------+
+                 | Code | Name                          |
+                 +------+-------------------------------+
+                 | 0    | "HOST_POWER_STATE_OFFLINE"    |
+                 | 1    | "HOST_POWER_STATE_DEEP_SLEEP" |
+                 | 3    | "HOST_POWER_STATE_LOW_POWER"  |
+                 | 4    | "HOST_POWER_STATE_ONLINE"     |
+                 +------+-------------------------------+
+
+   [CREF6]
+
+   HOST_POWER_STATE_OFFLINE
+      OS is physically powered off and cannot be awakened by the NCP.
+   HOST_POWER_STATE_DEEP_SLEEP
+      OS is in a deep low power state and will require a long time to
+      wake.  In this state, the NCP MUST NOT send any commands,
+      including any commands that contain network packets, prior to
+      signaling the host explicitly to awaken and receiving a signal to
+      update the state to "HOST_POWER_STATE_ONLINE".
+   HOST_POWER_STATE_LOW_POWER
+      OS is in a low power state and can be awakened quickly.
+   HOST_POWER_STATE_ONLINE
+      OS is powered for full responsiveness.
 
    After the OS sends "CMD_PROP_VALUE_SET" for this property with a
    value other than "HOST_POWER_STATE_ONLINE", it SHOULD wait for the
    NCP to acknowledge the property update (with a "CMD_VALUE_IS"
    command) before entering the specified power state.
 
-   On the NCP receiving any command when the state is not
+   Upon the NCP receiving any command when the state is not
    "HOST_POWER_STATE_ONLINE", it MUST silently update the state to the
    "HOST_POWER_STATE_ONLINE" value.
 
-   When the state is not "HOST_POWER_STATE_ONLINE", the NCP SHOULD NOT
+   When the state is not "HOST_POWER_STATE_ONLINE", the NCP *SHOULD NOT*
    send any commands except important notifications that warrant
    awakening the OS host, and the NCP MUST NOT send any informative
-   messages on the debug stream.
-
-   When the state is "HOST_POWER_STATE_DEEP_SLEEP", the NCP MUST NOT
-   send any commands, including any commands that contain network
-   packets, prior to signaling the host explicitly to awaken and
-   receiving a signal to update the state to "HOST_POWER_STATE_ONLINE".
-   As noted above, reception of any Spinel command is a signal to set
-   the state to "HOST_POWER_STATE_ONLINE".
+   messages on "PROP_DEBUG_STREAM".
 
    The OS MUST NOT send a value of "HOST_POWER_STATE" other than one of
    the standard codes defined here.  If the NCP receives a value other
@@ -2052,29 +2121,40 @@ Internet-Draft                 Spinel Core                  October 2017
    unsolicited property updates masked by "PROP_UNSOL_UPDATE_FILTER"
    should be honored while the OS indicates it is in a low-power state.
    After resuming to the "HOST_POWER_STATE_ONLINE" state, the value of
-   "PROP_UNSOL_UPDATE_FILTER" MUST be unchanged from the value assigned
-   prior to the OS indicating it was entering a low-power state.
-
-   The OS MUST use NLI 0 with commands using this property.  The NCP
-   SHOULD NOT process commands using this property if NLI is not zero.
-   The operational semantics of this property when NLI is not zero are
-   not specified.
-
-8.3.12.  PROP 4104: PROP_UNSOL_UPDATE_FILTER
-
-   o  Required only if "CAP_UNSOL_UPDATE_FILTER" is set.
-   o  Type: Read-Write
-   o  Packed-Encoding: "A(I)"
-   o  Default value: Empty.
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 37]
+
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 38]
 
 Internet-Draft                 Spinel Core                  October 2017
 
 
-   Contains a list of properties which are _excluded_ from generating
+   "PROP_UNSOL_UPDATE_FILTER" MUST be unchanged from the value assigned
+   prior to the OS indicating it was entering a low-power state.
+
+   The OS MUST use NLI 0 with commands using this property.  The NCP
+   SHOULD explicitly fail to process commands setting this property if
+   NLI is not zero.  The operational semantics of this property when NLI
+   is not zero are not specified.
+
+8.5.12.  PROP 4104: PROP_UNSOL_UPDATE_FILTER
+
+   o  Type: Multi-Value, Read-Write
+   o  Asynchronous Updates: No
+   o  Required: No
+   o  Post-Reset Value: Empty
+   o  Scope: NCP
+   o  Required Capability: "CAP_UNSOL_UPDATE_FILTER"
+
+                 +---------+-----------+-----------+-----+
+                 |  Bytes: |    1-3    |    1-3    | ... |
+                 +---------+-----------+-----------+-----+
+                 | Format: |    PUI    |    PUI    | ... |
+                 | Fields: | "PROP_ID" | "PROP_ID" | ... |
+                 +---------+-----------+-----------+-----+
+
+   Contains a list of property IDs which are _excluded_ from generating
    unsolicited value updates.  This property MUST be empty after NCP
    reset.
 
@@ -2085,30 +2165,33 @@ Internet-Draft                 Spinel Core                  October 2017
    in "PROP_UNSOL_UPDATE_LIST".  If such properties are added, the NCP
    MUST ignore the unsupported properties.
 
-   [CREF3]
+   [CREF7]
 
-   The NCP is REQUIRED to support and use the following commands with
-   this property:
+8.5.13.  PROP 4105: PROP_UNSOL_UPDATE_LIST
 
-   o  "CMD_PROP_VALUE_GET" (Section 5.3)
-   o  "CMD_PROP_VALUE_SET" (Section 5.4)
-   o  "CMD_PROP_VALUE_IS" (Section 5.7)
+   o  Type: Multi-Value, Constant
+   o  Asynchronous Updates: No
+   o  Required: No
+   o  Post-Reset Value: Implementation Specific
+   o  Scope: Firmware
+   o  Required Capability: "CAP_UNSOL_UPDATE_FILTER"
 
-   If the NCP advertises the "CAP_CMD_MULTI" capability, then it SHOULD
-   also support and use the following commands with this property:
 
-   o  "CMD_PROP_VALUE_INSERT" (Section 5.5)
-   o  "CMD_PROP_VALUE_REMOVE" (Section 5.6)
-   o  "CMD_PROP_VALUE_INSERTED" (Section 5.8)
-   o  "CMD_PROP_VALUE_REMOVED" (Section 5.9)
 
-   The value of this property MUST NOT depend on the NLI used.
 
-8.3.13.  PROP 4105: PROP_UNSOL_UPDATE_LIST
 
-   o  Required only if "CAP_UNSOL_UPDATE_FILTER" is set.
-   o  Type: Read-Only
-   o  Packed-Encoding: "A(I)"
+
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 39]
+
+Internet-Draft                 Spinel Core                  October 2017
+
+
+                 +---------+-----------+-----------+-----+
+                 |  Bytes: |    1-3    |    1-3    | ... |
+                 +---------+-----------+-----------+-----+
+                 | Format: |    PUI    |    PUI    | ... |
+                 | Fields: | "PROP_ID" | "PROP_ID" | ... |
+                 +---------+-----------+-----------+-----+
 
    Contains a list of properties which are capable of generating
    unsolicited value updates.  This list can be used when populating
@@ -2121,75 +2204,69 @@ Internet-Draft                 Spinel Core                  October 2017
 
    Note: not all properties that support unsolicited updates need to be
    listed here.  Some properties, network media scan results for
+   example, are only generated due to direct action on the part of the
+   OS, so those properties SHOULD NOT not be included in this list.
+
+8.6.  Stream Properties
+
+8.6.1.  PROP 112: PROP_STREAM_DEBUG
+
+   o  Type: Character-Stream, Output-Only
+   o  Asynchronous Updates: Yes
+   o  Required: No
+   o  Scope: NLI
+
+                        +---------+--------------+
+                        |  Bytes: |      n       |
+                        +---------+--------------+
+                        | Format: |     UTF8     |
+                        | Fields: | "DEBUG_DATA" |
+                        +---------+--------------+
+
+   This stream provides human-readable debugging output which may be
+   displayed in the OS logs.  It is intended to be treated as a one-way
+   virtual serial stream.  The OS MUST NOT assume that each emission of
+   this property is self-contained, instead the OS must use newline
+   characters for that purpose.
+
+   The location of newline characters MUST NOT not assumed by the OS: it
+   is the NCP's responsibility to insert newline characters where
+   needed, just like with any other text stream.
 
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 38]
+
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 40]
 
 Internet-Draft                 Spinel Core                  October 2017
 
 
-   example, are only generated due to direct action on the part of the
-   OS, so those properties SHOULD NOT not be included in this list.
+   The emitted data is UTF8-encoded without any zero termination.  Note
+   that the last UTF8 character MAY possibly be truncated.  If the last
+   UTF8 character is truncated, the truncated bytes MUST be the first
+   bytes of the next emission from this stream.
 
-   The value of this property MAY depend on the NLI used.
+8.6.2.  PROP 113: PROP_STREAM_RAW
 
-8.4.  Stream Properties
+   o  Type: Packet-Stream, Input/Output
+   o  Asynchronous Updates: Yes
+   o  Required: No
+   o  Scope: NLI
+   o  Related Capabilities:
 
-8.4.1.  PROP 112: PROP_STREAM_DEBUG
-
-   o  Type: Read-Only-Stream
-   o  Packed-Encoding: "D"
-
-                         +---------+-------------+
-                         | Octets: | n           |
-                         +---------+-------------+
-                         | Fields: | "UTF8_DATA" |
-                         +---------+-------------+
-
-   This property is a streaming property, meaning that you cannot
-   explicitly fetch the value of this property.  The stream provides
-   human-readable debugging output which may be displayed in the OS
-   logs.
-
-   The location of newline characters is not assumed by the OS: it is
-   the NCP's responsibility to insert newline characters where needed,
-   just like with any other text stream.
-
-   To receive the debugging stream entails the OS waiting for
-   "CMD_PROP_VALUE_IS" commands from the NCP for this property.
-
-   The value of this property MUST NOT depend on the NLI used.
-
-8.4.2.  PROP 113: PROP_STREAM_RAW
-
-   o  Type: Read-Write-Stream
-   o  Packed-Encoding: "dD"
+      *  "CAP_WRITABLE_RAW_STREAM": Can be written to if present.
 
         +---------+----------------+------------+----------------+
-        | Octets: | 2              | n          | n              |
+        | Bytes:  | 2              | n          | n              |
         +---------+----------------+------------+----------------+
+        | Format: | UINT16-LE      | DATA       | OPTIONAL DATA  |
         | Fields: | FRAME_DATA_LEN | FRAME_DATA | FRAME_METADATA |
         +---------+----------------+------------+----------------+
 
    This stream provides the capability of sending and receiving raw
    packets to and from the network.  The exact format of the frame
    metadata and data is dependent on the MAC and PHY being used.
-
-
-
-
-
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 39]
-
-Internet-Draft                 Spinel Core                  October 2017
-
-
-   This property is a streaming property, meaning that you cannot
-   explicitly fetch the value of this property.  To receive traffic
-   entails the OS wait foring "CMD_PROP_VALUE_IS" commands with this
-   property identifier from the NCP.
 
    Implementations MAY support the ability to transmit arbitrary raw
    packets.  Support for this feature is indicated by the presence of
@@ -2201,80 +2278,65 @@ Internet-Draft                 Spinel Core                  October 2017
    with the full network layer stack being implemented on the OS instead
    of the NCP.
 
-8.4.2.1.  Frame Metadata Format
+8.6.2.1.  Frame Metadata Format
 
    Any data past the end of "FRAME_DATA_LEN" is considered metadata and
    is OPTIONAL.  Frame metadata MAY be empty or partially specified.
    The operational semantics of using frame metadata is not specified in
-   the core protocol, i.e. the specification of metadata formats is left
-   to specializations of Spinel for specific network technologies.
+   the core protocol.
 
-8.4.3.  PROP 114: PROP_STREAM_NET
+8.6.3.  PROP 114: PROP_STREAM_NET
 
-   o  Type: Read-Write-Stream
-   o  Packed-Encoding: "dD"
-
-     +---------+------------------+--------------+------------------+
-     | Octets: | 2                |      n       |        n         |
-     +---------+------------------+--------------+------------------+
-     | Fields: | "FRAME_DATA_LEN" | "FRAME_DATA" | "FRAME_METADATA" |
-     +---------+------------------+--------------+------------------+
-
-   This stream provides the capability of sending and receiving data
-   packets to and from the currently attached network.  The exact format
-   of the frame metadata and data is dependent on the network protocol
-   being used.
-
-   This property is a streaming property, meaning that you cannot
-   explicitly fetch the value of this property.  To receive traffic
-   entails to OS waiting for "CMD_PROP_VALUE_IS" commands with this
-   property identifier from the NCP.
-
-   To transmit network packets entails the OS sending
-   "CMD_PROP_VALUE_SET" on this property with the value of the packet.
+   o  Type: Packet-Stream, Input/Output
+   o  Asynchronous Updates: Yes
+   o  Required: Yes
 
 
 
-
-
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 40]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 41]
 
 Internet-Draft                 Spinel Core                  October 2017
 
 
+   o  Scope: NLI
+
+        +---------+----------------+------------+----------------+
+        | Bytes:  | 2              | n          | n              |
+        +---------+----------------+------------+----------------+
+        | Format: | UINT16-LE      | IPv6       | OPTIONAL DATA  |
+        | Fields: | FRAME_DATA_LEN | FRAME_DATA | FRAME_METADATA |
+        +---------+----------------+------------+----------------+
+
+   This stream provides the capability of sending and receiving data
+   packets to and from the currently attached network.
+
    Any data past the end of "FRAME_DATA_LEN" is considered metadata, the
-   format of which is described in Section 8.4.2.1.
+   format of which is described in Section 8.6.2.1.
 
-8.4.4.  PROP 115: PROP_STREAM_NET_INSECURE
+8.6.4.  PROP 115: PROP_STREAM_NET_INSECURE
 
-   o  Type: Read-Write-Stream
-   o  Packed-Encoding: "dD"
+   o  Type: Packet-Stream, Input/Output
+   o  Asynchronous Updates: Yes
+   o  Required: Yes
+   o  Scope: NLI
 
-     +---------+------------------+--------------+------------------+
-     | Octets: | 2                |      n       |        n         |
-     +---------+------------------+--------------+------------------+
-     | Fields: | "FRAME_DATA_LEN" | "FRAME_DATA" | "FRAME_METADATA" |
-     +---------+------------------+--------------+------------------+
+        +---------+----------------+------------+----------------+
+        | Bytes:  | 2              | n          | n              |
+        +---------+----------------+------------+----------------+
+        | Format: | UINT16-LE      | IPv6       | OPTIONAL DATA  |
+        | Fields: | FRAME_DATA_LEN | FRAME_DATA | FRAME_METADATA |
+        +---------+----------------+------------+----------------+
 
    This stream provides the capability of sending and receiving
    plaintext non-authenticated data packets to and from the currently
-   attached network.  The exact format of the frame metadata and data is
-   dependent on the network protocol being used.
-
-   This property is a streaming property, meaning that you cannot
-   explicitly fetch the value of this property.  To receive traffic
-   entails to OS waiting for "CMD_PROP_VALUE_IS" commands with this
-   property identifier from the NCP.
-
-   To transmit network packets entails the OS sending
-   "CMD_PROP_VALUE_SET" on this property with the value of the packet.
+   attached network.
 
    Any data past the end of "FRAME_DATA_LEN" is considered metadata, the
-   format of which is described in Section 8.4.2.1.
+   format of which is described in Section 8.6.2.1.
 
-8.5.  PHY Properties
+8.7.  PHY Properties
 
-8.5.1.  PROP 32: PROP_PHY_ENABLED
+8.7.1.  PROP 32: PROP_PHY_ENABLED
 
    o  Type: Read-Write
    o  Packed-Encoding: "b" (bool8)
@@ -2284,24 +2346,23 @@ Internet-Draft                 Spinel Core                  October 2017
    implement things like packet sniffers.  This property can only be
    written if the "SPINEL_CAP_MAC_RAW" capability is present.
 
-8.5.2.  PROP 33: PROP_PHY_CHAN
-
-   o  Type: Read-Write
-   o  Packed-Encoding: "C" (uint8)
 
 
 
-
-
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 41]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 42]
 
 Internet-Draft                 Spinel Core                  October 2017
 
 
+8.7.2.  PROP 33: PROP_PHY_CHAN
+
+   o  Type: Read-Write
+   o  Packed-Encoding: "C" (uint8)
+
    Value is the current channel.  Must be set to one of the values
    contained in "PROP_PHY_CHAN_SUPPORTED".
 
-8.5.3.  PROP 34: PROP_PHY_CHAN_SUPPORTED
+8.7.3.  PROP 34: PROP_PHY_CHAN_SUPPORTED
 
    o  Type: Read-Only
    o  Packed-Encoding: "A(C)" (array of uint8)
@@ -2309,7 +2370,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
    Value is a list of channel values that are supported by the hardware.
 
-8.5.4.  PROP 35: PROP_PHY_FREQ
+8.7.4.  PROP 35: PROP_PHY_FREQ
 
    o  Type: Read-Only
    o  Packed-Encoding: "L" (uint32)
@@ -2317,7 +2378,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
    Value is the radio frequency (in kilohertz) of the current channel.
 
-8.5.5.  PROP 36: PROP_PHY_CCA_THRESHOLD
+8.7.5.  PROP 36: PROP_PHY_CCA_THRESHOLD
 
    o  Type: Read-Write
    o  Packed-Encoding: "c" (int8)
@@ -2329,7 +2390,7 @@ Internet-Draft                 Spinel Core                  October 2017
    When setting, the value will be rounded down to a value that is
    supported by the underlying radio hardware.
 
-8.5.6.  PROP 37: PROP_PHY_TX_POWER
+8.7.6.  PROP 37: PROP_PHY_TX_POWER
 
    o  Type: Read-Write
    o  Packed-Encoding: "c" (int8)
@@ -2340,25 +2401,26 @@ Internet-Draft                 Spinel Core                  October 2017
    When setting, the value will be rounded down to a value that is
    supported by the underlying radio hardware.
 
-8.5.7.  PROP 38: PROP_PHY_RSSI
+
+
+
+
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 43]
+
+Internet-Draft                 Spinel Core                  October 2017
+
+
+8.7.7.  PROP 38: PROP_PHY_RSSI
 
    o  Type: Read-Only
    o  Packed-Encoding: "c" (int8)
    o  Unit: dBm
 
-
-
-
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 42]
-
-Internet-Draft                 Spinel Core                  October 2017
-
-
    Value is the current RSSI (Received signal strength indication) from
    the radio.  This value can be used in energy scans and for
    determining the ambient noise floor for the operating environment.
 
-8.5.8.  PROP 39: PROP_PHY_RX_SENSITIVITY
+8.7.8.  PROP 39: PROP_PHY_RX_SENSITIVITY
 
    o  Type: Read-Only
    o  Packed-Encoding: "c" (int8)
@@ -2367,9 +2429,9 @@ Internet-Draft                 Spinel Core                  October 2017
    Value is the radio receive sensitivity.  This value can be used as
    lower bound noise floor for link metrics computation.
 
-8.6.  MAC Properties
+8.8.  MAC Properties
 
-8.6.1.  PROP 48: PROP_MAC_SCAN_STATE
+8.8.1.  PROP 48: PROP_MAC_SCAN_STATE
 
    o  Type: Read-Write
    o  Packed-Encoding: "C"
@@ -2395,28 +2457,28 @@ Internet-Draft                 Spinel Core                  October 2017
 
    Value switches to "SCAN_STATE_IDLE" when scan is complete.
 
-8.6.2.  PROP 49: PROP_MAC_SCAN_MASK
+
+
+
+
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 44]
+
+Internet-Draft                 Spinel Core                  October 2017
+
+
+8.8.2.  PROP 49: PROP_MAC_SCAN_MASK
 
    o  Type: Read-Write
    o  Packed-Encoding: "A(C)"
    o  Unit: List of channels to scan
 
-
-
-
-
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 43]
-
-Internet-Draft                 Spinel Core                  October 2017
-
-
-8.6.3.  PROP 50: PROP_MAC_SCAN_PERIOD
+8.8.3.  PROP 50: PROP_MAC_SCAN_PERIOD
 
    o  Type: Read-Write
    o  Packed-Encoding: "S" (uint16)
    o  Unit: milliseconds per channel
 
-8.6.4.  PROP 51: PROP_MAC_SCAN_BEACON
+8.8.4.  PROP 51: PROP_MAC_SCAN_BEACON
 
    o  Type: Read-Only-Stream
    o  Packed-Encoding: "Ccdd" (or "Cct(ESSc)t(iCUdd)")
@@ -2450,23 +2512,21 @@ Internet-Draft                 Spinel Core                  October 2017
       *  "d": XPANID
       *  "d": Steering data
 
-   Extra parameters may be added to each of the structures in the
-   future, so care should be taken to read the length that prepends each
-   structure.
 
 
 
 
 
-
-
-
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 44]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 45]
 
 Internet-Draft                 Spinel Core                  October 2017
 
 
-8.6.5.  PROP 52: PROP_MAC_15_4_LADDR
+   Extra parameters may be added to each of the structures in the
+   future, so care should be taken to read the length that prepends each
+   structure.
+
+8.8.5.  PROP 52: PROP_MAC_15_4_LADDR
 
    o  Type: Read-Write
    o  Packed-Encoding: "E"
@@ -2475,7 +2535,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
    This property is only present on NCPs which implement 802.15.4
 
-8.6.6.  PROP 53: PROP_MAC_15_4_SADDR
+8.8.6.  PROP 53: PROP_MAC_15_4_SADDR
 
    o  Type: Read-Write
    o  Packed-Encoding: "S"
@@ -2484,7 +2544,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
    This property is only present on NCPs which implement 802.15.4
 
-8.6.7.  PROP 54: PROP_MAC_15_4_PANID
+8.8.7.  PROP 54: PROP_MAC_15_4_PANID
 
    o  Type: Read-Write
    o  Packed-Encoding: "S"
@@ -2493,15 +2553,15 @@ Internet-Draft                 Spinel Core                  October 2017
 
    This property is only present on NCPs which implement 802.15.4
 
-8.6.8.  PROP 55: PROP_MAC_RAW_STREAM_ENABLED
+8.8.8.  PROP 55: PROP_MAC_RAW_STREAM_ENABLED
 
    o  Type: Read-Write
    o  Packed-Encoding: "b"
 
    Set to true to enable raw MAC frames to be emitted from
-   "PROP_STREAM_RAW".  See Section 8.4.2.
+   "PROP_STREAM_RAW".  See Section 8.6.2.
 
-8.6.9.  PROP 56: PROP_MAC_PROMISCUOUS_MODE
+8.8.9.  PROP 56: PROP_MAC_PROMISCUOUS_MODE
 
    o  Type: Read-Write
    o  Packed-Encoding: "C"
@@ -2513,11 +2573,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-
-
-
-
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 45]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 46]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -2534,9 +2590,9 @@ Internet-Draft                 Spinel Core                  October 2017
    |    |                                |     passed up the stack.    |
    +----+--------------------------------+-----------------------------+
 
-   See Section 8.4.2.
+   See Section 8.6.2.
 
-8.6.10.  PROP 57: PROP_MAC_ENERGY_SCAN_RESULT
+8.8.10.  PROP 57: PROP_MAC_ENERGY_SCAN_RESULT
 
    o  Type: Read-Only-Stream
    o  Packed-Encoding: "Cc"
@@ -2547,7 +2603,7 @@ Internet-Draft                 Spinel Core                  October 2017
    o  "C": Channel
    o  "c": RSSI (in dBm)
 
-8.6.11.  PROP 58: PROP_MAC_DATA_POLL_PERIOD {#prop-mac-data-poll-period
+8.8.11.  PROP 58: PROP_MAC_DATA_POLL_PERIOD {#prop-mac-data-poll-period
 
    o  Type: Read-Write
    o  Packed-Encoding: "L"
@@ -2564,7 +2620,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
    This property is only present on NCPs which implement 802.15.4.
 
-8.6.12.  PROP 4864: PROP_MAC_WHITELIST
+8.8.12.  PROP 4864: PROP_MAC_WHITELIST
 
    o  Type: Read-Write
    o  Packed-Encoding: "A(T(Ec))"
@@ -2573,7 +2629,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 46]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 47]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -2586,13 +2642,13 @@ Internet-Draft                 Spinel Core                  October 2017
       this value is omitted when setting or inserting, it is assumed to
       be 127.  This parameter is ignored when removing.
 
-8.6.13.  PROP 4865: PROP_MAC_WHITELIST_ENABLED
+8.8.13.  PROP 4865: PROP_MAC_WHITELIST_ENABLED
 
    o  Type: Read-Write
    o  Packed-Encoding: "b"
    o  Required capability: "CAP_MAC_WHITELIST"
 
-8.6.14.  PROP 4867: SPINEL_PROP_MAC_SRC_MATCH_ENABLED
+8.8.14.  PROP 4867: SPINEL_PROP_MAC_SRC_MATCH_ENABLED
 
    o  Type: Write
    o  Packed-Encoding: "b"
@@ -2603,7 +2659,7 @@ Internet-Draft                 Spinel Core                  October 2017
    radios when generating ACKs.  The short and extended address lists
    are used for settings the Frame Pending bit in the ACKs.
 
-8.6.15.  PROP 4868: SPINEL_PROP_MAC_SRC_MATCH_SHORT_ADDRESSES
+8.8.15.  PROP 4868: SPINEL_PROP_MAC_SRC_MATCH_SHORT_ADDRESSES
 
    o  Type: Write
    o  Packed-Encoding: "A(S)"
@@ -2616,7 +2672,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
    o  "S": Short address for hardware generated ACKs
 
-8.6.16.  PROP 4869: SPINEL_PROP_MAC_SRC_MATCH_EXTENDED_ADDRESSES
+8.8.16.  PROP 4869: SPINEL_PROP_MAC_SRC_MATCH_EXTENDED_ADDRESSES
 
    o  Type: Write
    o  Packed-Encoding: "A(E)"
@@ -2629,14 +2685,14 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 47]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 48]
 
 Internet-Draft                 Spinel Core                  October 2017
 
 
    o  "E": EUI64 address for hardware generated ACKs
 
-8.6.17.  PROP 4870: PROP_MAC_BLACKLIST
+8.8.17.  PROP 4870: PROP_MAC_BLACKLIST
 
    o  Type: Read-Write
    o  Packed-Encoding: "A(T(E))"
@@ -2646,15 +2702,15 @@ Internet-Draft                 Spinel Core                  October 2017
 
    o  "E": EUI64 address of node
 
-8.6.18.  PROP 4871: PROP_MAC_BLACKLIST_ENABLED
+8.8.18.  PROP 4871: PROP_MAC_BLACKLIST_ENABLED
 
    o  Type: Read-Write
    o  Packed-Encoding: "b"
    o  Required capability: "CAP_MAC_WHITELIST"
 
-8.7.  NET Properties
+8.9.  NET Properties
 
-8.7.1.  PROP 65: PROP_NET_IF_UP
+8.9.1.  PROP 65: PROP_NET_IF_UP
 
    o  Type: Read-Write
    o  Packed-Encoding: "b"
@@ -2662,7 +2718,7 @@ Internet-Draft                 Spinel Core                  October 2017
    Network interface up/down status.  Non-zero (set to 1) indicates up,
    zero indicates down.
 
-8.7.2.  PROP 66: PROP_NET_STACK_UP
+8.9.2.  PROP 66: PROP_NET_STACK_UP
 
    o  Type: Read-Write
    o  Packed-Encoding: "b"
@@ -2677,7 +2733,7 @@ Internet-Draft                 Spinel Core                  October 2017
    and PROP_NET_STACK_UP=FALSE?  Does the NLI matter in operations with
    the PROP_NET_STACK_UP property?
 
-8.8.  IPv6 Properties
+8.10.  IPv6 Properties
 
 
 
@@ -2685,19 +2741,19 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 48]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 49]
 
 Internet-Draft                 Spinel Core                  October 2017
 
 
-8.8.1.  PROP 96: PROP_IPV6_LL_ADDR
+8.10.1.  PROP 96: PROP_IPV6_LL_ADDR
 
    o  Type: Read-Only
    o  Packed-Encoding: "6"
 
    The IPv6 link-local scope address.
 
-8.8.2.  PROP 99: PROP_IPV6_ADDRESS_TABLE
+8.10.2.  PROP 99: PROP_IPV6_ADDRESS_TABLE
 
    o  Type: Read-Write
    o  Packed-Encoding: "A(t(6CLLC))"
@@ -2721,7 +2777,7 @@ Internet-Draft                 Spinel Core                  October 2017
    EDITOR: the operational semantics of the Flags field is not well-
    specified.
 
-8.8.3.  PROP 101: PROP_IPv6_ICMP_PING_OFFLOAD
+8.10.3.  PROP 101: PROP_IPv6_ICMP_PING_OFFLOAD
 
    o  Type: Read-Write
    o  Packed-Encoding: "b"
@@ -2731,7 +2787,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
    Default value is "false".
 
-8.8.4.  PROP 102: SPINEL_PROP_IPV6_MULTICAST_ADDRESS_TABLE
+8.10.4.  PROP 102: SPINEL_PROP_IPV6_MULTICAST_ADDRESS_TABLE
 
    o  Type: Read-Write
    o  Packed-Encoding: "A(t(6))"
@@ -2741,16 +2797,16 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 49]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 50]
 
 Internet-Draft                 Spinel Core                  October 2017
 
 
    o  "6": Multicast IPv6 Address
 
-8.9.  Debug Properties
+8.11.  Debug Properties
 
-8.9.1.  PROP 16384: PROP_DEBUG_TEST_ASSERT
+8.11.1.  PROP 16384: PROP_DEBUG_TEST_ASSERT
 
    o  Type: Read-Only
    o  Packed-Encoding: "b"
@@ -2761,7 +2817,7 @@ Internet-Draft                 Spinel Core                  October 2017
    is not supported or disabled boolean value of "false" is returned in
    response.
 
-8.9.2.  PROP 16385: PROP_DEBUG_NCP_LOG_LEVEL
+8.11.2.  PROP 16385: PROP_DEBUG_NCP_LOG_LEVEL
 
    o  Type: Read-Write
    o  Packed-Encoding: "C"
@@ -2797,7 +2853,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 50]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 51]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -2853,7 +2909,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 51]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 52]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -2874,7 +2930,7 @@ Appendix A.  Example Sessions
 
 A.1.  NCP Initialization
 
-   [CREF4]
+   [CREF8]
 
    Check the protocol version to see if it is supported:
 
@@ -2909,7 +2965,7 @@ A.1.  NCP Initialization
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 52]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 53]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -2918,7 +2974,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 A.2.  Attaching to a network
 
-   [CREF5]
+   [CREF9]
 
    We make the assumption that the NCP is already associated with a
    network at physical and media access layers.  The core layer steps
@@ -2951,7 +3007,7 @@ A.3.  Detaching from a network
 
 A.4.  Attaching to a saved network
 
-   [CREF6]
+   [CREF10]
 
    Recall the saved network if you haven't already done so:
 
@@ -2965,7 +3021,7 @@ A.4.  Attaching to a saved network
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 53]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 54]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -2977,7 +3033,7 @@ Internet-Draft                 Spinel Core                  October 2017
 
 A.5.  NCP Software Reset
 
-   [CREF7]
+   [CREF11]
 
    o  CMD_RESET
    o  CMD_VALUE_IS:PROP_LAST_STATUS:STATUS_RESET_SOFTWARE
@@ -3021,7 +3077,7 @@ B.1.  UART Recommendations
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 54]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 55]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -3077,7 +3133,7 @@ B.1.2.  HDLC-Lite
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 55]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 56]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -3133,7 +3189,7 @@ B.2.  SPI Recommendations
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 56]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 57]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -3189,7 +3245,7 @@ B.2.1.  SPI Framing Protocol
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 57]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 58]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -3238,14 +3294,14 @@ B.3.  I2C Recommendations
 
    TBD
 
-   [CREF8]
+   [CREF12]
 
 
 
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 58]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 59]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -3254,7 +3310,7 @@ B.4.  Native USB Recommendations
 
    TBD
 
-   [CREF9]
+   [CREF13]
 
 Appendix C.  Test Vectors
 
@@ -3275,7 +3331,7 @@ C.1.  Test Vector: Packed Unsigned Integer
                  |     2,097,151 | "FF FF 7F"            |
                  +---------------+-----------------------+
 
-   [CREF10]
+   [CREF14]
 
 C.2.  Test Vector: Reset Command
 
@@ -3301,7 +3357,7 @@ C.3.  Test Vector: Reset Notification
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 59]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 60]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -3310,13 +3366,13 @@ C.4.  Test Vector: Inbound IPv6 Packet
 
    CMD_VALUE_IS(PROP_STREAM_NET)
 
-   [CREF11]
+   [CREF15]
 
 C.5.  Test Vector: Outbound IPv6 Packet
 
    CMD_VALUE_SET(PROP_STREAM_NET)
 
-   [CREF12]
+   [CREF16]
 
 Appendix D.  Comparison with other protocols
 
@@ -3357,7 +3413,7 @@ Appendix D.  Comparison with other protocols
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 60]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 61]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -3413,7 +3469,7 @@ Appendix E.  Acknowledgments
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 61]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 62]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -3427,7 +3483,23 @@ Editorial Comments
         0 | 1 | 2 | 3 | 4 | 5 | 6 |
         7 | |---|---|---|---|---|---|---|---| | FLG || NLI || TID ||||
 
-[CREF3] RQ: The justification for the above behavior is to attempt to
+[CREF3] JW: I have no idea how to write the IANA registry creation text
+        for this. --
+
+[CREF4] RQ: Maybe we should switch this over to be a string instead? --
+
+[CREF5] JW: TODO: We should consider reversing the numbering here so
+        that 0 is `POWER_STATE_ONLINE`. We may also want to include some
+        extra values between the defined values for future expansion, so
+        that we can preserve the ordered relationship.  --
+
+[CREF6] JW: EDITOR: We should consider reversing the numbering here so
+        that 0 is `POWER_STATE_ONLINE`. We may also want to include some
+        additional reserved values between the defined values for future
+        expansion, so that we can preserve the ordered relationship.
+        See the similar editorial comment at (#prop-power-state).  --
+
+[CREF7] RQ: The justification for the above behavior is to attempt to
         avoid possible future interop problems by explicitly making sure
         that unknown properties are ignored.  Since unknown properties
         will obviously not be generating unsolicited updates, it seems
@@ -3440,39 +3512,34 @@ Editorial Comments
         needs to make sure that it checks PROP\_UNSOL\_UPDATE\_LIST
         first.  --
 
-[CREF4] RQ: FIXME: This example session is incomplete.
+[CREF8] RQ: FIXME: This example session is incomplete.
 
-[CREF5] RQ: FIXME: This example session is incomplete.
+[CREF9] RQ: FIXME: This example session is incomplete.
 
-[CREF6] RQ: FIXME: This example session is incomplete.
+[CREF10] RQ: FIXME: This example session is incomplete.
 
-[CREF7] RQ: FIXME: This example session is incomplete.
+[CREF11] RQ: FIXME: This example session is incomplete.
 
-[CREF8] RQ: It may make sense to have a look at what Bluetooth HCI is
-        doing for native I2C framing and go with that.
-
-[CREF9] RQ: It may make sense to have a look at what Bluetooth HCI is
-        doing for native USB framing and go with that.
-
-[CREF10] RQ: The PUI test-vector encodings need to be verified.
-
-[CREF11] RQ: FIXME: This test vector is incomplete.
-
-[CREF12] RQ: FIXME: This test vector is incomplete.
-
-Authors' Addresses
+[CREF12] RQ: It may make sense to have a look at what Bluetooth HCI is
+         doing for native I2C framing and go with that.
 
 
 
-
-
-
-
-
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 62]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 63]
 
 Internet-Draft                 Spinel Core                  October 2017
 
+
+[CREF13] RQ: It may make sense to have a look at what Bluetooth HCI is
+         doing for native USB framing and go with that.
+
+[CREF14] RQ: The PUI test-vector encodings need to be verified.
+
+[CREF15] RQ: FIXME: This test vector is incomplete.
+
+[CREF16] RQ: FIXME: This test vector is incomplete.
+
+Authors' Addresses
 
    Robert S. Quattlebaum
    Nest Labs, Inc.
@@ -3514,15 +3581,4 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 63]
+Quattlebaum & woodyatt   Expires April 30, 2018                [Page 64]
