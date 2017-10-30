@@ -42,6 +42,7 @@ Code        | Name                              | Description
  19         | `STATUS_ALREADY`                  | The operation is already in progress, or the property already has the value.
  20         | `STATUS_ITEM_NOT_FOUND`           | The given item could not be found in the property.
  21         | `STATUS_INVALID_COMMAND_FOR_PROP` | The given command cannot be performed on this property.
+??         | `STATUS_PROP_VALUE_TOO_BIG` | The value fo this property is too large.
 112         | `STATUS_RESET_POWER_ON`           | Cold power-on start.
 113         | `STATUS_RESET_EXTERNAL`           | External device reset.
 114         | `STATUS_RESET_SOFTWARE`           | Internal software orderly reset.
