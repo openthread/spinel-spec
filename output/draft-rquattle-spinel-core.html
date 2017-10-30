@@ -470,6 +470,15 @@
 <link href="#rfc.section.8.9" rel="Chapter" title="8.9 NET Properties">
 <link href="#rfc.section.8.9.1" rel="Chapter" title="8.9.1 PROP 65: PROP_NET_IF_UP">
 <link href="#rfc.section.8.9.2" rel="Chapter" title="8.9.2 PROP 66: PROP_NET_STACK_UP">
+<link href="#rfc.section.8.9.3" rel="Chapter" title="8.9.3 PROP 67: PROP_NET_ROLE">
+<link href="#rfc.section.8.9.4" rel="Chapter" title="8.9.4 PROP 68: PROP_NET_NETWORK_NAME">
+<link href="#rfc.section.8.9.5" rel="Chapter" title="8.9.5 PROP 69: PROP_NET_XPANID">
+<link href="#rfc.section.8.9.6" rel="Chapter" title="8.9.6 PROP 70: PROP_NET_MASTER_KEY">
+<link href="#rfc.section.8.9.7" rel="Chapter" title="8.9.7 PROP 71: PROP_NET_KEY_SEQUENCE_COUNTER">
+<link href="#rfc.section.8.9.8" rel="Chapter" title="8.9.8 PROP 72: PROP_NET_PARTITION_ID">
+<link href="#rfc.section.8.9.9" rel="Chapter" title="8.9.9 PROP 73: PROP_NET_REQUIRE_JOIN_EXISTING">
+<link href="#rfc.section.8.9.10" rel="Chapter" title="8.9.10 PROP 74: PROP_NET_KEY_SWITCH_GUARDTIME">
+<link href="#rfc.section.8.9.11" rel="Chapter" title="8.9.11 PROP 75: PROP_NET_PSKC">
 <link href="#rfc.section.8.10" rel="Chapter" title="8.10 IPv6 Properties">
 <link href="#rfc.section.8.10.1" rel="Chapter" title="8.10.1 PROP 96: PROP_IPV6_LL_ADDR">
 <link href="#rfc.section.8.10.2" rel="Chapter" title="8.10.2 PROP 99: PROP_IPV6_ADDRESS_TABLE">
@@ -479,7 +488,8 @@
 <link href="#rfc.section.8.11.1" rel="Chapter" title="8.11.1 PROP 16384: PROP_DEBUG_TEST_ASSERT">
 <link href="#rfc.section.8.11.2" rel="Chapter" title="8.11.2 PROP 16385: PROP_DEBUG_NCP_LOG_LEVEL">
 <link href="#rfc.section.9" rel="Chapter" title="9 Security Considerations">
-<link href="#rfc.section.9.1" rel="Chapter" title="9.1 Raw Application Access">
+<link href="#rfc.section.9.1" rel="Chapter" title="9.1 Network Name Normalization">
+<link href="#rfc.section.9.2" rel="Chapter" title="9.2 Raw Application Access">
 <link href="#rfc.section.10" rel="Chapter" title="10 IANA Considerations">
 <link href="#rfc.references" rel="Chapter" title="11 References">
 <link href="#rfc.references.1" rel="Chapter" title="11.1 Normative References">
@@ -513,7 +523,7 @@
   <link rel="schema.dct" href="http://purl.org/dc/terms/" />
 
   <meta name="dct.creator" content="Quattlebaum, R. and j. woodyatt, Ed." />
-  <meta name="dct.identifier" content="urn:ietf:id:draft-rquattle-spinel-core-5055ac5" />
+  <meta name="dct.identifier" content="urn:ietf:id:draft-rquattle-spinel-core-fa153f6" />
   <meta name="dct.issued" scheme="ISO8601" content="2017-10-30" />
   <meta name="dct.abstract" content="This document specifies the core of the Spinel host-controller protocol, which enables a general purpose application processor to manage, control, and offload IPv6 network functions to a Network Co-Processor (NCP) connected via a simple communication link(such as UART, SPI, or USB).  " />
   <meta name="description" content="This document specifies the core of the Spinel host-controller protocol, which enables a general purpose application processor to manage, control, and offload IPv6 network functions to a Network Co-Processor (NCP) connected via a simple communication link(such as UART, SPI, or USB).  " />
@@ -547,7 +557,7 @@
   </table>
 
   <p class="title">Spinel: A protocol for control and management of IPv6 network co-processors<br />
-  <span class="filename">draft-rquattle-spinel-core-5055ac5</span></p>
+  <span class="filename">draft-rquattle-spinel-core-fa153f6</span></p>
   
   <h1 id="rfc.abstract"><a href="#rfc.abstract">Abstract</a></h1>
 <p>This document specifies the core of the Spinel host-controller protocol, which enables a general purpose application processor to manage, control, and offload IPv6 network functions to a Network Co-Processor (NCP) connected via a simple communication link(such as UART, SPI, or USB).  </p>
@@ -758,6 +768,24 @@
 </li>
 <li>8.9.2.   <a href="#rfc.section.8.9.2">PROP 66: PROP_NET_STACK_UP</a>
 </li>
+<li>8.9.3.   <a href="#rfc.section.8.9.3">PROP 67: PROP_NET_ROLE</a>
+</li>
+<li>8.9.4.   <a href="#rfc.section.8.9.4">PROP 68: PROP_NET_NETWORK_NAME</a>
+</li>
+<li>8.9.5.   <a href="#rfc.section.8.9.5">PROP 69: PROP_NET_XPANID</a>
+</li>
+<li>8.9.6.   <a href="#rfc.section.8.9.6">PROP 70: PROP_NET_MASTER_KEY</a>
+</li>
+<li>8.9.7.   <a href="#rfc.section.8.9.7">PROP 71: PROP_NET_KEY_SEQUENCE_COUNTER</a>
+</li>
+<li>8.9.8.   <a href="#rfc.section.8.9.8">PROP 72: PROP_NET_PARTITION_ID</a>
+</li>
+<li>8.9.9.   <a href="#rfc.section.8.9.9">PROP 73: PROP_NET_REQUIRE_JOIN_EXISTING</a>
+</li>
+<li>8.9.10.   <a href="#rfc.section.8.9.10">PROP 74: PROP_NET_KEY_SWITCH_GUARDTIME</a>
+</li>
+<li>8.9.11.   <a href="#rfc.section.8.9.11">PROP 75: PROP_NET_PSKC</a>
+</li>
 </ul><li>8.10.   <a href="#rfc.section.8.10">IPv6 Properties</a>
 </li>
 <ul><li>8.10.1.   <a href="#rfc.section.8.10.1">PROP 96: PROP_IPV6_LL_ADDR</a>
@@ -776,7 +804,9 @@
 </li>
 </ul></ul><li>9.   <a href="#rfc.section.9">Security Considerations</a>
 </li>
-<ul><li>9.1.   <a href="#rfc.section.9.1">Raw Application Access</a>
+<ul><li>9.1.   <a href="#rfc.section.9.1">Network Name Normalization</a>
+</li>
+<li>9.2.   <a href="#rfc.section.9.2">Raw Application Access</a>
 </li>
 </ul><li>10.   <a href="#rfc.section.10">IANA Considerations</a>
 </li>
@@ -1815,6 +1845,11 @@
 <td class="left">21</td>
 <td class="left"><samp>STATUS_INVALID_COMMAND_FOR_PROP</samp></td>
 <td class="left">The given command cannot be performed on this property.</td>
+</tr>
+<tr>
+<td class="left">??</td>
+<td class="left"><samp>STATUS_PROP_VALUE_TOO_BIG</samp></td>
+<td class="left">The value fo this property is too large.</td>
 </tr>
 <tr>
 <td class="left">112</td>
@@ -3924,6 +3959,302 @@
 </table>
 <p id="rfc.section.8.9.2.p.2">Network protocol stack operational status. Non-zero (set to 1) indicates up, zero indicates down.  </p>
 <p id="rfc.section.8.9.2.p.3">Setting this to true implies also setting <samp>PROP_NET_IF_UP</samp> to true.  </p>
+<h1 id="rfc.section.8.9.3">
+<a href="#rfc.section.8.9.3">8.9.3.</a> <a href="#prop-net-role" id="prop-net-role">PROP 67: PROP_NET_ROLE</a>
+</h1>
+<p></p>
+
+<ul>
+<li>Type: Single-Value, Read-Only*</li>
+<li>Asynchronous Updates: Yes</li>
+<li>Required: REQUIRED</li>
+<li>Unit: Enumeration</li>
+<li>Post-Reset Value: 0 (<samp>NET_ROLE_DETACHED</samp>)</li>
+</ul>
+
+<p> </p>
+<table cellpadding="3" cellspacing="0" class="tt full center">
+<thead><tr>
+<th class="right">Bytes:</th>
+<th class="center">1</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="right">Format:</td>
+<td class="center">UINT8</td>
+</tr>
+<tr>
+<td class="right">Fields:</td>
+<td class="center"><samp>NET_ROLE</samp></td>
+</tr>
+</tbody>
+</table>
+<p id="rfc.section.8.9.3.p.2">Indicates what role the current device is playing on the network. This property is read-only, with the exception that the AP can indicate that it wants the NCP to detach and then attempt to reattach by setting this property to <samp>NET_ROLE_DETACHED</samp> when it was previously set to another value. Attempting to set this property to any other value will result in <samp>STATUS_INVALID_ARGUMENT</samp> being emitted.  </p>
+<table cellpadding="3" cellspacing="0" class="tt full center">
+<thead><tr>
+<th class="center">Code</th>
+<th class="center">Name</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="center">0</td>
+<td class="center"><samp>NET_ROLE_DETACHED</samp></td>
+</tr>
+<tr>
+<td class="center">1</td>
+<td class="center"><samp>NET_ROLE_CHILD</samp></td>
+</tr>
+<tr>
+<td class="center">2</td>
+<td class="center"><samp>NET_ROLE_ROUTER</samp></td>
+</tr>
+<tr>
+<td class="center">3</td>
+<td class="center"><samp>NET_ROLE_LEADER</samp></td>
+</tr>
+<tr>
+<td class="center">4</td>
+<td class="center"><samp>NET_ROLE_PEER</samp></td>
+</tr>
+</tbody>
+</table>
+<p></p>
+
+<dl>
+<dt>NET_ROLE_DETACHED</dt>
+<dd style="margin-left: 8">
+<br> The NCP is not currently participating on a network, or is in the process of attaching to a network.</dd>
+<dt>NET_ROLE_CHILD</dt>
+<dd style="margin-left: 8">
+<br> The NCP is currently attached to the mesh network as a child to a router node. Communication with nodes more than one hop away is possible. The NCP does not route any mesh traffic on the behalf of other nodes.</dd>
+<dt>NET_ROLE_ROUTER</dt>
+<dd style="margin-left: 8">
+<br> The NCP is currently a router node on the network, and will transparently route mesh traffic on behalf of other nodes.</dd>
+<dt>NET_ROLE_LEADER</dt>
+<dd style="margin-left: 8">
+<br> This role is identical ot <samp>NET_ROLE_ROUTER</samp> except that there is only node designated as the leader per partition. This role is Thread-specific.</dd>
+<dt>NET_ROLE_PEER</dt>
+<dd style="margin-left: 8">
+<br> In this role, the NCP may communicate with nodes which are no more than one hop away. This role is used while obtaining the network provision during in-band commissioning.</dd>
+</dl>
+
+<p> </p>
+<h1 id="rfc.section.8.9.4">
+<a href="#rfc.section.8.9.4">8.9.4.</a> <a href="#prop-net-network-name" id="prop-net-network-name">PROP 68: PROP_NET_NETWORK_NAME</a>
+</h1>
+<p></p>
+
+<ul>
+<li>Type: Single-Value, Read-Write</li>
+<li>Asynchronous Updates: Yes</li>
+<li>Required: REQUIRED for standard network layer</li>
+<li>Post-Reset Value: Empty</li>
+</ul>
+
+<p> </p>
+<table cellpadding="3" cellspacing="0" class="tt full center">
+<thead><tr>
+<th class="right">Bytes:</th>
+<th class="center">n</th>
+<th class="center">1</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="right">Format:</td>
+<td class="center">UTF8</td>
+<td class="center">CONST</td>
+</tr>
+<tr>
+<td class="right">Fields:</td>
+<td class="center"><samp>NETWORK_NAME</samp></td>
+<td class="center">0x00</td>
+</tr>
+</tbody>
+</table>
+<p id="rfc.section.8.9.4.p.2">Contains a zero-terminated UTF8 string which describes the name of the current network. This is analogous to the SSID in 802.11. The maximum length of the string is technology specific. Setting this property to a value that is too large will cause <samp>STATUS_PROP_VALUE_TOO_BIG</samp> to be emitted.  </p>
+<p id="rfc.section.8.9.4.p.3">When this value is being retrieved, all trailing zero bytes in the network name MUST be stripped. When this value is being set, all trailing zero bytes SHOULD be stripped.  </p>
+<p id="rfc.section.8.9.4.p.4">See <a href="#security-network-name" class="xref">Section 9.1</a> for security considerations regarding UTF8 normalization.  </p>
+<h1 id="rfc.section.8.9.5">
+<a href="#rfc.section.8.9.5">8.9.5.</a> <a href="#prop-net-xpanid" id="prop-net-xpanid">PROP 69: PROP_NET_XPANID</a>
+</h1>
+<p></p>
+
+<ul>
+<li>Type: Single-Value, Read-Write</li>
+<li>Asynchronous Updates: Yes</li>
+<li>Required: REQUIRED for standard network layer</li>
+<li>Post-Reset Value: All zeros</li>
+</ul>
+
+<p> </p>
+<table cellpadding="3" cellspacing="0" class="tt full center">
+<thead><tr>
+<th class="right">Bytes:</th>
+<th class="center">8</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="right">Format:</td>
+<td class="center">XPANID</td>
+</tr>
+<tr>
+<td class="right">Fields:</td>
+<td class="center"><samp>NET_XPANID</samp></td>
+</tr>
+</tbody>
+</table>
+<p id="rfc.section.8.9.5.p.2">Contains the extended personal-area network identifier for the current network. It allows for different networks with identical names to not conflict with each other. It is defined to be eight bytes long.  </p>
+<p id="rfc.section.8.9.5.p.3">For network technologies which don't have the concept of an XPANID, this property is hard-coded to always be all zeros.  </p>
+<h1 id="rfc.section.8.9.6">
+<a href="#rfc.section.8.9.6">8.9.6.</a> <a href="#prop-net-master-key" id="prop-net-master-key">PROP 70: PROP_NET_MASTER_KEY</a>
+</h1>
+<p></p>
+
+<ul>
+<li>Type: Single-Value, Read-Write</li>
+<li>Asynchronous Updates: Yes</li>
+<li>Required: REQUIRED for standard network layer</li>
+<li>Post-Reset Value: Unspecified</li>
+</ul>
+
+<p> </p>
+<table cellpadding="3" cellspacing="0" class="tt full center">
+<thead><tr>
+<th class="right">Bytes:</th>
+<th class="center">n</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="right">Format:</td>
+<td class="center">DATA</td>
+</tr>
+<tr>
+<td class="right">Fields:</td>
+<td class="center"><samp>NET_MASTER_KEY</samp></td>
+</tr>
+</tbody>
+</table>
+<p id="rfc.section.8.9.6.p.2">Master key material. The exact length of the value for this property is defined by the technology, but is generally 16-bytes (128-bit).  </p>
+<h1 id="rfc.section.8.9.7">
+<a href="#rfc.section.8.9.7">8.9.7.</a> <a href="#prop-net-key-sequence-counter" id="prop-net-key-sequence-counter">PROP 71: PROP_NET_KEY_SEQUENCE_COUNTER</a>
+</h1>
+<p></p>
+
+<ul>
+<li>Type: Single-Value, Read-Write</li>
+<li>Asynchronous Updates: No</li>
+<li>Required: REQUIRED for standard network layer</li>
+<li>Post-Reset Value: 0</li>
+</ul>
+
+<p> </p>
+<table cellpadding="3" cellspacing="0" class="tt full center">
+<thead><tr>
+<th class="right">Bytes:</th>
+<th class="center">4</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="right">Format:</td>
+<td class="center">UINT32</td>
+</tr>
+<tr>
+<td class="right">Fields:</td>
+<td class="center"><samp>NET_KEY_SEQUENCE_COUNTER</samp></td>
+</tr>
+</tbody>
+</table>
+<h1 id="rfc.section.8.9.8">
+<a href="#rfc.section.8.9.8">8.9.8.</a> <a href="#prop-net-partition-id" id="prop-net-partition-id">PROP 72: PROP_NET_PARTITION_ID</a>
+</h1>
+<p></p>
+
+<ul>
+<li>Type: Single-Value, Read-Only</li>
+<li>Asynchronous Updates: Yes</li>
+<li>Required: OPTIONAL</li>
+<li>Post-Reset Value: Unspecified</li>
+</ul>
+
+<p> </p>
+<table cellpadding="3" cellspacing="0" class="tt full center">
+<thead><tr>
+<th class="right">Bytes:</th>
+<th class="center">4</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="right">Format:</td>
+<td class="center">UINT32</td>
+</tr>
+<tr>
+<td class="right">Fields:</td>
+<td class="center"><samp>NET_PARTITION_ID</samp></td>
+</tr>
+</tbody>
+</table>
+<p id="rfc.section.8.9.8.p.2">The partition ID of the partition that this node is a member of.  </p>
+<p id="rfc.section.8.9.8.p.3">For network technologies which don't have the concept of a partition id, this property is hard-coded to always be zero.  </p>
+<h1 id="rfc.section.8.9.9">
+<a href="#rfc.section.8.9.9">8.9.9.</a> <a href="#prop-net-require-join-existing" id="prop-net-require-join-existing">PROP 73: PROP_NET_REQUIRE_JOIN_EXISTING</a>
+</h1>
+<p></p>
+
+<ul>
+<li>Type: Single-Value, Read-Write</li>
+<li>Asynchronous Updates: Yes</li>
+<li>Required: <ul>
+<li>Read: OPTIONAL</li>
+<li>Write: REQUIRED</li>
+</ul>
+</li>
+<li>Post-Reset Value: 0 (false)</li>
+</ul>
+
+<p> </p>
+<table cellpadding="3" cellspacing="0" class="tt full center">
+<thead><tr>
+<th class="right">Bytes:</th>
+<th class="center">1</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="right">Format:</td>
+<td class="center">BOOL</td>
+</tr>
+<tr>
+<td class="right">Fields:</td>
+<td class="center"><samp>NET_REQUIRE_JOIN_EXISTING</samp></td>
+</tr>
+</tbody>
+</table>
+<p><a id="CREF8" class="info">[CREF8]<span class="info">RQ: TODO: Elaborate on PROP_NET_JOIN_EXISTING --</span></a></p>
+<h1 id="rfc.section.8.9.10">
+<a href="#rfc.section.8.9.10">8.9.10.</a> <a href="#prop-net-key-swtich-guardtime" id="prop-net-key-swtich-guardtime">PROP 74: PROP_NET_KEY_SWITCH_GUARDTIME</a>
+</h1>
+<p></p>
+
+<ul>
+<li>Type: Read-Write</li>
+<li>Packed-Encoding: <samp>L</samp>
+</li>
+</ul>
+
+<p> </p>
+<p><a id="CREF9" class="info">[CREF9]<span class="info">RQ: TODO: This likely doesn't belong in core, at least not in the small-number section.  --</span></a></p>
+<h1 id="rfc.section.8.9.11">
+<a href="#rfc.section.8.9.11">8.9.11.</a> <a href="#prop-net-pskc" id="prop-net-pskc">PROP 75: PROP_NET_PSKC</a>
+</h1>
+<p></p>
+
+<ul>
+<li>Type: Read-Write</li>
+<li>Packed-Encoding: <samp>D</samp>
+</li>
+</ul>
+
+<p> </p>
+<p><a id="CREF10" class="info">[CREF10]<span class="info">RQ: TODO: This likely doesn't belong in core, at least not in the small-number section.  --</span></a></p>
 <h1 id="rfc.section.8.10">
 <a href="#rfc.section.8.10">8.10.</a> <a href="#prop-ipv6" id="prop-ipv6">IPv6 Properties</a>
 </h1>
@@ -4053,9 +4384,13 @@
 </h1>
 <p id="rfc.section.9.p.1">EDITOR: Insert verbiage here conforming to RFC Editor guidelines.  </p>
 <h1 id="rfc.section.9.1">
-<a href="#rfc.section.9.1">9.1.</a> <a href="#raw-application-access" id="raw-application-access">Raw Application Access</a>
+<a href="#rfc.section.9.1">9.1.</a> <a href="#security-network-name" id="security-network-name">Network Name Normalization</a>
 </h1>
-<p id="rfc.section.9.1.p.1">Spinel MAY be used as an API boundary for allowing processes to configure the NCP. However, such a system MUST NOT give unprivileged processess the ability to send or receive arbitrary command frames to the NCP. Only the specific commands and properties that are required should be allowed to be passed, and then only after being checked for proper format.  </p>
+<p id="rfc.section.9.1.p.1">TODO: Discuss UTF8 verification and normalization considerations related to <samp>PROP_NET_NETWORK_NAME</samp>.  </p>
+<h1 id="rfc.section.9.2">
+<a href="#rfc.section.9.2">9.2.</a> <a href="#raw-application-access" id="raw-application-access">Raw Application Access</a>
+</h1>
+<p id="rfc.section.9.2.p.1">Spinel MAY be used as an API boundary for allowing processes to configure the NCP. However, such a system MUST NOT give unprivileged processess the ability to send or receive arbitrary command frames to the NCP. Only the specific commands and properties that are required should be allowed to be passed, and then only after being checked for proper format.  </p>
 <h1 id="rfc.section.10">
 <a href="#rfc.section.10">10.</a> <a href="#iana-considerations" id="iana-considerations">IANA Considerations</a>
 </h1>
@@ -4112,7 +4447,7 @@
 <h1 id="rfc.appendix.A.1">
 <a href="#rfc.appendix.A.1">A.1.</a> <a href="#ncp-initialization" id="ncp-initialization">NCP Initialization</a>
 </h1>
-<p><a id="CREF8" class="info">[CREF8]<span class="info">RQ: FIXME: This example session is incomplete.</span></a></p>
+<p><a id="CREF11" class="info">[CREF11]<span class="info">RQ: FIXME: This example session is incomplete.</span></a></p>
 <p id="rfc.section.A.1.p.2">Check the protocol version to see if it is supported: </p>
 <p></p>
 
@@ -4167,7 +4502,7 @@
 <h1 id="rfc.appendix.A.2">
 <a href="#rfc.appendix.A.2">A.2.</a> <a href="#attaching-to-a-network" id="attaching-to-a-network">Attaching to a network</a>
 </h1>
-<p><a id="CREF9" class="info">[CREF9]<span class="info">RQ: FIXME: This example session is incomplete.</span></a></p>
+<p><a id="CREF12" class="info">[CREF12]<span class="info">RQ: FIXME: This example session is incomplete.</span></a></p>
 <p id="rfc.section.A.2.p.2">We make the assumption that the NCP is already associated with a network at physical and media access layers. The core layer steps proceed after the initial phase of initializing the specific network layer stack.  </p>
 <p id="rfc.section.A.2.p.3">Bring the network interface up: </p>
 <p></p>
@@ -4212,7 +4547,7 @@
 <h1 id="rfc.appendix.A.4">
 <a href="#rfc.appendix.A.4">A.4.</a> <a href="#attaching-to-a-saved-network" id="attaching-to-a-saved-network">Attaching to a saved network</a>
 </h1>
-<p><a id="CREF10" class="info">[CREF10]<span class="info">RQ: FIXME: This example session is incomplete.</span></a></p>
+<p><a id="CREF13" class="info">[CREF13]<span class="info">RQ: FIXME: This example session is incomplete.</span></a></p>
 <p id="rfc.section.A.4.p.2">Recall the saved network if you haven't already done so: </p>
 <p></p>
 
@@ -4240,7 +4575,7 @@
 <h1 id="rfc.appendix.A.5">
 <a href="#rfc.appendix.A.5">A.5.</a> <a href="#ncp-software-reset" id="ncp-software-reset">NCP Software Reset</a>
 </h1>
-<p><a id="CREF11" class="info">[CREF11]<span class="info">RQ: FIXME: This example session is incomplete.</span></a></p>
+<p><a id="CREF14" class="info">[CREF14]<span class="info">RQ: FIXME: This example session is incomplete.</span></a></p>
 <p></p>
 
 <ul>
@@ -4428,12 +4763,12 @@
 <a href="#rfc.appendix.B.3">B.3.</a> <a href="#i2c-recommendations" id="i2c-recommendations">I2C Recommendations</a>
 </h1>
 <p id="rfc.section.B.3.p.1">TBD </p>
-<p><a id="CREF12" class="info">[CREF12]<span class="info">RQ: It may make sense to have a look at what Bluetooth HCI is doing for native I2C framing and go with that.</span></a></p>
+<p><a id="CREF15" class="info">[CREF15]<span class="info">RQ: It may make sense to have a look at what Bluetooth HCI is doing for native I2C framing and go with that.</span></a></p>
 <h1 id="rfc.appendix.B.4">
 <a href="#rfc.appendix.B.4">B.4.</a> <a href="#native-usb-recommendations" id="native-usb-recommendations">Native USB Recommendations</a>
 </h1>
 <p id="rfc.section.B.4.p.1">TBD </p>
-<p><a id="CREF13" class="info">[CREF13]<span class="info">RQ: It may make sense to have a look at what Bluetooth HCI is doing for native USB framing and go with that.</span></a></p>
+<p><a id="CREF16" class="info">[CREF16]<span class="info">RQ: It may make sense to have a look at what Bluetooth HCI is doing for native USB framing and go with that.</span></a></p>
 <h1 id="rfc.appendix.C">
 <a href="#rfc.appendix.C">Appendix C.</a> <a href="#test-vectors" id="test-vectors">Test Vectors</a>
 </h1>
@@ -4488,7 +4823,7 @@
 </tr>
 </tbody>
 </table>
-<p><a id="CREF14" class="info">[CREF14]<span class="info">RQ: The PUI test-vector encodings need to be verified.</span></a></p>
+<p><a id="CREF17" class="info">[CREF17]<span class="info">RQ: The PUI test-vector encodings need to be verified.</span></a></p>
 <h1 id="rfc.appendix.C.2">
 <a href="#rfc.appendix.C.2">C.2.</a> <a href="#test-vector-reset-command" id="test-vector-reset-command">Test Vector: Reset Command</a>
 </h1>
@@ -4527,12 +4862,12 @@
 <a href="#rfc.appendix.C.4">C.4.</a> <a href="#test-vector-inbound-ipv6-packet" id="test-vector-inbound-ipv6-packet">Test Vector: Inbound IPv6 Packet</a>
 </h1>
 <p id="rfc.section.C.4.p.1">CMD_VALUE_IS(PROP_STREAM_NET) </p>
-<p><a id="CREF15" class="info">[CREF15]<span class="info">RQ: FIXME: This test vector is incomplete.</span></a></p>
+<p><a id="CREF18" class="info">[CREF18]<span class="info">RQ: FIXME: This test vector is incomplete.</span></a></p>
 <h1 id="rfc.appendix.C.5">
 <a href="#rfc.appendix.C.5">C.5.</a> <a href="#test-vector-outbound-ipv6-packet" id="test-vector-outbound-ipv6-packet">Test Vector: Outbound IPv6 Packet</a>
 </h1>
 <p id="rfc.section.C.5.p.1">CMD_VALUE_SET(PROP_STREAM_NET) </p>
-<p><a id="CREF16" class="info">[CREF16]<span class="info">RQ: FIXME: This test vector is incomplete.</span></a></p>
+<p><a id="CREF19" class="info">[CREF19]<span class="info">RQ: FIXME: This test vector is incomplete.</span></a></p>
 <h1 id="rfc.appendix.D">
 <a href="#rfc.appendix.D">Appendix D.</a> <a href="#appendix-comparison" id="appendix-comparison">Comparison with other protocols</a>
 </h1>

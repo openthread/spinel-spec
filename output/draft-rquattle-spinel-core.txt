@@ -10,7 +10,7 @@ Expires: May 3, 2018                                    October 30, 2017
 
    Spinel: A protocol for control and management of IPv6 network co-
                                processors
-                   draft-rquattle-spinel-core-5055ac5
+                   draft-rquattle-spinel-core-fa153f6
 
 Abstract
 
@@ -76,13 +76,13 @@ Table of Contents
        2.2.1.  Single-Value Properties . . . . . . . . . . . . . . .   8
        2.2.2.  Multiple-Value Properties . . . . . . . . . . . . . .   8
        2.2.3.  Stream Properties . . . . . . . . . . . . . . . . . .   9
-   3.  Spinel Frames . . . . . . . . . . . . . . . . . . . . . . . .   9
+   3.  Spinel Frames . . . . . . . . . . . . . . . . . . . . . . . .  10
      3.1.  Frame Format  . . . . . . . . . . . . . . . . . . . . . .  10
      3.2.  Header Format . . . . . . . . . . . . . . . . . . . . . .  10
-       3.2.1.  FLG: Flag . . . . . . . . . . . . . . . . . . . . . .  10
+       3.2.1.  FLG: Flag . . . . . . . . . . . . . . . . . . . . . .  11
        3.2.2.  NLI: Network Link Identifier  . . . . . . . . . . . .  11
        3.2.3.  TID: Transaction Identifier . . . . . . . . . . . . .  11
-       3.2.4.  CMD: Command Identifier . . . . . . . . . . . . . . .  11
+       3.2.4.  CMD: Command Identifier . . . . . . . . . . . . . . .  12
        3.2.5.  CMD_PAYLOAD: Command Payload  . . . . . . . . . . . .  12
    4.  Data Packing  . . . . . . . . . . . . . . . . . . . . . . . .  12
      4.1.  Primitive Types . . . . . . . . . . . . . . . . . . . . .  13
@@ -179,45 +179,45 @@ Internet-Draft                 Spinel Core                  October 2017
      8.9.  NET Properties  . . . . . . . . . . . . . . . . . . . . .  55
        8.9.1.  PROP 65: PROP_NET_IF_UP . . . . . . . . . . . . . . .  55
        8.9.2.  PROP 66: PROP_NET_STACK_UP  . . . . . . . . . . . . .  56
-     8.10. IPv6 Properties . . . . . . . . . . . . . . . . . . . . .  56
-       8.10.1.  PROP 96: PROP_IPV6_LL_ADDR . . . . . . . . . . . . .  56
-       8.10.2.  PROP 99: PROP_IPV6_ADDRESS_TABLE . . . . . . . . . .  56
-       8.10.3.  PROP 101: PROP_IPv6_ICMP_PING_OFFLOAD  . . . . . . .  57
-       8.10.4.  PROP 102: SPINEL_PROP_IPV6_MULTICAST_ADDRESS_TABLE .  57
-     8.11. Debug Properties  . . . . . . . . . . . . . . . . . . . .  57
-       8.11.1.  PROP 16384: PROP_DEBUG_TEST_ASSERT . . . . . . . . .  57
-       8.11.2.  PROP 16385: PROP_DEBUG_NCP_LOG_LEVEL . . . . . . . .  58
-   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  58
-     9.1.  Raw Application Access  . . . . . . . . . . . . . . . . .  58
-   10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  58
-   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  58
-     11.1.  Normative References . . . . . . . . . . . . . . . . . .  58
-     11.2.  Informative References . . . . . . . . . . . . . . . . .  59
-     11.3.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  59
-   Appendix A.  Example Sessions . . . . . . . . . . . . . . . . . .  59
-     A.1.  NCP Initialization  . . . . . . . . . . . . . . . . . . .  60
-     A.2.  Attaching to a network  . . . . . . . . . . . . . . . . .  60
-     A.3.  Detaching from a network  . . . . . . . . . . . . . . . .  61
-     A.4.  Attaching to a saved network  . . . . . . . . . . . . . .  61
-     A.5.  NCP Software Reset  . . . . . . . . . . . . . . . . . . .  61
-   Appendix B.  Recommended Framing Protocols  . . . . . . . . . . .  62
-     B.1.  UART Recommendations  . . . . . . . . . . . . . . . . . .  62
-       B.1.1.  UART Bit Rate Detection . . . . . . . . . . . . . . .  62
-       B.1.2.  HDLC-Lite . . . . . . . . . . . . . . . . . . . . . .  63
-     B.2.  SPI Recommendations . . . . . . . . . . . . . . . . . . .  64
-       B.2.1.  SPI Framing Protocol  . . . . . . . . . . . . . . . .  64
-     B.3.  I2C Recommendations . . . . . . . . . . . . . . . . . . .  66
-     B.4.  Native USB Recommendations  . . . . . . . . . . . . . . .  66
-   Appendix C.  Test Vectors . . . . . . . . . . . . . . . . . . . .  66
-     C.1.  Test Vector: Packed Unsigned Integer  . . . . . . . . . .  66
-     C.2.  Test Vector: Reset Command  . . . . . . . . . . . . . . .  67
-     C.3.  Test Vector: Reset Notification . . . . . . . . . . . . .  67
-     C.4.  Test Vector: Inbound IPv6 Packet  . . . . . . . . . . . .  67
-     C.5.  Test Vector: Outbound IPv6 Packet . . . . . . . . . . . .  68
-   Appendix D.  Comparison with other protocols  . . . . . . . . . .  68
-   Appendix E.  Acknowledgments  . . . . . . . . . . . . . . . . . .  69
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  71
-
+       8.9.3.  PROP 67: PROP_NET_ROLE  . . . . . . . . . . . . . . .  56
+       8.9.4.  PROP 68: PROP_NET_NETWORK_NAME  . . . . . . . . . . .  57
+       8.9.5.  PROP 69: PROP_NET_XPANID  . . . . . . . . . . . . . .  58
+       8.9.6.  PROP 70: PROP_NET_MASTER_KEY  . . . . . . . . . . . .  58
+       8.9.7.  PROP 71: PROP_NET_KEY_SEQUENCE_COUNTER  . . . . . . .  59
+       8.9.8.  PROP 72: PROP_NET_PARTITION_ID  . . . . . . . . . . .  59
+       8.9.9.  PROP 73: PROP_NET_REQUIRE_JOIN_EXISTING . . . . . . .  59
+       8.9.10. PROP 74: PROP_NET_KEY_SWITCH_GUARDTIME  . . . . . . .  60
+       8.9.11. PROP 75: PROP_NET_PSKC  . . . . . . . . . . . . . . .  60
+     8.10. IPv6 Properties . . . . . . . . . . . . . . . . . . . . .  60
+       8.10.1.  PROP 96: PROP_IPV6_LL_ADDR . . . . . . . . . . . . .  60
+       8.10.2.  PROP 99: PROP_IPV6_ADDRESS_TABLE . . . . . . . . . .  60
+       8.10.3.  PROP 101: PROP_IPv6_ICMP_PING_OFFLOAD  . . . . . . .  61
+       8.10.4.  PROP 102: SPINEL_PROP_IPV6_MULTICAST_ADDRESS_TABLE .  61
+     8.11. Debug Properties  . . . . . . . . . . . . . . . . . . . .  61
+       8.11.1.  PROP 16384: PROP_DEBUG_TEST_ASSERT . . . . . . . . .  61
+       8.11.2.  PROP 16385: PROP_DEBUG_NCP_LOG_LEVEL . . . . . . . .  62
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  62
+     9.1.  Network Name Normalization  . . . . . . . . . . . . . . .  62
+     9.2.  Raw Application Access  . . . . . . . . . . . . . . . . .  62
+   10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  62
+   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  63
+     11.1.  Normative References . . . . . . . . . . . . . . . . . .  63
+     11.2.  Informative References . . . . . . . . . . . . . . . . .  63
+     11.3.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  63
+   Appendix A.  Example Sessions . . . . . . . . . . . . . . . . . .  64
+     A.1.  NCP Initialization  . . . . . . . . . . . . . . . . . . .  64
+     A.2.  Attaching to a network  . . . . . . . . . . . . . . . . .  64
+     A.3.  Detaching from a network  . . . . . . . . . . . . . . . .  65
+     A.4.  Attaching to a saved network  . . . . . . . . . . . . . .  65
+     A.5.  NCP Software Reset  . . . . . . . . . . . . . . . . . . .  66
+   Appendix B.  Recommended Framing Protocols  . . . . . . . . . . .  66
+     B.1.  UART Recommendations  . . . . . . . . . . . . . . . . . .  66
+       B.1.1.  UART Bit Rate Detection . . . . . . . . . . . . . . .  66
+       B.1.2.  HDLC-Lite . . . . . . . . . . . . . . . . . . . . . .  67
+     B.2.  SPI Recommendations . . . . . . . . . . . . . . . . . . .  68
+       B.2.1.  SPI Framing Protocol  . . . . . . . . . . . . . . . .  69
+     B.3.  I2C Recommendations . . . . . . . . . . . . . . . . . . .  70
+     B.4.  Native USB Recommendations  . . . . . . . . . . . . . . .  70
 
 
 
@@ -225,6 +225,16 @@ Quattlebaum & woodyatt     Expires May 3, 2018                  [Page 4]
 
 Internet-Draft                 Spinel Core                  October 2017
 
+
+   Appendix C.  Test Vectors . . . . . . . . . . . . . . . . . . . .  71
+     C.1.  Test Vector: Packed Unsigned Integer  . . . . . . . . . .  71
+     C.2.  Test Vector: Reset Command  . . . . . . . . . . . . . . .  71
+     C.3.  Test Vector: Reset Notification . . . . . . . . . . . . .  71
+     C.4.  Test Vector: Inbound IPv6 Packet  . . . . . . . . . . . .  71
+     C.5.  Test Vector: Outbound IPv6 Packet . . . . . . . . . . . .  72
+   Appendix D.  Comparison with other protocols  . . . . . . . . . .  72
+   Appendix E.  Acknowledgments  . . . . . . . . . . . . . . . . . .  73
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  75
 
 1.  Introduction
 
@@ -264,6 +274,14 @@ Internet-Draft                 Spinel Core                  October 2017
    5.  The protocol must gracefully handle the addition of new features
        and capabilities without necessarily breaking backward
        compatibility.
+
+
+
+Quattlebaum & woodyatt     Expires May 3, 2018                  [Page 5]
+
+Internet-Draft                 Spinel Core                  October 2017
+
+
    6.  The protocol must support multiple conceptually independent
        network interfaces.
    7.  The protocol must be reasonably compact and lightweight.
@@ -272,15 +290,6 @@ Internet-Draft                 Spinel Core                  October 2017
    common features of IPv6.  In related and forthcoming documents, the
    Spinel protocol is extended to support NCP implementations for
    specific IPv6 link types, e.g.  Thread(R).
-
-
-
-
-
-Quattlebaum & woodyatt     Expires May 3, 2018                  [Page 5]
-
-Internet-Draft                 Spinel Core                  October 2017
-
 
 1.2.  Terminology
 
@@ -321,15 +330,6 @@ Internet-Draft                 Spinel Core                  October 2017
       to the physical implementation and operation of a networking
       medium.
    PUI
-      Packed Unsigned Integer.  A way to serialize an unsigned integer
-      using one, two, or three octets.  Used throughout the Spinel
-      protocol.  See Section 4.2 for more information.
-   TID
-      Transaction Identifier.  May be a value between zero and fifteen.
-      See Section 3.2.3 for more information.
-
-
-
 
 
 
@@ -337,6 +337,13 @@ Quattlebaum & woodyatt     Expires May 3, 2018                  [Page 6]
 
 Internet-Draft                 Spinel Core                  October 2017
 
+
+      Packed Unsigned Integer.  A way to serialize an unsigned integer
+      using one, two, or three octets.  Used throughout the Spinel
+      protocol.  See Section 4.2 for more information.
+   TID
+      Transaction Identifier.  May be a value between zero and fifteen.
+      See Section 3.2.3 for more information.
 
 2.  Property Overview
 
@@ -379,13 +386,6 @@ Internet-Draft                 Spinel Core                  October 2017
    Conceptually, the following operations are used by the OS to query or
    change a property's value:
 
-   o  "VALUE_GET"
-   o  "VALUE_SET"
-   o  "VALUE_INSERT"
-   o  "VALUE_REMOVE"
-
-   In addition, the following operations can be used by the NCP to
-   indicate changes to the value of a property:
 
 
 
@@ -393,6 +393,14 @@ Quattlebaum & woodyatt     Expires May 3, 2018                  [Page 7]
 
 Internet-Draft                 Spinel Core                  October 2017
 
+
+   o  "VALUE_GET"
+   o  "VALUE_SET"
+   o  "VALUE_INSERT"
+   o  "VALUE_REMOVE"
+
+   In addition, the following operations can be used by the NCP to
+   indicate changes to the value of a property:
 
    o  "VALUE_IS"
    o  "VALUE_INSERTED"
@@ -433,14 +441,6 @@ Internet-Draft                 Spinel Core                  October 2017
    o  List of IPv6 addresses assigned to the interface.
    o  List of capabilities supported by the NCP.
 
-   The valid operators on these sorts of properties are "VALUE_GET",
-   "VALUE_SET", "VALUE_INSERT", and "VALUE_REMOVE".
-
-   When the value is fetched using "VALUE_GET", an individual property
-   will return the entire list of items as either of the following:
-
-   1.  The concatenation of all of the individual values.  This is used
-       in cases where the length of an individual item is fixed.
 
 
 
@@ -450,6 +450,14 @@ Quattlebaum & woodyatt     Expires May 3, 2018                  [Page 8]
 Internet-Draft                 Spinel Core                  October 2017
 
 
+   The valid operators on these sorts of properties are "VALUE_GET",
+   "VALUE_SET", "VALUE_INSERT", and "VALUE_REMOVE".
+
+   When the value is fetched using "VALUE_GET", an individual property
+   will return the entire list of items as either of the following:
+
+   1.  The concatenation of all of the individual values.  This is used
+       in cases where the length of an individual item is fixed.
    2.  The concatenation of all of the individual values, each prefixed
        by a 16-bit big-endian integer describing the length of the
        individual item.  This would be used in cases where the length of
@@ -490,14 +498,6 @@ Internet-Draft                 Spinel Core                  October 2017
    "VALUE_REMOVE", "VALUE_INSERTED", and "VALUE_REMOVED" operations for
    stream properties is undefined and SHOULD NOT be used.
 
-3.  Spinel Frames
-
-   Spinel is a frame-based (rather than stream-based) protocol.  Frames
-   can be of any size between two bytes and MTU of the channel (which is
-   RECOMMENDED to be at least 1300 bytes).  Spinel frames SHALL be
-   delivered reliably and in-order.
-
-
 
 
 
@@ -505,6 +505,13 @@ Quattlebaum & woodyatt     Expires May 3, 2018                  [Page 9]
 
 Internet-Draft                 Spinel Core                  October 2017
 
+
+3.  Spinel Frames
+
+   Spinel is a frame-based (rather than stream-based) protocol.  Frames
+   can be of any size between two bytes and MTU of the channel (which is
+   RECOMMENDED to be at least 1300 bytes).  Spinel frames SHALL be
+   delivered reliably and in-order.
 
    The mechanism responsible for transporting frames between the OS and
    the NCP (while also ensuring both reliable and in-order delivery) is
@@ -548,19 +555,19 @@ Internet-Draft                 Spinel Core                  October 2017
 
    [CREF2]
 
-3.2.1.  FLG: Flag
-
-   The Flag (FLG) field in the two most significant bits of the header
-   octet ("FLG") is always set to the value two (or "10" in binary).
-   Any frame received with these bits set to any other value SHALL NOT
-   be considered a Spinel frame.
-
 
 
 Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 10]
 
 Internet-Draft                 Spinel Core                  October 2017
 
+
+3.2.1.  FLG: Flag
+
+   The Flag (FLG) field in the two most significant bits of the header
+   octet ("FLG") is always set to the value two (or "10" in binary).
+   Any frame received with these bits set to any other value SHALL NOT
+   be considered a Spinel frame.
 
    This convention allows Spinel to be line compatible with BTLE HCI.
    By defining the first two bit in this way we can disambiguate between
@@ -599,13 +606,6 @@ Internet-Draft                 Spinel Core                  October 2017
    response is not expected or needed, such as for unsolicited update
    commands sent to the OS from the NCP.
 
-3.2.4.  CMD: Command Identifier
-
-   The command identifier is a 21-bit unsigned integer encoded in up to
-   three octets using the packed unsigned integer format described in
-   Section 4.2.  This encoding allows for up to 2,097,152 individual
-   commands, with the first 127 commands represented as a single octet.
-   Command identifiers larger than 2,097,151 are explicitly forbidden.
 
 
 
@@ -617,6 +617,14 @@ Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 11]
 
 Internet-Draft                 Spinel Core                  October 2017
 
+
+3.2.4.  CMD: Command Identifier
+
+   The command identifier is a 21-bit unsigned integer encoded in up to
+   three octets using the packed unsigned integer format described in
+   Section 4.2.  This encoding allows for up to 2,097,152 individual
+   commands, with the first 127 commands represented as a single octet.
+   Command identifiers larger than 2,097,151 are explicitly forbidden.
 
 3.2.5.  CMD_PAYLOAD: Command Payload
 
@@ -657,14 +665,6 @@ Internet-Draft                 Spinel Core                  October 2017
    types, i.e. arrays of a specific type, structures with fields of
    varying type, Unicode text strings.
 
-   Each primitive datatype has an ASCII character associated with it in
-   the corresponding modeling language.  Fields in structures are
-   identified by their position.  The data model for any encoding of the
-   Spinel data packing format can be represented as a strings of
-   modeling language characters characters.  These strings are called
-   "type signatures" and some examples follow:
-
-   o  "C": An unsigned integer encoded as a single octet.
 
 
 
@@ -674,6 +674,14 @@ Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 12]
 Internet-Draft                 Spinel Core                  October 2017
 
 
+   Each primitive datatype has an ASCII character associated with it in
+   the corresponding modeling language.  Fields in structures are
+   identified by their position.  The data model for any encoding of the
+   Spinel data packing format can be represented as a strings of
+   modeling language characters characters.  These strings are called
+   "type signatures" and some examples follow:
+
+   o  "C": An unsigned integer encoded as a single octet.
    o  "C6U": An unsigned integer encoded as a single octet, followed by
       a 128-but IPv6 address, followed by a Unicode text string.
 
@@ -715,20 +723,15 @@ Internet-Draft                 Spinel Core                  October 2017
    |          |                      | type. See Section 4.5.          |
    +----------+----------------------+---------------------------------+
 
-   All multi-octet values are little-endian unless explicitly stated
-   otherwise.
-
-
-
-
-
-
 
 
 Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 13]
 
 Internet-Draft                 Spinel Core                  October 2017
 
+
+   All multi-octet values are little-endian unless explicitly stated
+   otherwise.
 
 4.2.  Packed Unsigned Integer
 
@@ -773,9 +776,6 @@ Internet-Draft                 Spinel Core                  October 2017
    o  "d" has the length of the data (in octets) prepended to the data
       (with the length encoded as type "S").  The size of the length
       field is not included in the length.
-   o  "D" does not have a prepended length: the length of the data is
-      implied by the octets remaining to be parsed.  It is an error for
-      "D" to not be the last type in a type in a type signature.
 
 
 
@@ -785,6 +785,10 @@ Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 14]
 
 Internet-Draft                 Spinel Core                  October 2017
 
+
+   o  "D" does not have a prepended length: the length of the data is
+      implied by the octets remaining to be parsed.  It is an error for
+      "D" to not be the last type in a type in a type signature.
 
    This dichotomy allows for more efficient encoding by eliminating
    redundancy.  If the rest of the frame is a data blob, encoding the
@@ -830,10 +834,6 @@ Internet-Draft                 Spinel Core                  October 2017
    Additionally, we can add fields to each structure without introducing
    backward compatability problems: Data encoded as "Lt(ESU)t(6D)"
    (Notice the extra "U") will decode just fine as "Lt(ES)t(6D)".
-   Additionally, if we don't care about the MAC layer and only care
-   about the network layer, we could parse as "Lt()t(6D)".
-
-
 
 
 
@@ -841,6 +841,9 @@ Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 15]
 
 Internet-Draft                 Spinel Core                  October 2017
 
+
+   Additionally, if we don't care about the MAC layer and only care
+   about the network layer, we could parse as "Lt()t(6D)".
 
    Note that data encoded as "Lt(ES)t(6D)" will also parse as "Ldd",
    with the structures from both layers now being opaque data blobs.
@@ -882,9 +885,6 @@ Internet-Draft                 Spinel Core                  October 2017
    IANA maintains a registry of Spinel "CMD" command numbers, with
    varying registration policies assigned for different ranges according
    to the following table:
-
-
-
 
 
 
@@ -1440,6 +1440,8 @@ Internet-Draft                 Spinel Core                  October 2017
    | 21   | "STATUS_INVALID_COMMAND_FOR_PROP" | The given command      |
    |      |                                   | cannot be performed on |
    |      |                                   | this property.         |
+   | ??   | "STATUS_PROP_VALUE_TOO_BIG"       | The value fo this      |
+   |      |                                   | property is too large. |
    | 112  | "STATUS_RESET_POWER_ON"           | Cold power-on start.   |
    | 113  | "STATUS_RESET_EXTERNAL"           | External device reset. |
    | 114  | "STATUS_RESET_SOFTWARE"           | Internal software      |
@@ -1448,8 +1450,6 @@ Internet-Draft                 Spinel Core                  October 2017
    |      |                                   | abortive reset.        |
    | 116  | "STATUS_RESET_CRASH"              | Unrecoverable software |
    |      |                                   | execution failure.     |
-   | 117  | "STATUS_RESET_ASSERT"             | Software invariant     |
-   |      |                                   | property not           |
 
 
 
@@ -1458,6 +1458,8 @@ Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 26]
 Internet-Draft                 Spinel Core                  October 2017
 
 
+   | 117  | "STATUS_RESET_ASSERT"             | Software invariant     |
+   |      |                                   | property not           |
    |      |                                   | respected.             |
    | 118  | "STATUS_RESET_OTHER"              | Unspecified cause.     |
    | 119  | "STATUS_RESET_UNKNOWN"            | Failure while          |
@@ -1491,8 +1493,6 @@ Internet-Draft                 Spinel Core                  October 2017
                +-----------------------+------------------+
 
    The initial content of the registry is shown in the table below.
-
-
 
 
 
@@ -3113,6 +3113,226 @@ Internet-Draft                 Spinel Core                  October 2017
 
    Setting this to true implies also setting "PROP_NET_IF_UP" to true.
 
+8.9.3.  PROP 67: PROP_NET_ROLE
+
+   o  Type: Single-Value, Read-Only*
+   o  Asynchronous Updates: Yes
+   o  Required: REQUIRED
+   o  Unit: Enumeration
+   o  Post-Reset Value: 0 ("NET_ROLE_DETACHED")
+
+                         +---------+------------+
+                         |  Bytes: |     1      |
+                         +---------+------------+
+                         | Format: |   UINT8    |
+                         | Fields: | "NET_ROLE" |
+                         +---------+------------+
+
+   Indicates what role the current device is playing on the network.
+   This property is read-only, with the exception that the AP can
+
+
+
+Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 56]
+
+Internet-Draft                 Spinel Core                  October 2017
+
+
+   indicate that it wants the NCP to detach and then attempt to reattach
+   by setting this property to "NET_ROLE_DETACHED" when it was
+   previously set to another value.  Attempting to set this property to
+   any other value will result in "STATUS_INVALID_ARGUMENT" being
+   emitted.
+
+                      +------+---------------------+
+                      | Code |         Name        |
+                      +------+---------------------+
+                      |  0   | "NET_ROLE_DETACHED" |
+                      |  1   |   "NET_ROLE_CHILD"  |
+                      |  2   |  "NET_ROLE_ROUTER"  |
+                      |  3   |  "NET_ROLE_LEADER"  |
+                      |  4   |   "NET_ROLE_PEER"   |
+                      +------+---------------------+
+
+   NET_ROLE_DETACHED
+      The NCP is not currently participating on a network, or is in the
+      process of attaching to a network.
+   NET_ROLE_CHILD
+      The NCP is currently attached to the mesh network as a child to a
+      router node.  Communication with nodes more than one hop away is
+      possible.  The NCP does not route any mesh traffic on the behalf
+      of other nodes.
+   NET_ROLE_ROUTER
+      The NCP is currently a router node on the network, and will
+      transparently route mesh traffic on behalf of other nodes.
+   NET_ROLE_LEADER
+      This role is identical ot "NET_ROLE_ROUTER" except that there is
+      only node designated as the leader per partition.  This role is
+      Thread-specific.
+   NET_ROLE_PEER
+      In this role, the NCP may communicate with nodes which are no more
+      than one hop away.  This role is used while obtaining the network
+      provision during in-band commissioning.
+
+8.9.4.  PROP 68: PROP_NET_NETWORK_NAME
+
+   o  Type: Single-Value, Read-Write
+   o  Asynchronous Updates: Yes
+   o  Required: REQUIRED for standard network layer
+   o  Post-Reset Value: Empty
+
+
+
+
+
+
+
+
+
+Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 57]
+
+Internet-Draft                 Spinel Core                  October 2017
+
+
+                   +---------+----------------+-------+
+                   |  Bytes: |       n        |   1   |
+                   +---------+----------------+-------+
+                   | Format: |      UTF8      | CONST |
+                   | Fields: | "NETWORK_NAME" |  0x00 |
+                   +---------+----------------+-------+
+
+   Contains a zero-terminated UTF8 string which describes the name of
+   the current network.  This is analogous to the SSID in 802.11.  The
+   maximum length of the string is technology specific.  Setting this
+   property to a value that is too large will cause
+   "STATUS_PROP_VALUE_TOO_BIG" to be emitted.
+
+   When this value is being retrieved, all trailing zero bytes in the
+   network name MUST be stripped.  When this value is being set, all
+   trailing zero bytes SHOULD be stripped.
+
+   See Section 9.1 for security considerations regarding UTF8
+   normalization.
+
+8.9.5.  PROP 69: PROP_NET_XPANID
+
+   o  Type: Single-Value, Read-Write
+   o  Asynchronous Updates: Yes
+   o  Required: REQUIRED for standard network layer
+   o  Post-Reset Value: All zeros
+
+                        +---------+--------------+
+                        |  Bytes: |      8       |
+                        +---------+--------------+
+                        | Format: |    XPANID    |
+                        | Fields: | "NET_XPANID" |
+                        +---------+--------------+
+
+   Contains the extended personal-area network identifier for the
+   current network.  It allows for different networks with identical
+   names to not conflict with each other.  It is defined to be eight
+   bytes long.
+
+   For network technologies which don't have the concept of an XPANID,
+   this property is hard-coded to always be all zeros.
+
+8.9.6.  PROP 70: PROP_NET_MASTER_KEY
+
+   o  Type: Single-Value, Read-Write
+   o  Asynchronous Updates: Yes
+   o  Required: REQUIRED for standard network layer
+   o  Post-Reset Value: Unspecified
+
+
+
+Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 58]
+
+Internet-Draft                 Spinel Core                  October 2017
+
+
+                      +---------+------------------+
+                      |  Bytes: |        n         |
+                      +---------+------------------+
+                      | Format: |       DATA       |
+                      | Fields: | "NET_MASTER_KEY" |
+                      +---------+------------------+
+
+   Master key material.  The exact length of the value for this property
+   is defined by the technology, but is generally 16-bytes (128-bit).
+
+8.9.7.  PROP 71: PROP_NET_KEY_SEQUENCE_COUNTER
+
+   o  Type: Single-Value, Read-Write
+   o  Asynchronous Updates: No
+   o  Required: REQUIRED for standard network layer
+   o  Post-Reset Value: 0
+
+                 +---------+----------------------------+
+                 |  Bytes: |             4              |
+                 +---------+----------------------------+
+                 | Format: |           UINT32           |
+                 | Fields: | "NET_KEY_SEQUENCE_COUNTER" |
+                 +---------+----------------------------+
+
+8.9.8.  PROP 72: PROP_NET_PARTITION_ID
+
+   o  Type: Single-Value, Read-Only
+   o  Asynchronous Updates: Yes
+   o  Required: OPTIONAL
+   o  Post-Reset Value: Unspecified
+
+                     +---------+--------------------+
+                     |  Bytes: |         4          |
+                     +---------+--------------------+
+                     | Format: |       UINT32       |
+                     | Fields: | "NET_PARTITION_ID" |
+                     +---------+--------------------+
+
+   The partition ID of the partition that this node is a member of.
+
+   For network technologies which don't have the concept of a partition
+   id, this property is hard-coded to always be zero.
+
+8.9.9.  PROP 73: PROP_NET_REQUIRE_JOIN_EXISTING
+
+   o  Type: Single-Value, Read-Write
+   o  Asynchronous Updates: Yes
+   o  Required:
+
+
+
+Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 59]
+
+Internet-Draft                 Spinel Core                  October 2017
+
+
+      *  Read: OPTIONAL
+      *  Write: REQUIRED
+   o  Post-Reset Value: 0 (false)
+
+                 +---------+-----------------------------+
+                 |  Bytes: |              1              |
+                 +---------+-----------------------------+
+                 | Format: |             BOOL            |
+                 | Fields: | "NET_REQUIRE_JOIN_EXISTING" |
+                 +---------+-----------------------------+
+
+   [CREF8]
+
+8.9.10.  PROP 74: PROP_NET_KEY_SWITCH_GUARDTIME
+
+   o  Type: Read-Write
+   o  Packed-Encoding: "L"
+
+   [CREF9]
+
+8.9.11.  PROP 75: PROP_NET_PSKC
+
+   o  Type: Read-Write
+   o  Packed-Encoding: "D"
+
+   [CREF10]
+
 8.10.  IPv6 Properties
 
 8.10.1.  PROP 96: PROP_IPV6_LL_ADDR
@@ -3130,18 +3350,18 @@ Internet-Draft                 Spinel Core                  October 2017
    This property provides all unicast addresses.  Array of structures
    containing:
 
-
-
-
-Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 56]
-
-Internet-Draft                 Spinel Core                  October 2017
-
-
    o  "6": IPv6 Address
    o  "C": Network Prefix Length
    o  "L": Valid Lifetime
    o  "L": Preferred Lifetime
+
+
+
+Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 60]
+
+Internet-Draft                 Spinel Core                  October 2017
+
+
    o  "C": Flags
 
    EDITOR: this conflates the IPv6 interface address list with the IPv6
@@ -3189,7 +3409,11 @@ Internet-Draft                 Spinel Core                  October 2017
 
 
 
-Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 57]
+
+
+
+
+Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 61]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -3221,7 +3445,12 @@ Internet-Draft                 Spinel Core                  October 2017
 
    EDITOR: Insert verbiage here conforming to RFC Editor guidelines.
 
-9.1.  Raw Application Access
+9.1.  Network Name Normalization
+
+   TODO: Discuss UTF8 verification and normalization considerations
+   related to "PROP_NET_NETWORK_NAME".
+
+9.2.  Raw Application Access
 
    Spinel MAY be used as an API boundary for allowing processes to
    configure the NCP.  However, such a system MUST NOT give unprivileged
@@ -3234,6 +3463,17 @@ Internet-Draft                 Spinel Core                  October 2017
 
    EDITOR: insert verbiage here: registry creation forms, et cetera.
 
+
+
+
+
+
+
+Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 62]
+
+Internet-Draft                 Spinel Core                  October 2017
+
+
 11.  References
 
 11.1.  Normative References
@@ -3242,13 +3482,6 @@ Internet-Draft                 Spinel Core                  October 2017
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997, <https://www.rfc-
               editor.org/info/rfc2119>.
-
-
-
-Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 58]
-
-Internet-Draft                 Spinel Core                  October 2017
-
 
    [RFC8200]  Deering, S. and R. Hinden, "Internet Protocol, Version 6
               (IPv6) Specification", STD 86, RFC 8200,
@@ -3289,26 +3522,23 @@ Internet-Draft                 Spinel Core                  October 2017
 
    [3] http://reveng.sourceforge.net/crc-catalogue/16.htm#crc.cat.kermit
 
+
+
+
+Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 63]
+
+Internet-Draft                 Spinel Core                  October 2017
+
+
    [4] https://github.com/miekg/mmark
 
    [5] http://xml2rfc.ietf.org/
 
 Appendix A.  Example Sessions
 
-
-
-
-
-
-
-Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 59]
-
-Internet-Draft                 Spinel Core                  October 2017
-
-
 A.1.  NCP Initialization
 
-   [CREF8]
+   [CREF11]
 
    Check the protocol version to see if it is supported:
 
@@ -3344,24 +3574,24 @@ A.1.  NCP Initialization
 
 A.2.  Attaching to a network
 
-   [CREF9]
+   [CREF12]
 
    We make the assumption that the NCP is already associated with a
    network at physical and media access layers.  The core layer steps
+
+
+
+Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 64]
+
+Internet-Draft                 Spinel Core                  October 2017
+
+
    proceed after the initial phase of initializing the specific network
    layer stack.
 
    Bring the network interface up:
 
    o  CMD_VALUE_SET:PROP_NET_IF_UP:TRUE
-
-
-
-Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 60]
-
-Internet-Draft                 Spinel Core                  October 2017
-
-
    o  CMD_VALUE_IS:PROP_NET_IF_UP:TRUE
 
    Bring the routing stack up:
@@ -3385,7 +3615,7 @@ A.3.  Detaching from a network
 
 A.4.  Attaching to a saved network
 
-   [CREF10]
+   [CREF13]
 
    Recall the saved network if you haven't already done so:
 
@@ -3401,22 +3631,25 @@ A.4.  Attaching to a saved network
    o  CMD_VALUE_SET:PROP_NET_STACK_UP:TRUE
    o  CMD_VALUE_IS:PROP_NET_STACK_UP:TRUE
 
+
+
+
+
+
+
+Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 65]
+
+Internet-Draft                 Spinel Core                  October 2017
+
+
 A.5.  NCP Software Reset
 
-   [CREF11]
+   [CREF14]
 
    o  CMD_RESET
    o  CMD_VALUE_IS:PROP_LAST_STATUS:STATUS_RESET_SOFTWARE
 
    Then jump to Appendix A.1.
-
-
-
-
-Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 61]
-
-Internet-Draft                 Spinel Core                  October 2017
-
 
 Appendix B.  Recommended Framing Protocols
 
@@ -3457,6 +3690,14 @@ B.1.1.  UART Bit Rate Detection
    theoretical maximum bitrate of many relevant network interfaces, e.g.
    the 802.15.4 2.4GHz PHY (250kbit).  In most circumstances this
    mismatch is not significant because the overall bitrate will be much
+
+
+
+Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 66]
+
+Internet-Draft                 Spinel Core                  October 2017
+
+
    lower than either of these rates, but there are circumstances where a
    faster UART bitrate is desirable.  Thus, this document proposes a
    simple bitrate detection scheme that can be employed by the OS to
@@ -3466,13 +3707,6 @@ B.1.1.  UART Bit Rate Detection
    The algorithm is to send successive NOOP commands to the NCP at
    increasing bitrates.  When a valid "CMD_LAST_STATUS" response has
    been received, we have identified the correct bitrate.
-
-
-
-Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 62]
-
-Internet-Draft                 Spinel Core                  October 2017
-
 
    In order to limit the time spent hunting for the appropriate bitrate,
    we RECOMMEND that only the following bitrates be checked:
@@ -3512,6 +3746,14 @@ B.1.2.  HDLC-Lite
                  | 0xF8        | Vendor-Specific        |
                  +-------------+------------------------+
 
+
+
+
+Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 67]
+
+Internet-Draft                 Spinel Core                  October 2017
+
+
    When present in a data frame, these octet values are escaped by
    prepending the escape octet ("0x7D") and XORing the value with
    "0x20".
@@ -3521,14 +3763,6 @@ B.1.2.  HDLC-Lite
    the frame data, the frame MUST be discarded.  The implementation MAY
    indicate the failure to higher levels to handle as they see fit, but
    MUST NOT attempt to process the deceived frame.
-
-
-
-
-Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 63]
-
-Internet-Draft                 Spinel Core                  October 2017
-
 
    Consecutive flag octets are entirely legal and MUST NOT be treated as
    a framing error.  Consecutive flag octets MAY be used as a way to
@@ -3565,6 +3799,17 @@ B.2.  SPI Recommendations
    This recommended configuration may be adjusted depending on the
    individual needs of the application or product.
 
+
+
+
+
+
+
+Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 68]
+
+Internet-Draft                 Spinel Core                  October 2017
+
+
 B.2.1.  SPI Framing Protocol
 
    Each SPI frame starts with a 5-byte frame header:
@@ -3576,16 +3821,6 @@ B.2.1.  SPI Framing Protocol
                   +---------+-----+----------+----------+
 
    o  "HDR": The first byte is the header byte (defined below)
-
-
-
-
-
-Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 64]
-
-Internet-Draft                 Spinel Core                  October 2017
-
-
    o  "RECV_LEN": The second and third bytes indicate the largest frame
       size that that device is ready to receive.  If zero, then the
       other device must not send any data.  (Little endian)
@@ -3623,6 +3858,14 @@ Internet-Draft                 Spinel Core                  October 2017
    the contained frame length.  This will induce the slave device to
    indicate the length of the frame it wants to send (if any) and
    indicate the largest frame it is capable of receiving at the moment.
+
+
+
+Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 69]
+
+Internet-Draft                 Spinel Core                  October 2017
+
+
    This allows the master to calculate the size of the next transaction.
    Alternatively, if the master has a frame to send it can just go ahead
    and send a frame of that length and determine if the frame was
@@ -3633,14 +3876,6 @@ Internet-Draft                 Spinel Core                  October 2017
 
    This protocol can be used either unidirectionally or bidirectionally,
    determined by the behavior of the master and the slave.
-
-
-
-
-Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 65]
-
-Internet-Draft                 Spinel Core                  October 2017
-
 
    If the the master notices "PATTERN" is not set correctly, the master
    should consider the transaction to have failed and try again after 10
@@ -3667,36 +3902,29 @@ B.3.  I2C Recommendations
 
    TBD
 
-   [CREF12]
+   [CREF15]
 
 B.4.  Native USB Recommendations
 
    TBD
 
-   [CREF13]
+   [CREF16]
+
+
+
+
+
+
+
+
+Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 70]
+
+Internet-Draft                 Spinel Core                  October 2017
+
 
 Appendix C.  Test Vectors
 
 C.1.  Test Vector: Packed Unsigned Integer
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 66]
-
-Internet-Draft                 Spinel Core                  October 2017
-
 
                  +---------------+-----------------------+
                  | Decimal Value | Packet Octet Encoding |
@@ -3713,7 +3941,7 @@ Internet-Draft                 Spinel Core                  October 2017
                  |     2,097,151 | "FF FF 7F"            |
                  +---------------+-----------------------+
 
-   [CREF14]
+   [CREF17]
 
 C.2.  Test Vector: Reset Command
 
@@ -3741,15 +3969,11 @@ C.4.  Test Vector: Inbound IPv6 Packet
 
    CMD_VALUE_IS(PROP_STREAM_NET)
 
-   [CREF15]
+   [CREF18]
 
 
 
-
-
-
-
-Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 67]
+Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 71]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -3758,7 +3982,7 @@ C.5.  Test Vector: Outbound IPv6 Packet
 
    CMD_VALUE_SET(PROP_STREAM_NET)
 
-   [CREF16]
+   [CREF19]
 
 Appendix D.  Comparison with other protocols
 
@@ -3805,7 +4029,7 @@ Appendix D.  Comparison with other protocols
 
 
 
-Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 68]
+Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 72]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -3861,7 +4085,7 @@ Editorial Comments
 
 
 
-Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 69]
+Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 73]
 
 Internet-Draft                 Spinel Core                  October 2017
 
@@ -3898,33 +4122,41 @@ Internet-Draft                 Spinel Core                  October 2017
         needs to make sure that it checks PROP\_UNSOL\_UPDATE\_LIST
         first.  --
 
-[CREF8] RQ: FIXME: This example session is incomplete.
+[CREF8] RQ: TODO: Elaborate on PROP_NET_JOIN_EXISTING --
 
-[CREF9] RQ: FIXME: This example session is incomplete.
+[CREF9] RQ: TODO: This likely doesn't belong in core, at least not in
+        the small-number section.  --
 
-[CREF10] RQ: FIXME: This example session is incomplete.
+[CREF10] RQ: TODO: This likely doesn't belong in core, at least not in
+         the small-number section.  --
 
 [CREF11] RQ: FIXME: This example session is incomplete.
 
-[CREF12] RQ: It may make sense to have a look at what Bluetooth HCI is
-         doing for native I2C framing and go with that.
+[CREF12] RQ: FIXME: This example session is incomplete.
 
-[CREF13] RQ: It may make sense to have a look at what Bluetooth HCI is
-         doing for native USB framing and go with that.
+[CREF13] RQ: FIXME: This example session is incomplete.
 
-[CREF14] RQ: The PUI test-vector encodings need to be verified.
+[CREF14] RQ: FIXME: This example session is incomplete.
 
 
 
 
-Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 70]
+Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 74]
 
 Internet-Draft                 Spinel Core                  October 2017
 
 
-[CREF15] RQ: FIXME: This test vector is incomplete.
+[CREF15] RQ: It may make sense to have a look at what Bluetooth HCI is
+         doing for native I2C framing and go with that.
 
-[CREF16] RQ: FIXME: This test vector is incomplete.
+[CREF16] RQ: It may make sense to have a look at what Bluetooth HCI is
+         doing for native USB framing and go with that.
+
+[CREF17] RQ: The PUI test-vector encodings need to be verified.
+
+[CREF18] RQ: FIXME: This test vector is incomplete.
+
+[CREF19] RQ: FIXME: This test vector is incomplete.
 
 Authors' Addresses
 
@@ -3965,12 +4197,4 @@ Authors' Addresses
 
 
 
-
-
-
-
-
-
-
-
-Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 71]
+Quattlebaum & woodyatt     Expires May 3, 2018                 [Page 75]

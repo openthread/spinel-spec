@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rfc SYSTEM 'rfc2629.dtd' []>
-<rfc ipr="trust200902" category="std" docName="draft-rquattle-spinel-core-5055ac5">
+<rfc ipr="trust200902" category="std" docName="draft-rquattle-spinel-core-fa153f6">
 <?rfc toc="yes"?>
 <?rfc symrefs="yes"?>
 <?rfc sortrefs="yes"?>
@@ -940,6 +940,7 @@ represent the given value.
 <c>19</c><c><spanx style="verb">STATUS_ALREADY</spanx></c><c>The operation is already in progress, or the property already has the value.</c>
 <c>20</c><c><spanx style="verb">STATUS_ITEM_NOT_FOUND</spanx></c><c>The given item could not be found in the property.</c>
 <c>21</c><c><spanx style="verb">STATUS_INVALID_COMMAND_FOR_PROP</spanx></c><c>The given command cannot be performed on this property.</c>
+<c>??</c><c><spanx style="verb">STATUS_PROP_VALUE_TOO_BIG</spanx></c><c>The value fo this property is too large.</c>
 <c>112</c><c><spanx style="verb">STATUS_RESET_POWER_ON</spanx></c><c>Cold power-on start.</c>
 <c>113</c><c><spanx style="verb">STATUS_RESET_EXTERNAL</spanx></c><c>External device reset.</c>
 <c>114</c><c><spanx style="verb">STATUS_RESET_SOFTWARE</spanx></c><c>Internal software orderly reset.</c>
@@ -2573,6 +2574,227 @@ It bring up link-local IPv6 capabilities on PROP_STREAM_NET_INSECURE.
 <t>Setting this to true implies also setting <spanx style="verb">PROP_NET_IF_UP</spanx> to true.
 </t>
 </section>
+
+<section anchor="prop-net-role" title="PROP 67: PROP_NET_ROLE">
+<t>
+<list style="symbols">
+<t>Type: Single-Value, Read-Only*</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required: REQUIRED</t>
+<t>Unit: Enumeration</t>
+<t>Post-Reset Value: 0 (<spanx style="verb">NET_ROLE_DETACHED</spanx>)</t>
+</list>
+</t>
+<texttable>
+<ttcol align="right">Bytes:</ttcol>
+<ttcol align="center">1</ttcol>
+
+<c>Format:</c><c>UINT8</c>
+<c>Fields:</c><c><spanx style="verb">NET_ROLE</spanx></c>
+</texttable>
+<t>Indicates what role the current device is playing on the network. This property is
+read-only, with the exception that the AP can indicate that it wants the NCP to
+detach and then attempt to reattach by setting this property to <spanx style="verb">NET_ROLE_DETACHED</spanx>
+when it was previously set to another value. Attempting to set this property
+to any other value will result in <spanx style="verb">STATUS_INVALID_ARGUMENT</spanx> being emitted.
+</t>
+<texttable>
+<ttcol align="center">Code</ttcol>
+<ttcol align="center">Name</ttcol>
+
+<c>0</c><c><spanx style="verb">NET_ROLE_DETACHED</spanx></c>
+<c>1</c><c><spanx style="verb">NET_ROLE_CHILD</spanx></c>
+<c>2</c><c><spanx style="verb">NET_ROLE_ROUTER</spanx></c>
+<c>3</c><c><spanx style="verb">NET_ROLE_LEADER</spanx></c>
+<c>4</c><c><spanx style="verb">NET_ROLE_PEER</spanx></c>
+</texttable>
+<t>
+<list style="hanging">
+<t hangText="NET_ROLE_DETACHED">
+<vspace />
+The NCP is not currently participating on a network, or is in the process of attaching
+to a network.</t>
+<t hangText="NET_ROLE_CHILD">
+<vspace />
+The NCP is currently attached to the mesh network as a child to a router node. Communication
+with nodes more than one hop away is possible. The NCP does not route any mesh traffic on the
+behalf of other nodes.</t>
+<t hangText="NET_ROLE_ROUTER">
+<vspace />
+The NCP is currently a router node on the network, and will transparently route mesh
+traffic on behalf of other nodes.</t>
+<t hangText="NET_ROLE_LEADER">
+<vspace />
+This role is identical ot <spanx style="verb">NET_ROLE_ROUTER</spanx> except that there is only node designated as the
+leader per partition. This role is Thread-specific.</t>
+<t hangText="NET_ROLE_PEER">
+<vspace />
+In this role, the NCP may communicate with nodes which are no more than one hop away. This
+role is used while obtaining the network provision during in-band commissioning.</t>
+</list>
+</t>
+</section>
+
+<section anchor="prop-net-network-name" title="PROP 68: PROP_NET_NETWORK_NAME">
+<t>
+<list style="symbols">
+<t>Type: Single-Value, Read-Write</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required: REQUIRED for standard network layer</t>
+<t>Post-Reset Value: Empty</t>
+</list>
+</t>
+<texttable>
+<ttcol align="right">Bytes:</ttcol>
+<ttcol align="center">n</ttcol>
+<ttcol align="center">1</ttcol>
+
+<c>Format:</c><c>UTF8</c><c>CONST</c>
+<c>Fields:</c><c><spanx style="verb">NETWORK_NAME</spanx></c><c>0x00</c>
+</texttable>
+<t>Contains a zero-terminated UTF8 string which describes the name of
+the current network. This is analogous to the SSID in 802.11. The maximum
+length of the string is technology specific. Setting this property to a value
+that is too large will cause <spanx style="verb">STATUS_PROP_VALUE_TOO_BIG</spanx> to be emitted.
+</t>
+<t>When this value is being retrieved, all trailing zero bytes in the network name
+MUST be stripped. When this value is being set, all trailing zero bytes
+SHOULD be stripped.
+</t>
+<t>See <xref target="security-network-name"/> for security considerations regarding UTF8
+normalization.
+</t>
+</section>
+
+<section anchor="prop-net-xpanid" title="PROP 69: PROP_NET_XPANID">
+<t>
+<list style="symbols">
+<t>Type: Single-Value, Read-Write</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required: REQUIRED for standard network layer</t>
+<t>Post-Reset Value: All zeros</t>
+</list>
+</t>
+<texttable>
+<ttcol align="right">Bytes:</ttcol>
+<ttcol align="center">8</ttcol>
+
+<c>Format:</c><c>XPANID</c>
+<c>Fields:</c><c><spanx style="verb">NET_XPANID</spanx></c>
+</texttable>
+<t>Contains the extended personal-area network identifier for the current
+network. It allows for different networks with identical names to not
+conflict with each other. It is defined to be eight bytes long.
+</t>
+<t>For network technologies which don't have the concept of an XPANID,
+this property is hard-coded to always be all zeros.
+</t>
+</section>
+
+<section anchor="prop-net-master-key" title="PROP 70: PROP_NET_MASTER_KEY">
+<t>
+<list style="symbols">
+<t>Type: Single-Value, Read-Write</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required: REQUIRED for standard network layer</t>
+<t>Post-Reset Value: Unspecified</t>
+</list>
+</t>
+<texttable>
+<ttcol align="right">Bytes:</ttcol>
+<ttcol align="center">n</ttcol>
+
+<c>Format:</c><c>DATA</c>
+<c>Fields:</c><c><spanx style="verb">NET_MASTER_KEY</spanx></c>
+</texttable>
+<t>Master key material. The exact length of the value for this property is defined by
+the technology, but is generally 16-bytes (128-bit).
+</t>
+</section>
+
+<section anchor="prop-net-key-sequence-counter" title="PROP 71: PROP_NET_KEY_SEQUENCE_COUNTER">
+<t>
+<list style="symbols">
+<t>Type: Single-Value, Read-Write</t>
+<t>Asynchronous Updates: No</t>
+<t>Required: REQUIRED for standard network layer</t>
+<t>Post-Reset Value: 0</t>
+</list>
+</t>
+<texttable>
+<ttcol align="right">Bytes:</ttcol>
+<ttcol align="center">4</ttcol>
+
+<c>Format:</c><c>UINT32</c>
+<c>Fields:</c><c><spanx style="verb">NET_KEY_SEQUENCE_COUNTER</spanx></c>
+</texttable>
+</section>
+
+<section anchor="prop-net-partition-id" title="PROP 72: PROP_NET_PARTITION_ID">
+<t>
+<list style="symbols">
+<t>Type: Single-Value, Read-Only</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required: OPTIONAL</t>
+<t>Post-Reset Value: Unspecified</t>
+</list>
+</t>
+<texttable>
+<ttcol align="right">Bytes:</ttcol>
+<ttcol align="center">4</ttcol>
+
+<c>Format:</c><c>UINT32</c>
+<c>Fields:</c><c><spanx style="verb">NET_PARTITION_ID</spanx></c>
+</texttable>
+<t>The partition ID of the partition that this node is a member of.
+</t>
+<t>For network technologies which don't have the concept of a partition id,
+this property is hard-coded to always be zero.
+</t>
+</section>
+
+<section anchor="prop-net-require-join-existing" title="PROP 73: PROP_NET_REQUIRE_JOIN_EXISTING">
+<t>
+<list style="symbols">
+<t>Type: Single-Value, Read-Write</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required:
+<list style="symbols">
+<t>Read: OPTIONAL</t>
+<t>Write: REQUIRED</t>
+</list></t>
+<t>Post-Reset Value: 0 (false)</t>
+</list>
+</t>
+<texttable>
+<ttcol align="right">Bytes:</ttcol>
+<ttcol align="center">1</ttcol>
+
+<c>Format:</c><c>BOOL</c>
+<c>Fields:</c><c><spanx style="verb">NET_REQUIRE_JOIN_EXISTING</spanx></c>
+</texttable>
+<t><cref source="RQ">TODO: Elaborate on PROP_NET_JOIN_EXISTING --</cref></t>
+</section>
+
+<section anchor="prop-net-key-swtich-guardtime" title="PROP 74: PROP_NET_KEY_SWITCH_GUARDTIME">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding: <spanx style="verb">L</spanx></t>
+</list>
+</t>
+<t><cref source="RQ">TODO: This likely doesn't belong in core, at least not in the small-number section.  --</cref></t>
+</section>
+
+<section anchor="prop-net-pskc" title="PROP 75: PROP_NET_PSKC">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding: <spanx style="verb">D</spanx></t>
+</list>
+</t>
+<t><cref source="RQ">TODO: This likely doesn't belong in core, at least not in the small-number section.  --</cref></t>
+</section>
 </section>
 
 <section anchor="prop-ipv6" title="IPv6 Properties">
@@ -2686,6 +2908,12 @@ Array of structures containing:
 <section anchor="security-considerations" title="Security Considerations">
 <t>EDITOR: Insert verbiage here conforming to RFC Editor guidelines.
 </t>
+
+<section anchor="security-network-name" title="Network Name Normalization">
+<t>TODO: Discuss UTF8 verification and normalization considerations related to
+<spanx style="verb">PROP_NET_NETWORK_NAME</spanx>.
+</t>
+</section>
 
 <section anchor="raw-application-access" title="Raw Application Access">
 <t>Spinel MAY be used as an API boundary for allowing processes to configure the NCP. However, such a system MUST NOT give unprivileged processess the ability to send or receive arbitrary command frames to the NCP. Only the specific commands and properties that are required should be allowed to be passed, and then only after being checked for proper format.
