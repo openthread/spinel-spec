@@ -4,7 +4,7 @@
 
 * Type: Single-Value, Read-Only
 * Asynchronous Updates: Yes
-* Required: Yes
+* Required: **REQUIRED**
 * Post-Reset Value: Reset Reason Code
 
 Bytes:  |    1-3
@@ -33,7 +33,7 @@ See (#status-codes) for the complete list of status codes.
 
 * Type: Single-Value, Constant
 * Asynchronous Updates: No
-* Required: Yes
+* Required: **REQUIRED**
 * Post-Reset Value: 4, 3
 
 Bytes:  |       1-3       |      1-3
@@ -67,7 +67,7 @@ be identical across all implemented NLIs.
 
 * Type: Single-Value, Constant
 * Asynchronous Updates: No
-* Required: Yes
+* Required: **REQUIRED**
 * Scope: Firmware
 * Post-Reset Value: Implementation-Specific
 
@@ -119,7 +119,7 @@ identical across all implemented NLIs.
 
 * Type: Single-Value, Constant
 * Asynchronous Updates: No
-* Required: Yes
+* Required: **REQUIRED**
 * Post-Reset Value: Implementation-Specific
 
 Bytes:  |    1-3
@@ -146,7 +146,7 @@ network protocol given by the NCP.
 
 * Type: Single-Value, Constant
 * Asynchronous Updates: No
-* Required: Yes
+* Required: **REQUIRED**
 * Post-Reset Value: Implementation-Specific
 
 Bytes:  |    1-3
@@ -161,7 +161,7 @@ Fields: | `VENDOR_ID`
 
 * Type: Multiple-Value, Constant
 * Asynchronous Updates: No
-* Required: Yes
+* Required: **REQUIRED**
 * Post-Reset Value: Implementation-Specific
 
 Bytes:  |   1-3 |  1-3  | ...
@@ -176,7 +176,7 @@ packed unsigned integers. See (#capabilities) for a list of values.
 
 * Type: Single-Value, Constant
 * Asynchronous Updates: No
-* Required: Yes
+* Required: **REQUIRED**
 * Post-Reset Value: 1-4
 
 Bytes:  |    1
@@ -197,9 +197,11 @@ identical across all implemented NLIs.
 * Asynchronous Updates: Yes
 * Required:
 	* Read: Yes
-	* Write: RECOMENDED
+	* Write: **RECOMENDED**
 * Post-Reset Value: `POWER_STATE_ONLINE`
-* Related Capabilities: `CAP_POWER_STATE`(writable)
+* Related Capabilities:
+    * `CAP_POWER_STATE`: Required when writable
+* See Also: (#prop-mac-data-poll-period)
 
 Bytes:  |    1
 -------:|-------------
@@ -246,7 +248,7 @@ Code    | Name
 * Type: Single-Value, Read-Only
 * Asynchronous Updates: No
 * Post-Reset Value: Determined by Factory
-* Required: Yes
+* Required: **REQUIRED**
 
 Bytes:  |    8
 -------:|-------------
@@ -260,7 +262,7 @@ The EUI-64 (TODO:CITE) format of the link-layer address of the device.
 
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: No
-* Required: No
+* Required: **OPTIONAL**
 * Post-Reset Value: 0
 * Required Capability: `CAP_LOCK`
 
@@ -286,7 +288,7 @@ of `STATUS_ALREADY`.
 
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: No
-* Required: No
+* Required: **OPTIONAL**
 * Post-Reset Value: `HOST_POWER_STATE_ONLINE`
 * Required Capability: `???` (TODO: Assign a capability)
 
@@ -369,7 +371,7 @@ NLI is not zero are not specified.
 
 * Type: Multi-Value, Read-Write
 * Asynchronous Updates: No
-* Required: No
+* Required: **OPTIONAL**
 * Post-Reset Value: Empty
 * Scope: NCP
 * Required Capability: `CAP_UNSOL_UPDATE_FILTER`
@@ -409,7 +411,7 @@ NCP **MUST** ignore the unsupported properties.
 
 * Type: Multi-Value, Constant
 * Asynchronous Updates: No
-* Required: No
+* Required: **OPTIONAL**
 * Post-Reset Value: Implementation Specific
 * Scope: Firmware
 * Required Capability: `CAP_UNSOL_UPDATE_FILTER`
@@ -439,7 +441,7 @@ those properties **SHOULD NOT** not be included in this list.
 
 * Type: Character-Stream, Output-Only
 * Asynchronous Updates: Yes
-* Required: No
+* Required: **OPTIONAL**
 * Scope: NLI
 
 Bytes:  |    *n*
@@ -466,7 +468,7 @@ first bytes of the next emission from this stream.
 
 * Type: Packet-Stream, Input/Output
 * Asynchronous Updates: Yes
-* Required: No
+* Required: **OPTIONAL**
 * Scope: NLI
 * Related Capabilities:
 	* `CAP_WRITABLE_RAW_STREAM`: Can be written to if present.
@@ -501,7 +503,7 @@ specified in the core protocol.
 
 * Type: Packet-Stream, Input/Output
 * Asynchronous Updates: Yes
-* Required: Yes
+* Required: **REQUIRED**
 * Scope: NLI
 
 Bytes:  |        2       |     *n*    |       *n*
@@ -519,7 +521,7 @@ format of which is described in (#frame-metadata-format).
 
 * Type: Packet-Stream, Input/Output
 * Asynchronous Updates: Yes
-* Required: Yes
+* Required: **REQUIRED**
 * Scope: NLI
 
 Bytes:  |        2       |     *n*    |       *n*
