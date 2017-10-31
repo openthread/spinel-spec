@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rfc SYSTEM 'rfc2629.dtd' []>
-<rfc ipr="trust200902" category="std" docName="draft-rquattle-spinel-core-fa153f6">
+<rfc ipr="trust200902" category="std" docName="draft-rquattle-spinel-core-c7807a1">
 <?rfc toc="yes"?>
 <?rfc symrefs="yes"?>
 <?rfc sortrefs="yes"?>
@@ -42,7 +42,7 @@
 <uri></uri>
 </address>
 </author>
-<date year="2017" month="October" day="30"/>
+<date year="2017" month="October" day="31"/>
 
 <area>Internet</area>
 <workgroup></workgroup>
@@ -1118,16 +1118,12 @@ very frequently are generally allocated from the &quot;primary&quot; range.
 <t>Type: Single-Value, Read-Only</t>
 <t>Asynchronous Updates: Yes</t>
 <t>Required: REQUIRED</t>
+<t>Scope: NLI</t>
+<t>Value Type: PUI</t>
+<t>Units: Enumeration</t>
 <t>Post-Reset Value: Reset Reason Code</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1-3</ttcol>
-
-<c>Format:</c><c>PUI</c>
-<c>Fields:</c><c><spanx style="verb">STATUS_CODE</spanx></c>
-</texttable>
 <t>This property describes the status code of the last NCP operation. For
 many commands, failure is indicated by emitting this property with the
 TID matching the failing command. It is generally not necessary to
@@ -1153,6 +1149,8 @@ values.
 <t>Type: Single-Value, Constant</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: REQUIRED</t>
+<t>Scope: NCP</t>
+<t>Value Type: PUI, PUI</t>
 <t>Post-Reset Value: 4, 3</t>
 </list>
 </t>
@@ -1198,18 +1196,11 @@ be identical across all implemented NLIs.
 <t>Type: Single-Value, Constant</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: REQUIRED</t>
-<t>Scope: Firmware</t>
+<t>Scope: NCP</t>
+<t>Value Type: STRING</t>
 <t>Post-Reset Value: Implementation-Specific</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">n</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>ASCII</c><c>CONST</c>
-<c>Fields:</c><c><spanx style="verb">NCP_VERSION</spanx></c><c>0x00</c>
-</texttable>
 <t>Contains a zero-terminated ASCII string which describes the firmware
 currently running on the NCP.
 </t>
@@ -1264,16 +1255,12 @@ identical across all implemented NLIs.
 <t>Type: Single-Value, Constant</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: REQUIRED</t>
+<t>Scope: NLI</t>
+<t>Value Type: PUI</t>
+<t>Units: Enumeration</t>
 <t>Post-Reset Value: Implementation-Specific</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1-3</ttcol>
-
-<c>Format:</c><c>PUI</c>
-<c>Fields:</c><c><spanx style="verb">INTERFACE_TYPE</spanx></c>
-</texttable>
 <t>This unsigned packed integer identifies the network protocol
 implemented by this NCP. A registry of network interface type codes is
 maintained by IANA with a reservation policy of Specification
@@ -1299,16 +1286,12 @@ network protocol given by the NCP.
 <t>Type: Single-Value, Constant</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: REQUIRED</t>
+<t>Scope: NCP</t>
+<t>Value Type: PUI</t>
+<t>Units: Enumeration</t>
 <t>Post-Reset Value: Implementation-Specific</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1-3</ttcol>
-
-<c>Format:</c><c>PUI</c>
-<c>Fields:</c><c><spanx style="verb">VENDOR_ID</spanx></c>
-</texttable>
 <t><cref source="JW">I have no idea how to write the IANA registry creation text for this. --</cref></t>
 <t><cref source="RQ">Maybe we should switch this over to be a string instead? --</cref></t>
 </section>
@@ -1317,20 +1300,15 @@ network protocol given by the NCP.
 <t>
 <list style="symbols">
 <t>Type: Multiple-Value, Constant</t>
+<t>Has Item Length Prefix: No</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: REQUIRED</t>
+<t>Scope: NLI</t>
+<t>Item Type: PUI</t>
+<t>Units: Enumeration</t>
 <t>Post-Reset Value: Implementation-Specific</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1-3</ttcol>
-<ttcol align="center">1-3</ttcol>
-<ttcol align="center">...</ttcol>
-
-<c>Format:</c><c>PUI</c><c>PUI</c><c>...</c>
-<c>Fields:</c><c><spanx style="verb">CAP</spanx></c><c><spanx style="verb">CAP</spanx></c><c>...</c>
-</texttable>
 <t>Describes the supported capabilities of this NCP. Encoded as a list of
 packed unsigned integers. See <xref target="capabilities"/> for a list of values.
 </t>
@@ -1342,16 +1320,12 @@ packed unsigned integers. See <xref target="capabilities"/> for a list of values
 <t>Type: Single-Value, Constant</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: REQUIRED</t>
+<t>Scope: NCP</t>
+<t>Item Type: UINT8</t>
+<t>Units: Count</t>
 <t>Post-Reset Value: 1-4</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>INT</c>
-<c>Fields:</c><c><spanx style="verb">INTERFACE_COUNT</spanx></c>
-</texttable>
 <t>Describes the number of concurrent interfaces supported by this NCP.
 Since the concurrent interface mechanism is still TBD, this value
 MUST always be one.
@@ -1368,9 +1342,12 @@ identical across all implemented NLIs.
 <t>Asynchronous Updates: Yes</t>
 <t>Required:
 <list style="symbols">
-<t>Read: Yes</t>
-<t>Write: <spanx style="strong">RECOMENDED</spanx></t>
+<t><spanx style="verb">CMD_PROP_VALUE_GET</spanx>: REQUIRED</t>
+<t><spanx style="verb">CMD_PROP_VALUE_SET</spanx>: <spanx style="strong">RECOMENDED</spanx></t>
 </list></t>
+<t>Scope: NLI</t>
+<t>Item Type: UINT8</t>
+<t>Units: Enumeration</t>
 <t>Post-Reset Value: <spanx style="verb">POWER_STATE_ONLINE</spanx></t>
 <t>Related Capabilities:
 <list style="symbols">
@@ -1379,13 +1356,6 @@ identical across all implemented NLIs.
 <t>See Also: <xref target="prop-mac-data-poll-period"/></t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>INT</c>
-<c>Fields:</c><c><spanx style="verb">POWER_STATE</spanx></c>
-</texttable>
 <t>A single octet coded that indicates the current power state of the
 NCP. Setting this property allows controls of the current NCP power
 state. The following table enumerates the standard codes and their
@@ -1432,17 +1402,12 @@ NCP is powered for full responsiveness.</t>
 <list style="symbols">
 <t>Type: Single-Value, Read-Only</t>
 <t>Asynchronous Updates: No</t>
-<t>Post-Reset Value: Determined by Factory</t>
 <t>Required: REQUIRED</t>
+<t>Scope: NLI</t>
+<t>Value Type: EUI64_BE</t>
+<t>Post-Reset Value: Determined by Factory</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">8</ttcol>
-
-<c>Format:</c><c>EUI-64-BE</c>
-<c>Fields:</c><c><spanx style="verb">HWADDR</spanx></c>
-</texttable>
 <t>The EUI-64 (TODO:CITE) format of the link-layer address of the device.
 MAY be different across multiple NLIs.
 </t>
@@ -1454,17 +1419,12 @@ MAY be different across multiple NLIs.
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: OPTIONAL</t>
-<t>Post-Reset Value: 0</t>
+<t>Scope: NLI</t>
 <t>Required Capability: <spanx style="verb">CAP_LOCK</spanx></t>
+<t>Value Type: BOOL</t>
+<t>Post-Reset Value: 0 (false)</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>Boolean</c>
-<c>Fields:</c><c><spanx style="verb">LOCK</spanx></c>
-</texttable>
 <t>Property transaction lock. Used for grouping transactional changes to
 several properties for simultaneous commit, or to temporarily prevent
 the automatic updating of property values. When this property is set,
@@ -1486,17 +1446,13 @@ of <spanx style="verb">STATUS_ALREADY</spanx>.
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: OPTIONAL</t>
-<t>Post-Reset Value: <spanx style="verb">HOST_POWER_STATE_ONLINE</spanx></t>
+<t>Scope: NCP</t>
 <t>Required Capability: <spanx style="verb">???</spanx> (TODO: Assign a capability)</t>
+<t>Value Type: UINT8</t>
+<t>Units: Enumeration</t>
+<t>Post-Reset Value: <spanx style="verb">HOST_POWER_STATE_ONLINE</spanx></t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>INT</c>
-<c>Fields:</c><c><spanx style="verb">HOST_POWER_STATE</spanx></c>
-</texttable>
 <t>Describes the current power state of the <spanx style="emph">OS</spanx>. This property is used
 by the OS to inform the NCP when it has changed power states. The NCP
 can then use this state to determine which properties need
@@ -1577,22 +1533,16 @@ NLI is not zero are not specified.
 <t>
 <list style="symbols">
 <t>Type: Multi-Value, Read-Write</t>
+<t>Has Item Length Prefix: No</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: OPTIONAL</t>
-<t>Post-Reset Value: Empty</t>
-<t>Scope: NCP</t>
+<t>Scope: NLI</t>
 <t>Required Capability: <spanx style="verb">CAP_UNSOL_UPDATE_FILTER</spanx></t>
+<t>Item Type: PUI (<xref target="packed-unsigned-integer"/>)</t>
+<t>Units: Enumeration (Property Keys)</t>
+<t>Post-Reset Value: Empty</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1-3</ttcol>
-<ttcol align="center">1-3</ttcol>
-<ttcol align="center">...</ttcol>
-
-<c>Format:</c><c>PUI</c><c>PUI</c><c>...</c>
-<c>Fields:</c><c><spanx style="verb">PROP_ID</spanx></c><c><spanx style="verb">PROP_ID</spanx></c><c>...</c>
-</texttable>
 <t>Contains a list of property IDs which are <spanx style="emph">excluded</spanx> from generating
 unsolicited value updates. This property MUST be empty after NCP
 reset.
@@ -1623,22 +1573,16 @@ NCP MUST ignore the unsupported properties.
 <t>
 <list style="symbols">
 <t>Type: Multi-Value, Constant</t>
+<t>Has Item Length Prefix: No</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: OPTIONAL</t>
-<t>Post-Reset Value: Implementation Specific</t>
-<t>Scope: Firmware</t>
+<t>Scope: NLI</t>
 <t>Required Capability: <spanx style="verb">CAP_UNSOL_UPDATE_FILTER</spanx></t>
+<t>Item Type: PUI (<xref target="packed-unsigned-integer"/>)</t>
+<t>Units: Enumeration (Property Keys)</t>
+<t>Post-Reset Value: Implementation Specific</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1-3</ttcol>
-<ttcol align="center">1-3</ttcol>
-<ttcol align="center">...</ttcol>
-
-<c>Format:</c><c>PUI</c><c>PUI</c><c>...</c>
-<c>Fields:</c><c><spanx style="verb">PROP_ID</spanx></c><c><spanx style="verb">PROP_ID</spanx></c><c>...</c>
-</texttable>
 <t>Contains a list of properties which are capable of generating
 unsolicited value updates. This list can be used when populating
 <spanx style="verb">PROP_UNSOL_UPDATE_FILTER</spanx> to disable all unsolicited property
@@ -1661,19 +1605,12 @@ those properties SHOULD NOT not be included in this list.
 <section anchor="prop-stream-debug" title="PROP 112: PROP_STREAM_DEBUG">
 <t>
 <list style="symbols">
-<t>Type: Character-Stream, Output-Only</t>
-<t>Asynchronous Updates: Yes</t>
+<t>Type: Byte-Stream, Output-Only</t>
 <t>Required: OPTIONAL</t>
-<t>Scope: NLI</t>
+<t>Scope: NCP</t>
+<t>Value Type: UTF8 Fragment</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">n</ttcol>
-
-<c>Format:</c><c>UTF8</c>
-<c>Fields:</c><c><spanx style="verb">DEBUG_DATA</spanx></c>
-</texttable>
 <t>This stream provides human-readable debugging output which may be
 displayed in the OS logs. It is intended to be treated as a one-way
 virtual serial stream. The OS MUST NOT assume that each emission
@@ -1695,24 +1632,25 @@ first bytes of the next emission from this stream.
 <t>
 <list style="symbols">
 <t>Type: Packet-Stream, Input/Output</t>
-<t>Asynchronous Updates: Yes</t>
 <t>Required: OPTIONAL</t>
 <t>Scope: NLI</t>
 <t>Related Capabilities:
 <list style="symbols">
 <t><spanx style="verb">CAP_WRITABLE_RAW_STREAM</spanx>: Can be written to if present.</t>
 </list></t>
+<t>Value Type: Structure</t>
 </list>
 </t>
-<texttable>
-<ttcol align="left">Bytes:</ttcol>
-<ttcol align="left">2</ttcol>
-<ttcol align="left">n</ttcol>
-<ttcol align="left">n</ttcol>
 
-<c>Format:</c><c>UINT16-LE</c><c>DATA</c><c>OPTIONAL DATA</c>
-<c>Fields:</c><c>FRAME_DATA_LEN</c><c>FRAME_DATA</c><c>FRAME_METADATA</c>
-</texttable>
+<figure align="center"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   FRAME_LEN (Little endian)   | FRAME_DATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   FRAME_METADATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
 <t>This stream provides the capability of sending and receiving raw
 packets to and from the network. The exact format of the frame
 metadata and data is dependent on the MAC and PHY being used.
@@ -1729,7 +1667,7 @@ the NCP.
 </t>
 
 <section anchor="frame-metadata-format" title="Frame Metadata Format">
-<t>Any data past the end of <spanx style="verb">FRAME_DATA_LEN</spanx> is considered metadata and
+<t>Any data past the end of <spanx style="verb">FRAME_DATA</spanx> is considered metadata and
 is OPTIONAL. Frame metadata MAY be empty or partially
 specified. The operational semantics of using frame metadata is not
 specified in the core protocol.
@@ -1741,24 +1679,26 @@ specified in the core protocol.
 <t>
 <list style="symbols">
 <t>Type: Packet-Stream, Input/Output</t>
-<t>Asynchronous Updates: Yes</t>
 <t>Required: REQUIRED</t>
 <t>Scope: NLI</t>
+<t>Value Type: Structure</t>
+<t>See Also: <xref target="prop-stream-net-insecure"/></t>
 </list>
 </t>
-<texttable>
-<ttcol align="left">Bytes:</ttcol>
-<ttcol align="left">2</ttcol>
-<ttcol align="left">n</ttcol>
-<ttcol align="left">n</ttcol>
 
-<c>Format:</c><c>UINT16-LE</c><c>IPv6</c><c>OPTIONAL DATA</c>
-<c>Fields:</c><c>FRAME_DATA_LEN</c><c>FRAME_DATA</c><c>FRAME_METADATA</c>
-</texttable>
+<figure align="center"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   FRAME_LEN (Little endian)   | FRAME_DATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   FRAME_METADATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
 <t>This stream provides the capability of sending and receiving data
 packets to and from the currently attached network.
 </t>
-<t>Any data past the end of <spanx style="verb">FRAME_DATA_LEN</spanx> is considered metadata, the
+<t>Any data past the end of <spanx style="verb">FRAME_LEN</spanx> is considered metadata, the
 format of which is described in <xref target="frame-metadata-format"/>.
 </t>
 </section>
@@ -1767,26 +1707,18 @@ format of which is described in <xref target="frame-metadata-format"/>.
 <t>
 <list style="symbols">
 <t>Type: Packet-Stream, Input/Output</t>
-<t>Asynchronous Updates: Yes</t>
 <t>Required: REQUIRED</t>
 <t>Scope: NLI</t>
+<t>Value Type: Structure</t>
+<t>See Also: <xref target="prop-stream-net"/></t>
 </list>
 </t>
-<texttable>
-<ttcol align="left">Bytes:</ttcol>
-<ttcol align="left">2</ttcol>
-<ttcol align="left">n</ttcol>
-<ttcol align="left">n</ttcol>
-
-<c>Format:</c><c>UINT16-LE</c><c>IPv6</c><c>OPTIONAL DATA</c>
-<c>Fields:</c><c>FRAME_DATA_LEN</c><c>FRAME_DATA</c><c>FRAME_METADATA</c>
-</texttable>
+<t>The structure of the value of this property is identical to that of
+PROP_STREAM_NET (<xref target="prop-stream-net"/>).
+</t>
 <t>This stream provides the capability of sending and receiving plaintext
 non-authenticated data packets to and from the currently attached
 network.
-</t>
-<t>Any data past the end of <spanx style="verb">FRAME_DATA_LEN</spanx> is considered metadata, the
-format of which is described in <xref target="frame-metadata-format"/>.
 </t>
 </section>
 </section>
@@ -1796,24 +1728,22 @@ format of which is described in <xref target="frame-metadata-format"/>.
 <section anchor="prop-phy-enabled" title="PROP 32: PROP_PHY_ENABLED">
 <t>
 <list style="symbols">
-<t>Type: Single-Value, Read-Write</t>
+<t>Type: Single-Value, Read/Write</t>
 <t>Asynchronous Updates: No</t>
 <t>Required:
 <list style="symbols">
-<t>Read: Yes</t>
-<t>Write: No</t>
+<t><spanx style="verb">CMD_PROP_VALUE_GET</spanx>: REQUIRED</t>
+<t><spanx style="verb">CMD_PROP_VALUE_SET</spanx>: <spanx style="strong">RECOMENDED</spanx></t>
 </list></t>
+<t>Scope: NLI</t>
+<t>Related Capabilities:
+<list style="symbols">
+<t><spanx style="verb">CAP_MAC_RAW</spanx> required to use <spanx style="verb">CMD_PROP_VALUE_SET</spanx></t>
+</list></t>
+<t>Value Type: BOOL</t>
 <t>Post-Reset Value: 0 (false)</t>
-<t>Related Capabilities: SPINEL_CAP_MAC_RAW</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>BOOL</c>
-<c>Fields:</c><c><spanx style="verb">PHY_ENABLED</spanx></c>
-</texttable>
 <t>Set to 1 if the PHY is enabled, set to 0 otherwise.
 May be directly enabled to bypass higher-level packet processing
 in order to implement things like packet sniffers. This property
@@ -1827,19 +1757,15 @@ can only be written if the <spanx style="verb">SPINEL_CAP_MAC_RAW</spanx> capabi
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: REQUIRED</t>
-<t>Unit: Channel Index</t>
+<t>Value Type: UINT8</t>
+<t>Units: Channel Index</t>
 <t>Post-Reset Value: Unspecified</t>
+<t>See Also: (<xref target="prop-phy-chan-supported"/>)</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>UINT8</c>
-<c>Fields:</c><c><spanx style="verb">CHANNEL</spanx></c>
-</texttable>
-<t>Value is the current channel. Must be set to one of the
+<t>Value is the current channel index. Must be set to one of the
 values contained in <spanx style="verb">PROP_PHY_CHAN_SUPPORTED</spanx>.
+m
 </t>
 </section>
 
@@ -1847,22 +1773,15 @@ values contained in <spanx style="verb">PROP_PHY_CHAN_SUPPORTED</spanx>.
 <t>
 <list style="symbols">
 <t>Type: Multiple-Value, Constant</t>
+<t>Has Item Length Prefix: No</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: REQUIRED</t>
-<t>Unit: Channel Index</t>
-<t>Post-Reset Value: Implementation Specific</t>
+<t>Item Type: UINT8</t>
+<t>Units: Channel Index</t>
+<t>See Also: (<xref target="prop-phy-chan"/>)</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">...</ttcol>
-
-<c>Format:</c><c>UINT8</c><c>UINT8</c><c>...</c>
-<c>Fields:</c><c><spanx style="verb">CHANNEL</spanx></c><c><spanx style="verb">CHANNEL</spanx></c><c>...</c>
-</texttable>
-<t>Value is a list of channel values that are supported by the
+<t>Value is a list of channel indexes that are supported by the
 NCP.
 </t>
 </section>
@@ -1873,17 +1792,13 @@ NCP.
 <t>Type: Single-Value, Read-Only</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: REQUIRED</t>
-<t>Unit: kHz</t>
+<t>Scope: NLI</t>
+<t>Value Type: UINT32_LE</t>
+<t>Units: kHz</t>
 <t>Post-Reset Value: Unspecified</t>
+<t>See Also: (<xref target="prop-phy-chan"/>)</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>UINT32_LE</c>
-<c>Fields:</c><c><spanx style="verb">FREQ</spanx></c>
-</texttable>
 <t>Value is the radio frequency (in kilohertz) of the
 current channel.
 </t>
@@ -1895,17 +1810,11 @@ current channel.
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: OPTIONAL</t>
-<t>Unit: dB</t>
-<t>Post-Reset Value: Implementation-specific default</t>
+<t>Value Type: INT8</t>
+<t>Unit: dB (RF Power)</t>
+<t>Post-Reset Value: Implementation Specified</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>INT8</c>
-<c>Fields:</c><c><spanx style="verb">CCA_THRESHOLD</spanx></c>
-</texttable>
 <t>Value is the CCA (clear-channel assessment) threshold. Set to
 -128 to disable.
 </t>
@@ -1926,18 +1835,13 @@ that is supported by the underlying radio hardware.
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: REQUIRED</t>
-<t>Unit: dB</t>
-<t>Post-Reset Value: 0dB</t>
+<t>Value Type: INT8</t>
+<t>Unit: dB (RF Power)</t>
+<t>Post-Reset Value: 0dB RECOMMENDED</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>INT8</c>
-<c>Fields:</c><c><spanx style="verb">TX_POWER</spanx></c>
-</texttable>
-<t>Value is the transmit power of the radio, measured in decibells.
+<t>Value is the maximum transmit power the network stack is allowed
+to set the radio to, measured in decibels.
 </t>
 <t>The specific meaning of zero dB is implementation-specific,
 but MUST be consistant with definitions of other properties
@@ -1956,17 +1860,11 @@ that is supported by the underlying radio hardware.
 <t>Type: Single-Value, Read-Only</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: REQUIRED</t>
-<t>Unit: dB</t>
+<t>Value Type: INT8</t>
+<t>Unit: dB (RF Power)</t>
 <t>Post-Reset Value: Unspecified</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>INT8</c>
-<c>Fields:</c><c><spanx style="verb">RSSI</spanx></c>
-</texttable>
 <t>Value is the current RSSI (Received Signal Strength Indication)
 from the radio. This value can be used in energy scans and for
 determining the ambient noise floor for the operating environment.
@@ -1982,11 +1880,11 @@ antenna connector.
 <section anchor="prop-phy-rx-sensitivity" title="PROP 39: PROP_PHY_RX_SENSITIVITY">
 <t>
 <list style="symbols">
-<t>Type: Single-Value, Read-Only</t>
+<t>Type: Single-Value, Constant</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: OPTIONAL</t>
+<t>Value Type: INT8</t>
 <t>Unit: dB</t>
-<t>Post-Reset Value: Unspecified</t>
 </list>
 </t>
 <texttable>
@@ -2016,17 +1914,11 @@ antenna connector.
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: Yes</t>
 <t>Required: REQUIRED</t>
-<t>Unit: Enumeration</t>
-<t>Post-Reset Value: 0 (false)</t>
+<t>Value Type: UINT8</t>
+<t>Units: Enumeration</t>
+<t>Post-Reset Value: <spanx style="verb">SCAN_STATE_IDLE</spanx></t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>UINT8</c>
-<c>Fields:</c><c><spanx style="verb">SCAN_STATE</spanx></c>
-</texttable>
 <t>TODO(RQ): This needs to be re-thought out. I don't like the whole discovery
 thing being a separate scan state. Maybe we should add another property
 for scanning only compatible networks.
@@ -2059,23 +1951,19 @@ scan operation. Discovery scan result will be emitted from
 <section anchor="prop-mac-scan-mask" title="PROP 49: PROP_MAC_SCAN_MASK">
 <t>
 <list style="symbols">
-<t>Type: Multi-Value, Read-Write</t>
+<t>Type: Multiple-Value, Read-Write</t>
+<t>Has Item Length Prefix: No</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: REQUIRED</t>
-<t>Unit: Channel Index</t>
-<t>Post-Reset Value: Same as PROP_PHY_CHAN_SUPPORTED</t>
+<t>Item Type: UINT8</t>
+<t>Units: Channel Index</t>
+<t>Post-Reset Value: Same as <spanx style="verb">PROP_PHY_CHAN_SUPPORTED</spanx></t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">...</ttcol>
-
-<c>Format:</c><c>UINT8</c><c>UINT8</c><c>...</c>
-<c>Fields:</c><c><spanx style="verb">CHANNEL</spanx></c><c><spanx style="verb">CHANNEL</spanx></c><c>...</c>
-</texttable>
 <t>This property contains the list of channels that will be scanned.
+</t>
+<t>Setting this property to be empty MUST reinitialize it with the contents
+of <spanx style="verb">PROP_PHY_CHAN_SUPPORTED</spanx>.
 </t>
 </section>
 
@@ -2084,63 +1972,75 @@ scan operation. Discovery scan result will be emitted from
 <list style="symbols">
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: No</t>
-<t>Required: OPTIONAL</t>
+<t>Required: RECOMMENDED</t>
+<t>Value Type: UINT16_LE</t>
 <t>Unit: milliseconds per channel</t>
-<t>Post-Reset Value: Implementation-specific-default</t>
+<t>Post-Reset Value: 100ms RECOMMENDED</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>UINT16_LE</c>
-<c>Fields:</c><c><spanx style="verb">MSEC</spanx></c>
-</texttable>
+<t>Number of milliseconds that the scan should wait per channel for
+beacons or for collecting energy samples.
+</t>
 </section>
 
 <section anchor="prop-mac-scan-beacon" title="PROP 51: PROP_MAC_SCAN_BEACON">
 <t>
 <list style="symbols">
-<t>Type: Packet Stream, Output-Only</t>
+<t>Type: Packet-Stream, Output-Only</t>
+<t>Asynchronous Updates: Yes</t>
 <t>Required: REQUIRED</t>
-<t>Packed-Encoding: <spanx style="verb">Ccdd</spanx> (or <spanx style="verb">Cct(ESSc)t(iCUdd)</spanx>)</t>
+<t>Scope: NLI</t>
+<t>Value Type: Structure</t>
 </list>
 </t>
-<texttable>
-<ttcol align="center">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">2</ttcol>
-<ttcol align="center">n</ttcol>
-<ttcol align="center">2</ttcol>
-<ttcol align="center">n</ttcol>
 
-<c>Format:</c><c>UINT8</c><c>INT8</c><c>UINT16_LE</c><c>DATA</c><c>UINT16_LE</c><c>DATA</c>
-<c>Fields:</c><c>CH</c><c>RSSI</c><c>MAC_LEN</c><c>MAC_DATA</c><c>NET_LEN</c><c>NET_DATA</c>
-</texttable>
+<figure align="center"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|    CHANNEL    |      RSSI     | MAC_LEN(Bytes, Little endian) |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   MAC_DATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| NET_LEN(Bytes, Little endian) | NET_DATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
 <t>Scan beacons have two embedded structures which contain
 information about the MAC layer and the NET layer. Their
 format depends on the MAC and NET layer currently in use.
 </t>
-<t>For example, in an 802.15.4 PHY, MAC_DATA would be formatted as follows:
+<t>For example, in an 802.15.4 PHY, <spanx style="verb">MAC_DATA</spanx> would be formatted as follows:
 </t>
-<texttable>
-<ttcol align="center">Bytes:</ttcol>
-<ttcol align="center">8</ttcol>
-<ttcol align="center">2</ttcol>
-<ttcol align="center">2</ttcol>
-<ttcol align="center">1</ttcol>
 
-<c>Format:</c><c>EUI-64</c><c>UINT16_LE</c><c>UINT16_LE</c><c>UINT8</c>
-<c>Fields:</c><c>LONG_ADDR</c><c>SHORT_ADDR</c><c>PAN-ID</c><c>LQI</c>
-</texttable>
-<t>For the standard network layer, the NET_DATA formatted as follows:
+<figure align="center"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                      EUI-64 (Upper word) ...                  :
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+:                  ... EUI-64 (Lower word)                      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  SHORT_ADDR (Little Endian)   |     PAN_ID (Little Endian)    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|      LQI      |
++-+-+-+-+-+-+-+-+
+</artwork></figure>
+<t>For the standard network layer, the <spanx style="verb">NET_DATA</spanx> formatted as follows:
 </t>
-<t>Bytes: | 1-3  |   1  |    <spanx style="emph">n</spanx>                             |  1   |  2 |  <spanx style="emph">n</spanx>    |  2| <spanx style="emph">n</spanx>
---------|----|------|----------------------------|------|---|------|----------
-Format: | PUI | UINT8 | UTF8                      |  ZT  |  UINT16_LE  | DATA   |UINT16_LE   | DATA
-Fields: | PROTO | FLAGS | NETWORK_NAME | 0x00 | XPANID_LEN| XPANID | STEERING_LEN | STEERING
-</t>
+
+<figure align="center"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|        PROTOCOL (PUI, three-bytes shown)      |     FLAGS     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   NETWORK_NAME (UTF8) ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|      0x00     |   XPANID_LEN (Little endian)  | XPANID ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  STEERING_LEN(Little endian)  | STEERING_DATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
 <t>Extra parameters may be added to each of the structures
 in the future, so care should be taken to read the length
 that prepends each structure.
@@ -2159,20 +2059,13 @@ antenna connector.
 <list style="symbols">
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: No</t>
-<t>Required: <spanx style="strong">ONLY</spanx> used with 802.15.4 MAC</t>
-<t>Post-Reset Value: Tehnology-dependent. MAY  be <spanx style="verb">PROP_HWADDR</spanx> or be randomly generated.</t>
+<t>Required: <spanx style="strong">ONLY</spanx> if used with 802.15.4 MAC</t>
+<t>Value Type: EUI64_BE</t>
+<t>Post-Reset Value: Tehnology-dependent. MAY  be <spanx style="verb">PROP_HWADDR</spanx> or randomly generated.</t>
 </list>
 </t>
-<texttable>
-<ttcol align="center">Bytes:</ttcol>
-<ttcol align="center">8</ttcol>
-
-<c>Format:</c><c>EUI-64</c>
-<c>Fields:</c><c>LADDR</c>
-</texttable>
-<t>TODO(RQ): Break this out into an 802.15.4-specific section
-</t>
-<t>The 802.15.4 long address of this node.
+<t><cref source="RQ">Break PROP_MAC_15_4_LADDR out into an 802.15.4-specific section --</cref></t>
+<t>The 802.15.4 long (extended) address of this node.
 </t>
 <t>This property is only present on NCPs which implement 802.15.4
 </t>
@@ -2183,18 +2076,16 @@ antenna connector.
 <list style="symbols">
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: No</t>
-<t>Required: <spanx style="strong">ONLY</spanx> when used with 802.15.4 MAC</t>
-<t>Post-Reset Value: 0xFFFF</t>
+<t>Required:
+<list style="symbols">
+<t><spanx style="verb">CMD_PROP_VALUE_GET</spanx>: REQUIRED when used with 802.15.4 MAC</t>
+<t><spanx style="verb">CMD_PROP_VALUE_SET</spanx>: RECOMMENDED when used with 802.15.4 MAC</t>
+</list></t>
+<t>Value Type: UINT16_LE</t>
+<t>Post-Reset Value: 65535 (0xFFFF)</t>
 </list>
 </t>
-<texttable>
-<ttcol align="center">Bytes:</ttcol>
-<ttcol align="center">2</ttcol>
-
-<c>Format:</c><c>UINT16_LE</c>
-<c>Fields:</c><c>SADDR</c>
-</texttable>
-<t>TODO(RQ): Break this out into an 802.15.4-specific section
+<t>&lt;!-- RQ -- Break PROP_MAC_15_4_SADDR out into an 802.15.4-specific section -- --&gt;
 </t>
 <t>The 802.15.4 short address of this node.
 </t>
@@ -2207,19 +2098,16 @@ antenna connector.
 <list style="symbols">
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: No</t>
-<t>Required: <spanx style="strong">ONLY</spanx> when used with 802.15.4 MAC</t>
-<t>Post-Reset Value: 0xFFFF ?</t>
+<t>Required:
+<list style="symbols">
+<t><spanx style="verb">CMD_PROP_VALUE_GET</spanx>: REQUIRED when used with 802.15.4 MAC</t>
+<t><spanx style="verb">CMD_PROP_VALUE_SET</spanx>: RECOMMENDED when used with 802.15.4 MAC</t>
+</list></t>
+<t>Value Type: UINT16_LE</t>
+<t>Post-Reset Value: 65535 (0xFFFF)</t>
 </list>
 </t>
-<texttable>
-<ttcol align="center">Bytes:</ttcol>
-<ttcol align="center">2</ttcol>
-
-<c>Format:</c><c>UINT16_LE</c>
-<c>Fields:</c><c>PANID</c>
-</texttable>
-<t>TODO(RQ): Break this out into an 802.15.4-specific section
-</t>
+<t><cref source="RQ">Break PROP_MAC_15_4_PANID out into an 802.15.4-specific section --</cref></t>
 <t>The 802.15.4 PANID this node is associated with.
 </t>
 <t>This property is only present on NCPs which implement 802.15.4
@@ -2232,18 +2120,12 @@ antenna connector.
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: RECOMMENDED</t>
+<t>Value Type: BOOL</t>
 <t>Post-Reset Value: 0 (false)</t>
+<t>See also: (<xref target="prop-stream-raw"/>)</t>
 </list>
 </t>
-<texttable>
-<ttcol align="center">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>BOOL</c>
-<c>Fields:</c><c>RAW_STREAM_ENABLED</c>
-</texttable>
 <t>Set to true to enable raw MAC frames to be emitted from <spanx style="verb">PROP_STREAM_RAW</spanx>.
-See <xref target="prop-stream-raw"/>.
 </t>
 </section>
 
@@ -2253,17 +2135,11 @@ See <xref target="prop-stream-raw"/>.
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: RECOMMENDED</t>
-<t>Unit: Enumeration</t>
+<t>Value Type: UINT8</t>
+<t>Units: Enumeration</t>
 <t>Post-Reset Value: <spanx style="verb">MAC_PROMISCUOUS_MODE_OFF</spanx></t>
 </list>
 </t>
-<texttable>
-<ttcol align="center">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>UINT8</c>
-<c>Fields:</c><c>MAC_PROMISCUOUS_MODE</c>
-</texttable>
 <t>Possible Values:
 </t>
 <texttable>
@@ -2282,15 +2158,20 @@ See <xref target="prop-stream-raw"/>.
 <section anchor="prop-mac-escan-result" title="PROP 57: PROP_MAC_ENERGY_SCAN_RESULT">
 <t>
 <list style="symbols">
-<t>Type: Packet Stream, Output-Only</t>
+<t>Type: Packet-Stream, Output-Only</t>
 <t>Required: REQUIRED</t>
+<t>Value Type: UINT8, INT8</t>
+<t>Units: Channel Index, dB (RF Power)</t>
 </list>
 </t>
-<t>Bytes: | 1 | 1
---------|----|-
-Format: | UINT8 | INT8
-Fields: | CHANNEL | RSSI
-</t>
+
+<figure align="center"><artwork align="center">
+  0                   1
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|    CHANNEL    |      RSSI     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
 <t>This property is emitted during energy scan operation (SCAN_STATE_ENERGY)
 once per scanned channel.
 </t>
@@ -2309,19 +2190,13 @@ antenna connector.
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: OPTIONAL</t>
+<t>Value Type: UINT32_LE</t>
 <t>Unit: milliseconds</t>
-<t>Post-Reset Value: 5000ms</t>
+<t>Post-Reset Value: 5000ms RECOMMENDED</t>
 <t>Required Capability: <spanx style="verb">CAP_POWER_SAVE</spanx></t>
 <t>See Also: <xref target="prop-power-state"/></t>
 </list>
 </t>
-<texttable>
-<ttcol align="center">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>UINT32_LE</c>
-<c>Fields:</c><c>MAC_DATA_POLL_PERIOD</c>
-</texttable>
 <t>The (user-specified) data poll (802.15.4 MAC Data Request) period
 in milliseconds. Value zero means the poll period will be calculated
 by the stack to be the maximum interval acceptable by the parent. If the
@@ -2343,8 +2218,9 @@ ignored.
 <t>Asynchronous Updates: No</t>
 <t>Per-Item Length: No</t>
 <t>Required: OPTIONAL</t>
-<t>Post-Reset Value: empty</t>
 <t>Required Capability: <spanx style="verb">CAP_MAC_WHITELIST</spanx></t>
+<t>Item Type: EUI64_BE, UINT8</t>
+<t>Post-Reset Value: empty</t>
 <t>See Also: <xref target="prop-mac-whitelist-enabled"/></t>
 </list>
 </t>
@@ -2360,17 +2236,21 @@ and SHOULD NOT be used in production.
 </t>
 <t>Item Format:
 </t>
-<texttable>
-<ttcol align="center">Bytes:</ttcol>
-<ttcol align="center">8</ttcol>
-<ttcol align="center">1</ttcol>
 
-<c>Format:</c><c>EUI-64-BE</c><c>UINT8</c>
-<c>Fields:</c><c>ADDR</c><c>RSSI</c>
-</texttable>
+<figure align="center"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                      EUI64 (Upper word) ...                   :
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+:                  ... EUI64 (Lower word)                       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     RSSI      |
++-+-+-+-+-+-+-+-+
+</artwork></figure>
 <t>
 <list style="hanging">
-<t hangText="ADDR">
+<t hangText="EUI64">
 <vspace />
 EUI64 address of node</t>
 <t hangText="RSSI">
@@ -2390,18 +2270,12 @@ Optional RSSI-override value. The value 127 indicates
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: OPTIONAL</t>
-<t>Post-Reset Value: 0 (false)</t>
 <t>Required capability: <spanx style="verb">CAP_MAC_WHITELIST</spanx></t>
+<t>Value Type: BOOL</t>
+<t>Post-Reset Value: 0 (false)</t>
 <t>See Also: <xref target="prop-mac-whitelist"/></t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>BOOL</c>
-<c>Fields:</c><c><spanx style="verb">WHITELIST_ENABLED</spanx></c>
-</texttable>
 <t>TODO(RQ): Consider moving this to the debug section.
 </t>
 <t>Setting this to true SHALL cause <spanx style="verb">PROP_MAC_BLACKLIST_ENABLED</spanx> to be automatically
@@ -2415,18 +2289,12 @@ set to false.
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: OPTIONAL</t>
-<t>Post-Reset Value: 0 (false)</t>
 <t>Required capability: <spanx style="verb">CAP_MAC_RAW</spanx>, TODO: 802.15.4 PHY CAP</t>
+<t>Value Type: BOOL</t>
+<t>Post-Reset Value: 0 (false)</t>
 <t>See Also: <xref target="prop-mac-src-match-short-addresses"/>, <xref target="prop-mac-src-match-extended-addresses"/></t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>BOOL</c>
-<c>Fields:</c><c><spanx style="verb">SRC_MATCH_ENABLED</spanx></c>
-</texttable>
 <t>Set to true to enable radio source matching or false to disable it. The source match
 functionality is used by radios when generating ACKs. The short and extended address
 lists are used for settings the Frame Pending bit in the ACKs.
@@ -2440,6 +2308,7 @@ lists are used for settings the Frame Pending bit in the ACKs.
 <t>Asynchronous Updates: No</t>
 <t>Per-Item Length: No</t>
 <t>Required: OPTIONAL</t>
+<t>Item Type: UINT16_LE</t>
 <t>Post-Reset Value: empty</t>
 <t>Required Capability: <spanx style="verb">CAP_MAC_RAW</spanx>, TODO: 802.15.4 PHY CAP</t>
 <t>See Also: <xref target="prop-mac-src-match-enabled"/></t>
@@ -2448,15 +2317,6 @@ lists are used for settings the Frame Pending bit in the ACKs.
 <t>Configures the list of short addresses used for source matching. These
 short address are used for hardware generated ACKs.
 </t>
-<t>Item Format:
-</t>
-<texttable>
-<ttcol align="center">Bytes:</ttcol>
-<ttcol align="center">2</ttcol>
-
-<c>Format:</c><c>UINT16_LE</c>
-<c>Fields:</c><c>SADDR</c>
-</texttable>
 </section>
 
 <section anchor="prop-mac-src-match-extended-addresses" title="PROP 4869: PROP_MAC_SRC_MATCH_EXTENDED_ADDRESSES">
@@ -2466,6 +2326,7 @@ short address are used for hardware generated ACKs.
 <t>Asynchronous Updates: No</t>
 <t>Per-Item Length: No</t>
 <t>Required: OPTIONAL</t>
+<t>Item Type: EUI64_BE</t>
 <t>Post-Reset Value: empty</t>
 <t>Required Capabilities: <spanx style="verb">CAP_MAC_RAW</spanx>, TODO: 802.15.4 PHY CAP</t>
 <t>See Also: <xref target="prop-mac-src-match-enabled"/></t>
@@ -2483,8 +2344,9 @@ long address are used for hardware generated ACKs.
 <t>Asynchronous Updates: No</t>
 <t>Per-Item Length: No</t>
 <t>Required: OPTIONAL</t>
-<t>Post-Reset Value: empty</t>
 <t>Required Capability: <spanx style="verb">CAP_MAC_WHITELIST</spanx></t>
+<t>Item Type: EUI64_BE</t>
+<t>Post-Reset Value: empty</t>
 <t>See Also: <xref target="prop-mac-blacklist-enabled"/></t>
 </list>
 </t>
@@ -2501,6 +2363,7 @@ to communicate with devices which are in this list.
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: No</t>
 <t>Required: OPTIONAL</t>
+<t>Value Type: BOOL</t>
 <t>Post-Reset Value: 0 (false)</t>
 <t>Required capability: <spanx style="verb">CAP_MAC_WHITELIST</spanx></t>
 <t>See Also: <xref target="prop-mac-blacklist"/></t>
@@ -2511,13 +2374,6 @@ to communicate with devices which are in this list.
 <t>Setting this to true SHALL cause <spanx style="verb">PROP_MAC_WHITELIST_ENABLED</spanx> to be automatically
 set to false.
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>BOOL</c>
-<c>Fields:</c><c><spanx style="verb">BLACKLIST_ENABLED</spanx></c>
-</texttable>
 </section>
 </section>
 
@@ -2802,12 +2658,19 @@ this property is hard-coded to always be zero.
 <section anchor="prop-ipv6-ll-addr" title="PROP 96: PROP_IPV6_LL_ADDR">
 <t>
 <list style="symbols">
-<t>Type: Read-Only</t>
-<t>Packed-Encoding: <spanx style="verb">6</spanx></t>
+<t>Type: Single-Value, Read-Write</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required: REQUIRED</t>
+<t>Post-Reset Value: Unspecified</t>
 </list>
 </t>
-<t>The IPv6 link-local scope address.
-</t>
+<texttable>
+<ttcol align="right">Bytes:</ttcol>
+<ttcol align="center">16</ttcol>
+
+<c>Format:</c><c>IPV6_ADDR</c>
+<c>Fields:</c><c><spanx style="verb">IPV6_LL_ADDR</spanx></c>
+</texttable>
 </section>
 
 <section anchor="prop-ipv6-address-table" title="PROP 99: PROP_IPV6_ADDRESS_TABLE">

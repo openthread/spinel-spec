@@ -523,8 +523,8 @@
   <link rel="schema.dct" href="http://purl.org/dc/terms/" />
 
   <meta name="dct.creator" content="Quattlebaum, R. and j. woodyatt, Ed." />
-  <meta name="dct.identifier" content="urn:ietf:id:draft-rquattle-spinel-core-fa153f6" />
-  <meta name="dct.issued" scheme="ISO8601" content="2017-10-30" />
+  <meta name="dct.identifier" content="urn:ietf:id:draft-rquattle-spinel-core-c7807a1" />
+  <meta name="dct.issued" scheme="ISO8601" content="2017-10-31" />
   <meta name="dct.abstract" content="This document specifies the core of the Spinel host-controller protocol, which enables a general purpose application processor to manage, control, and offload IPv6 network functions to a Network Co-Processor (NCP) connected via a simple communication link(such as UART, SPI, or USB).  " />
   <meta name="description" content="This document specifies the core of the Spinel host-controller protocol, which enables a general purpose application processor to manage, control, and offload IPv6 network functions to a Network Co-Processor (NCP) connected via a simple communication link(such as UART, SPI, or USB).  " />
 
@@ -548,8 +548,8 @@
 <td class="right">Nest Labs, Inc.</td>
 </tr>
 <tr>
-<td class="left">Expires: May 3, 2018</td>
-<td class="right">October 30, 2017</td>
+<td class="left">Expires: May 4, 2018</td>
+<td class="right">October 31, 2017</td>
 </tr>
 
     	
@@ -557,7 +557,7 @@
   </table>
 
   <p class="title">Spinel: A protocol for control and management of IPv6 network co-processors<br />
-  <span class="filename">draft-rquattle-spinel-core-fa153f6</span></p>
+  <span class="filename">draft-rquattle-spinel-core-c7807a1</span></p>
   
   <h1 id="rfc.abstract"><a href="#rfc.abstract">Abstract</a></h1>
 <p>This document specifies the core of the Spinel host-controller protocol, which enables a general purpose application processor to manage, control, and offload IPv6 network functions to a Network Co-Processor (NCP) connected via a simple communication link(such as UART, SPI, or USB).  </p>
@@ -566,7 +566,7 @@
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at http://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on May 3, 2018.</p>
+<p>This Internet-Draft will expire on May 4, 2018.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2017 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (http://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -2202,26 +2202,13 @@
 <li>Type: Single-Value, Read-Only</li>
 <li>Asynchronous Updates: Yes</li>
 <li>Required: REQUIRED</li>
+<li>Scope: NLI</li>
+<li>Value Type: PUI</li>
+<li>Units: Enumeration</li>
 <li>Post-Reset Value: Reset Reason Code</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1-3</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">PUI</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>STATUS_CODE</samp></td>
-</tr>
-</tbody>
-</table>
 <p id="rfc.section.8.5.1.p.2">This property describes the status code of the last NCP operation. For many commands, failure is indicated by emitting this property with the TID matching the failing command. It is generally not necessary to ever fetch the value of this property explicitly, as it is often emitted directly as an error response. It is also occasionally emitted as a success response with a value of <samp>STATUS_OK</samp>.  </p>
 <p id="rfc.section.8.5.1.p.3">Upon NCP reset, this property MUST be emitted with a status code indicating the reset reason.  </p>
 <p id="rfc.section.8.5.1.p.4">Upon receiving an update to PROP<em>LAST</em>STATUS with a status code that indicates a reset, the host SHALL assume that the NCP has been reset and that all properties have reverted to their defined after-reset values.  </p>
@@ -2235,6 +2222,8 @@
 <li>Type: Single-Value, Constant</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: REQUIRED</li>
+<li>Scope: NCP</li>
+<li>Value Type: PUI, PUI</li>
 <li>Post-Reset Value: 4, 3</li>
 </ul>
 
@@ -2282,30 +2271,12 @@
 <li>Type: Single-Value, Constant</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: REQUIRED</li>
-<li>Scope: Firmware</li>
+<li>Scope: NCP</li>
+<li>Value Type: STRING</li>
 <li>Post-Reset Value: Implementation-Specific</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">n</th>
-<th class="center">1</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">ASCII</td>
-<td class="center">CONST</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>NCP_VERSION</samp></td>
-<td class="center">0x00</td>
-</tr>
-</tbody>
-</table>
 <p id="rfc.section.8.5.3.p.2">Contains a zero-terminated ASCII string which describes the firmware currently running on the NCP.  </p>
 <p id="rfc.section.8.5.3.p.3">The value of this string MUST be different for every firmware release.  </p>
 <p id="rfc.section.8.5.3.p.4">The format of the string is not strictly defined, but it is intended to present similarly to the "User-Agent" string from HTTP. The following format is RECOMMENDED: </p>
@@ -2352,26 +2323,13 @@
 <li>Type: Single-Value, Constant</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: REQUIRED</li>
+<li>Scope: NLI</li>
+<li>Value Type: PUI</li>
+<li>Units: Enumeration</li>
 <li>Post-Reset Value: Implementation-Specific</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1-3</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">PUI</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>INTERFACE_TYPE</samp></td>
-</tr>
-</tbody>
-</table>
 <p id="rfc.section.8.5.4.p.2">This unsigned packed integer identifies the network protocol implemented by this NCP. A registry of network interface type codes is maintained by IANA with a reservation policy of Specification Required. The initial content of the registry is shown in the table below: </p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
 <thead><tr>
@@ -2403,26 +2361,13 @@
 <li>Type: Single-Value, Constant</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: REQUIRED</li>
+<li>Scope: NCP</li>
+<li>Value Type: PUI</li>
+<li>Units: Enumeration</li>
 <li>Post-Reset Value: Implementation-Specific</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1-3</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">PUI</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>VENDOR_ID</samp></td>
-</tr>
-</tbody>
-</table>
 <p><a id="CREF3" class="info">[CREF3]<span class="info">JW: I have no idea how to write the IANA registry creation text for this. --</span></a></p>
 <p><a id="CREF4" class="info">[CREF4]<span class="info">RQ: Maybe we should switch this over to be a string instead? --</span></a></p>
 <h1 id="rfc.section.8.5.6">
@@ -2432,34 +2377,16 @@
 
 <ul>
 <li>Type: Multiple-Value, Constant</li>
+<li>Has Item Length Prefix: No</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: REQUIRED</li>
+<li>Scope: NLI</li>
+<li>Item Type: PUI</li>
+<li>Units: Enumeration</li>
 <li>Post-Reset Value: Implementation-Specific</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1-3</th>
-<th class="center">1-3</th>
-<th class="center">...</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">PUI</td>
-<td class="center">PUI</td>
-<td class="center">...</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>CAP</samp></td>
-<td class="center"><samp>CAP</samp></td>
-<td class="center">...</td>
-</tr>
-</tbody>
-</table>
 <p id="rfc.section.8.5.6.p.2">Describes the supported capabilities of this NCP. Encoded as a list of packed unsigned integers. See <a href="#capabilities" class="xref">Section 7</a> for a list of values.  </p>
 <h1 id="rfc.section.8.5.7">
 <a href="#rfc.section.8.5.7">8.5.7.</a> <a href="#prop-interface-count" id="prop-interface-count">PROP 6: PROP_INTERFACE_COUNT</a>
@@ -2470,26 +2397,13 @@
 <li>Type: Single-Value, Constant</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: REQUIRED</li>
+<li>Scope: NCP</li>
+<li>Item Type: UINT8</li>
+<li>Units: Count</li>
 <li>Post-Reset Value: 1-4</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">INT</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>INTERFACE_COUNT</samp></td>
-</tr>
-</tbody>
-</table>
 <p id="rfc.section.8.5.7.p.2">Describes the number of concurrent interfaces supported by this NCP.  Since the concurrent interface mechanism is still TBD, this value MUST always be one.  </p>
 <p id="rfc.section.8.5.7.p.3">If a NCP supports multiple NLIs, the value of this property MUST be identical across all implemented NLIs.  </p>
 <h1 id="rfc.section.8.5.8">
@@ -2501,11 +2415,16 @@
 <li>Type: Single-Value, Read/Write</li>
 <li>Asynchronous Updates: Yes</li>
 <li>Required: <ul>
-<li>Read: Yes</li>
-<li>Write: <strong>RECOMENDED</strong>
+<li>
+<samp>CMD_PROP_VALUE_GET</samp>: REQUIRED</li>
+<li>
+<samp>CMD_PROP_VALUE_SET</samp>: <strong>RECOMENDED</strong>
 </li>
 </ul>
 </li>
+<li>Scope: NLI</li>
+<li>Item Type: UINT8</li>
+<li>Units: Enumeration</li>
 <li>Post-Reset Value: <samp>POWER_STATE_ONLINE</samp>
 </li>
 <li>Related Capabilities: <ul><li>
@@ -2516,22 +2435,6 @@
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">INT</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>POWER_STATE</samp></td>
-</tr>
-</tbody>
-</table>
 <p id="rfc.section.8.5.8.p.2">A single octet coded that indicates the current power state of the NCP. Setting this property allows controls of the current NCP power state. The following table enumerates the standard codes and their significance.  </p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
 <thead><tr>
@@ -2591,27 +2494,13 @@
 <ul>
 <li>Type: Single-Value, Read-Only</li>
 <li>Asynchronous Updates: No</li>
-<li>Post-Reset Value: Determined by Factory</li>
 <li>Required: REQUIRED</li>
+<li>Scope: NLI</li>
+<li>Value Type: EUI64_BE</li>
+<li>Post-Reset Value: Determined by Factory</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">8</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">EUI-64-BE</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>HWADDR</samp></td>
-</tr>
-</tbody>
-</table>
 <p id="rfc.section.8.5.9.p.2">The EUI-64 (TODO:CITE) format of the link-layer address of the device.  MAY be different across multiple NLIs.  </p>
 <h1 id="rfc.section.8.5.10">
 <a href="#rfc.section.8.5.10">8.5.10.</a> <a href="#prop-lock" id="prop-lock">PROP 9: PROP_LOCK</a>
@@ -2622,28 +2511,14 @@
 <li>Type: Single-Value, Read-Write</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: OPTIONAL</li>
-<li>Post-Reset Value: 0</li>
+<li>Scope: NLI</li>
 <li>Required Capability: <samp>CAP_LOCK</samp>
 </li>
+<li>Value Type: BOOL</li>
+<li>Post-Reset Value: 0 (false)</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">Boolean</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>LOCK</samp></td>
-</tr>
-</tbody>
-</table>
 <p id="rfc.section.8.5.10.p.2">Property transaction lock. Used for grouping transactional changes to several properties for simultaneous commit, or to temporarily prevent the automatic updating of property values. When this property is set, all non-Spinel-related operations of the NCP are effectively frozen until it is cleared. There is no support for transaction rollback.  </p>
 <p id="rfc.section.8.5.10.p.3">This property is only supported if the <samp>CAP_LOCK</samp> capability is present.  </p>
 <p id="rfc.section.8.5.10.p.4">Unlike most other properties, setting this property to true when the value of the property is already true SHALL fail with a last status of <samp>STATUS_ALREADY</samp>.  </p>
@@ -2656,28 +2531,15 @@
 <li>Type: Single-Value, Read-Write</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: OPTIONAL</li>
+<li>Scope: NCP</li>
+<li>Required Capability: <samp>???</samp> (TODO: Assign a capability)</li>
+<li>Value Type: UINT8</li>
+<li>Units: Enumeration</li>
 <li>Post-Reset Value: <samp>HOST_POWER_STATE_ONLINE</samp>
 </li>
-<li>Required Capability: <samp>???</samp> (TODO: Assign a capability)</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">INT</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>HOST_POWER_STATE</samp></td>
-</tr>
-</tbody>
-</table>
 <p id="rfc.section.8.5.11.p.2">Describes the current power state of the <em>OS</em>. This property is used by the OS to inform the NCP when it has changed power states. The NCP can then use this state to determine which properties need asynchronous updates. Enumeration is encoded as a single unsigned octet.  </p>
 <p id="rfc.section.8.5.11.p.3">The following table enumerates the standard codes and their significance.  </p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
@@ -2736,37 +2598,18 @@
 
 <ul>
 <li>Type: Multi-Value, Read-Write</li>
+<li>Has Item Length Prefix: No</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: OPTIONAL</li>
-<li>Post-Reset Value: Empty</li>
-<li>Scope: NCP</li>
+<li>Scope: NLI</li>
 <li>Required Capability: <samp>CAP_UNSOL_UPDATE_FILTER</samp>
 </li>
+<li>Item Type: PUI (<a href="#packed-unsigned-integer" class="xref">Section 4.2</a>)</li>
+<li>Units: Enumeration (Property Keys)</li>
+<li>Post-Reset Value: Empty</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1-3</th>
-<th class="center">1-3</th>
-<th class="center">...</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">PUI</td>
-<td class="center">PUI</td>
-<td class="center">...</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>PROP_ID</samp></td>
-<td class="center"><samp>PROP_ID</samp></td>
-<td class="center">...</td>
-</tr>
-</tbody>
-</table>
 <p id="rfc.section.8.5.12.p.2">Contains a list of property IDs which are <em>excluded</em> from generating unsolicited value updates. This property MUST be empty after NCP reset.  </p>
 <p id="rfc.section.8.5.12.p.3">In other words, the OS may opt-out of unsolicited property updates for a specific property by adding that property id to this list.  </p>
 <p id="rfc.section.8.5.12.p.4">The OS SHOULD NOT add properties to this list which are not present in <samp>PROP_UNSOL_UPDATE_LIST</samp>. If such properties are added, the NCP MUST ignore the unsupported properties.  </p>
@@ -2778,37 +2621,18 @@
 
 <ul>
 <li>Type: Multi-Value, Constant</li>
+<li>Has Item Length Prefix: No</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: OPTIONAL</li>
-<li>Post-Reset Value: Implementation Specific</li>
-<li>Scope: Firmware</li>
+<li>Scope: NLI</li>
 <li>Required Capability: <samp>CAP_UNSOL_UPDATE_FILTER</samp>
 </li>
+<li>Item Type: PUI (<a href="#packed-unsigned-integer" class="xref">Section 4.2</a>)</li>
+<li>Units: Enumeration (Property Keys)</li>
+<li>Post-Reset Value: Implementation Specific</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1-3</th>
-<th class="center">1-3</th>
-<th class="center">...</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">PUI</td>
-<td class="center">PUI</td>
-<td class="center">...</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>PROP_ID</samp></td>
-<td class="center"><samp>PROP_ID</samp></td>
-<td class="center">...</td>
-</tr>
-</tbody>
-</table>
 <p id="rfc.section.8.5.13.p.2">Contains a list of properties which are capable of generating unsolicited value updates. This list can be used when populating <samp>PROP_UNSOL_UPDATE_FILTER</samp> to disable all unsolicited property updates.  </p>
 <p id="rfc.section.8.5.13.p.3">The NCP MUST NOT change the value of this property after sending a <samp>CMD_VALUE_IS</samp> for <samp>PROP_LAST_STATUS</samp> with any of the <samp>STATUS_RESET_xxxxx</samp> status codes.  </p>
 <p id="rfc.section.8.5.13.p.4">Note: not all properties that support unsolicited updates need to be listed here. Some properties, network media scan results for example, are only generated due to direct action on the part of the OS, so those properties SHOULD NOT not be included in this list.  </p>
@@ -2821,29 +2645,13 @@
 <p></p>
 
 <ul>
-<li>Type: Character-Stream, Output-Only</li>
-<li>Asynchronous Updates: Yes</li>
+<li>Type: Byte-Stream, Output-Only</li>
 <li>Required: OPTIONAL</li>
-<li>Scope: NLI</li>
+<li>Scope: NCP</li>
+<li>Value Type: UTF8 Fragment</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">n</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">UTF8</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>DEBUG_DATA</samp></td>
-</tr>
-</tbody>
-</table>
 <p id="rfc.section.8.6.1.p.2">This stream provides human-readable debugging output which may be displayed in the OS logs. It is intended to be treated as a one-way virtual serial stream. The OS MUST NOT assume that each emission of this property is self-contained, instead the OS must use newline characters for that purpose.  </p>
 <p id="rfc.section.8.6.1.p.3">The location of newline characters MUST NOT not assumed by the OS: it is the NCP's responsibility to insert newline characters where needed, just like with any other text stream.  </p>
 <p id="rfc.section.8.6.1.p.4">The emitted data is UTF8-encoded without any zero termination. Note that the last UTF8 character MAY possibly be truncated. If the last UTF8 character is truncated, the truncated bytes MUST be the first bytes of the next emission from this stream.  </p>
@@ -2854,44 +2662,31 @@
 
 <ul>
 <li>Type: Packet-Stream, Input/Output</li>
-<li>Asynchronous Updates: Yes</li>
 <li>Required: OPTIONAL</li>
 <li>Scope: NLI</li>
 <li>Related Capabilities: <ul><li>
 <samp>CAP_WRITABLE_RAW_STREAM</samp>: Can be written to if present.</li></ul>
 </li>
+<li>Value Type: Structure</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="left">Bytes:</th>
-<th class="left">2</th>
-<th class="left">n</th>
-<th class="left">n</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="left">Format:</td>
-<td class="left">UINT16-LE</td>
-<td class="left">DATA</td>
-<td class="left">OPTIONAL DATA</td>
-</tr>
-<tr>
-<td class="left">Fields:</td>
-<td class="left">FRAME_DATA_LEN</td>
-<td class="left">FRAME_DATA</td>
-<td class="left">FRAME_METADATA</td>
-</tr>
-</tbody>
-</table>
+<pre>
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   FRAME_LEN (Little endian)   | FRAME_DATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   FRAME_METADATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</pre>
 <p id="rfc.section.8.6.2.p.2">This stream provides the capability of sending and receiving raw packets to and from the network. The exact format of the frame metadata and data is dependent on the MAC and PHY being used.  </p>
 <p id="rfc.section.8.6.2.p.3">Implementations MAY support the ability to transmit arbitrary raw packets. Support for this feature is indicated by the presence of the <samp>CAP_WRITABLE_RAW_STREAM</samp> capability.  </p>
 <p id="rfc.section.8.6.2.p.4">If the capability <samp>CAP_WRITABLE_RAW_STREAM</samp> is set, then packets written to this stream with <samp>CMD_PROP_VALUE_SET</samp> will be sent out over the radio. This allows the caller to use the network directly, with the full network layer stack being implemented on the OS instead of the NCP.  </p>
 <h1 id="rfc.section.8.6.2.1">
 <a href="#rfc.section.8.6.2.1">8.6.2.1.</a> <a href="#frame-metadata-format" id="frame-metadata-format">Frame Metadata Format</a>
 </h1>
-<p id="rfc.section.8.6.2.1.p.1">Any data past the end of <samp>FRAME_DATA_LEN</samp> is considered metadata and is OPTIONAL. Frame metadata MAY be empty or partially specified. The operational semantics of using frame metadata is not specified in the core protocol.  </p>
+<p id="rfc.section.8.6.2.1.p.1">Any data past the end of <samp>FRAME_DATA</samp> is considered metadata and is OPTIONAL. Frame metadata MAY be empty or partially specified. The operational semantics of using frame metadata is not specified in the core protocol.  </p>
 <h1 id="rfc.section.8.6.3">
 <a href="#rfc.section.8.6.3">8.6.3.</a> <a href="#prop-stream-net" id="prop-stream-net">PROP 114: PROP_STREAM_NET</a>
 </h1>
@@ -2899,36 +2694,25 @@
 
 <ul>
 <li>Type: Packet-Stream, Input/Output</li>
-<li>Asynchronous Updates: Yes</li>
 <li>Required: REQUIRED</li>
 <li>Scope: NLI</li>
+<li>Value Type: Structure</li>
+<li>See Also: <a href="#prop-stream-net-insecure" class="xref">Section 8.6.4</a>
+</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="left">Bytes:</th>
-<th class="left">2</th>
-<th class="left">n</th>
-<th class="left">n</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="left">Format:</td>
-<td class="left">UINT16-LE</td>
-<td class="left">IPv6</td>
-<td class="left">OPTIONAL DATA</td>
-</tr>
-<tr>
-<td class="left">Fields:</td>
-<td class="left">FRAME_DATA_LEN</td>
-<td class="left">FRAME_DATA</td>
-<td class="left">FRAME_METADATA</td>
-</tr>
-</tbody>
-</table>
+<pre>
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   FRAME_LEN (Little endian)   | FRAME_DATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   FRAME_METADATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</pre>
 <p id="rfc.section.8.6.3.p.2">This stream provides the capability of sending and receiving data packets to and from the currently attached network.  </p>
-<p id="rfc.section.8.6.3.p.3">Any data past the end of <samp>FRAME_DATA_LEN</samp> is considered metadata, the format of which is described in <a href="#frame-metadata-format" class="xref">Section 8.6.2.1</a>.  </p>
+<p id="rfc.section.8.6.3.p.3">Any data past the end of <samp>FRAME_LEN</samp> is considered metadata, the format of which is described in <a href="#frame-metadata-format" class="xref">Section 8.6.2.1</a>.  </p>
 <h1 id="rfc.section.8.6.4">
 <a href="#rfc.section.8.6.4">8.6.4.</a> <a href="#prop-stream-net-insecure" id="prop-stream-net-insecure">PROP 115: PROP_STREAM_NET_INSECURE</a>
 </h1>
@@ -2936,36 +2720,16 @@
 
 <ul>
 <li>Type: Packet-Stream, Input/Output</li>
-<li>Asynchronous Updates: Yes</li>
 <li>Required: REQUIRED</li>
 <li>Scope: NLI</li>
+<li>Value Type: Structure</li>
+<li>See Also: <a href="#prop-stream-net" class="xref">Section 8.6.3</a>
+</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="left">Bytes:</th>
-<th class="left">2</th>
-<th class="left">n</th>
-<th class="left">n</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="left">Format:</td>
-<td class="left">UINT16-LE</td>
-<td class="left">IPv6</td>
-<td class="left">OPTIONAL DATA</td>
-</tr>
-<tr>
-<td class="left">Fields:</td>
-<td class="left">FRAME_DATA_LEN</td>
-<td class="left">FRAME_DATA</td>
-<td class="left">FRAME_METADATA</td>
-</tr>
-</tbody>
-</table>
-<p id="rfc.section.8.6.4.p.2">This stream provides the capability of sending and receiving plaintext non-authenticated data packets to and from the currently attached network.  </p>
-<p id="rfc.section.8.6.4.p.3">Any data past the end of <samp>FRAME_DATA_LEN</samp> is considered metadata, the format of which is described in <a href="#frame-metadata-format" class="xref">Section 8.6.2.1</a>.  </p>
+<p id="rfc.section.8.6.4.p.2">The structure of the value of this property is identical to that of PROP_STREAM_NET (<a href="#prop-stream-net" class="xref">Section 8.6.3</a>).  </p>
+<p id="rfc.section.8.6.4.p.3">This stream provides the capability of sending and receiving plaintext non-authenticated data packets to and from the currently attached network.  </p>
 <h1 id="rfc.section.8.7">
 <a href="#rfc.section.8.7">8.7.</a> <a href="#prop-phy" id="prop-phy">PHY Properties</a>
 </h1>
@@ -2975,34 +2739,26 @@
 <p></p>
 
 <ul>
-<li>Type: Single-Value, Read-Write</li>
+<li>Type: Single-Value, Read/Write</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: <ul>
-<li>Read: Yes</li>
-<li>Write: No</li>
+<li>
+<samp>CMD_PROP_VALUE_GET</samp>: REQUIRED</li>
+<li>
+<samp>CMD_PROP_VALUE_SET</samp>: <strong>RECOMENDED</strong>
+</li>
 </ul>
 </li>
+<li>Scope: NLI</li>
+<li>Related Capabilities: <ul><li>
+<samp>CAP_MAC_RAW</samp> required to use <samp>CMD_PROP_VALUE_SET</samp>
+</li></ul>
+</li>
+<li>Value Type: BOOL</li>
 <li>Post-Reset Value: 0 (false)</li>
-<li>Related Capabilities: SPINEL_CAP_MAC_RAW</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">BOOL</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>PHY_ENABLED</samp></td>
-</tr>
-</tbody>
-</table>
 <p id="rfc.section.8.7.1.p.2">Set to 1 if the PHY is enabled, set to 0 otherwise.  May be directly enabled to bypass higher-level packet processing in order to implement things like packet sniffers. This property can only be written if the <samp>SPINEL_CAP_MAC_RAW</samp> capability is present.  </p>
 <h1 id="rfc.section.8.7.2">
 <a href="#rfc.section.8.7.2">8.7.2.</a> <a href="#prop-phy-chan" id="prop-phy-chan">PROP 33: PROP_PHY_CHAN</a>
@@ -3013,28 +2769,14 @@
 <li>Type: Single-Value, Read-Write</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: REQUIRED</li>
-<li>Unit: Channel Index</li>
+<li>Value Type: UINT8</li>
+<li>Units: Channel Index</li>
 <li>Post-Reset Value: Unspecified</li>
+<li>See Also: (<a href="#prop-phy-chan-supported" class="xref">Section 8.7.3</a>)</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">UINT8</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>CHANNEL</samp></td>
-</tr>
-</tbody>
-</table>
-<p id="rfc.section.8.7.2.p.2">Value is the current channel. Must be set to one of the values contained in <samp>PROP_PHY_CHAN_SUPPORTED</samp>.  </p>
+<p id="rfc.section.8.7.2.p.2">Value is the current channel index. Must be set to one of the values contained in <samp>PROP_PHY_CHAN_SUPPORTED</samp>.  m </p>
 <h1 id="rfc.section.8.7.3">
 <a href="#rfc.section.8.7.3">8.7.3.</a> <a href="#prop-phy-chan-supported" id="prop-phy-chan-supported">PROP 34: PROP_PHY_CHAN_SUPPORTED</a>
 </h1>
@@ -3042,36 +2784,16 @@
 
 <ul>
 <li>Type: Multiple-Value, Constant</li>
+<li>Has Item Length Prefix: No</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: REQUIRED</li>
-<li>Unit: Channel Index</li>
-<li>Post-Reset Value: Implementation Specific</li>
+<li>Item Type: UINT8</li>
+<li>Units: Channel Index</li>
+<li>See Also: (<a href="#prop-phy-chan" class="xref">Section 8.7.2</a>)</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1</th>
-<th class="center">1</th>
-<th class="center">...</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">UINT8</td>
-<td class="center">UINT8</td>
-<td class="center">...</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>CHANNEL</samp></td>
-<td class="center"><samp>CHANNEL</samp></td>
-<td class="center">...</td>
-</tr>
-</tbody>
-</table>
-<p id="rfc.section.8.7.3.p.2">Value is a list of channel values that are supported by the NCP.  </p>
+<p id="rfc.section.8.7.3.p.2">Value is a list of channel indexes that are supported by the NCP.  </p>
 <h1 id="rfc.section.8.7.4">
 <a href="#rfc.section.8.7.4">8.7.4.</a> <a href="#prop-phy-freq" id="prop-phy-freq">PROP 35: PROP_PHY_FREQ</a>
 </h1>
@@ -3081,27 +2803,14 @@
 <li>Type: Single-Value, Read-Only</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: REQUIRED</li>
-<li>Unit: kHz</li>
+<li>Scope: NLI</li>
+<li>Value Type: UINT32_LE</li>
+<li>Units: kHz</li>
 <li>Post-Reset Value: Unspecified</li>
+<li>See Also: (<a href="#prop-phy-chan" class="xref">Section 8.7.2</a>)</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">UINT32_LE</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>FREQ</samp></td>
-</tr>
-</tbody>
-</table>
 <p id="rfc.section.8.7.4.p.2">Value is the radio frequency (in kilohertz) of the current channel.  </p>
 <h1 id="rfc.section.8.7.5">
 <a href="#rfc.section.8.7.5">8.7.5.</a> <a href="#prop-phy-cca-threshold" id="prop-phy-cca-threshold">PROP 36: PROP_PHY_CCA_THRESHOLD</a>
@@ -3112,27 +2821,12 @@
 <li>Type: Single-Value, Read-Write</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: OPTIONAL</li>
-<li>Unit: dB</li>
-<li>Post-Reset Value: Implementation-specific default</li>
+<li>Value Type: INT8</li>
+<li>Unit: dB (RF Power)</li>
+<li>Post-Reset Value: Implementation Specified</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">INT8</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>CCA_THRESHOLD</samp></td>
-</tr>
-</tbody>
-</table>
 <p id="rfc.section.8.7.5.p.2">Value is the CCA (clear-channel assessment) threshold. Set to -128 to disable.  </p>
 <p id="rfc.section.8.7.5.p.3">The specific meaning of zero dB is implementation-specific, but MUST be consistant with definitions of other properties that express power. It is RECOMMENDED that zero dB represent one milliwatt of power (0dBm), as measured from the antenna connector.  </p>
 <p id="rfc.section.8.7.5.p.4">When setting, the value SHOULD be rounded down to a value that is supported by the underlying radio hardware.  </p>
@@ -3145,28 +2839,13 @@
 <li>Type: Single-Value, Read-Write</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: REQUIRED</li>
-<li>Unit: dB</li>
-<li>Post-Reset Value: 0dB</li>
+<li>Value Type: INT8</li>
+<li>Unit: dB (RF Power)</li>
+<li>Post-Reset Value: 0dB RECOMMENDED</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">INT8</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>TX_POWER</samp></td>
-</tr>
-</tbody>
-</table>
-<p id="rfc.section.8.7.6.p.2">Value is the transmit power of the radio, measured in decibells.  </p>
+<p id="rfc.section.8.7.6.p.2">Value is the maximum transmit power the network stack is allowed to set the radio to, measured in decibels.  </p>
 <p id="rfc.section.8.7.6.p.3">The specific meaning of zero dB is implementation-specific, but MUST be consistant with definitions of other properties that express power. It is RECOMMENDED that zero dB represent one milliwatt of power (0dBm), as measured from the antenna connector.  </p>
 <p id="rfc.section.8.7.6.p.4">When setting, the value SHOULD be rounded down to a value that is supported by the underlying radio hardware.  </p>
 <h1 id="rfc.section.8.7.7">
@@ -3178,27 +2857,12 @@
 <li>Type: Single-Value, Read-Only</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: REQUIRED</li>
-<li>Unit: dB</li>
+<li>Value Type: INT8</li>
+<li>Unit: dB (RF Power)</li>
 <li>Post-Reset Value: Unspecified</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">INT8</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>RSSI</samp></td>
-</tr>
-</tbody>
-</table>
 <p id="rfc.section.8.7.7.p.2">Value is the current RSSI (Received Signal Strength Indication) from the radio. This value can be used in energy scans and for determining the ambient noise floor for the operating environment.  </p>
 <p id="rfc.section.8.7.7.p.3">The specific meaning of zero dB is implementation-specific, but MUST be consistant with definitions of other properties that express power. It is RECOMMENDED that zero dB represent one milliwatt of power (0dBm), as measured from the antenna connector.  </p>
 <h1 id="rfc.section.8.7.8">
@@ -3207,11 +2871,11 @@
 <p></p>
 
 <ul>
-<li>Type: Single-Value, Read-Only</li>
+<li>Type: Single-Value, Constant</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: OPTIONAL</li>
+<li>Value Type: INT8</li>
 <li>Unit: dB</li>
-<li>Post-Reset Value: Unspecified</li>
 </ul>
 
 <p> </p>
@@ -3245,27 +2909,13 @@
 <li>Type: Single-Value, Read-Write</li>
 <li>Asynchronous Updates: Yes</li>
 <li>Required: REQUIRED</li>
-<li>Unit: Enumeration</li>
-<li>Post-Reset Value: 0 (false)</li>
+<li>Value Type: UINT8</li>
+<li>Units: Enumeration</li>
+<li>Post-Reset Value: <samp>SCAN_STATE_IDLE</samp>
+</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">UINT8</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>SCAN_STATE</samp></td>
-</tr>
-</tbody>
-</table>
 <p id="rfc.section.8.8.1.p.2">TODO(RQ): This needs to be re-thought out. I don't like the whole discovery thing being a separate scan state. Maybe we should add another property for scanning only compatible networks.  </p>
 <p id="rfc.section.8.8.1.p.3">Possible Values: </p>
 <p></p>
@@ -3291,37 +2941,19 @@
 <p></p>
 
 <ul>
-<li>Type: Multi-Value, Read-Write</li>
+<li>Type: Multiple-Value, Read-Write</li>
+<li>Has Item Length Prefix: No</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: REQUIRED</li>
-<li>Unit: Channel Index</li>
-<li>Post-Reset Value: Same as PROP_PHY_CHAN_SUPPORTED</li>
+<li>Item Type: UINT8</li>
+<li>Units: Channel Index</li>
+<li>Post-Reset Value: Same as <samp>PROP_PHY_CHAN_SUPPORTED</samp>
+</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1</th>
-<th class="center">1</th>
-<th class="center">...</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">UINT8</td>
-<td class="center">UINT8</td>
-<td class="center">...</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>CHANNEL</samp></td>
-<td class="center"><samp>CHANNEL</samp></td>
-<td class="center">...</td>
-</tr>
-</tbody>
-</table>
 <p id="rfc.section.8.8.2.p.2">This property contains the list of channels that will be scanned.  </p>
+<p id="rfc.section.8.8.2.p.3">Setting this property to be empty MUST reinitialize it with the contents of <samp>PROP_PHY_CHAN_SUPPORTED</samp>.  </p>
 <h1 id="rfc.section.8.8.3">
 <a href="#rfc.section.8.8.3">8.8.3.</a> <a href="#prop-mac-scan-period" id="prop-mac-scan-period">PROP 50: PROP_MAC_SCAN_PERIOD</a>
 </h1>
@@ -3330,102 +2962,70 @@
 <ul>
 <li>Type: Single-Value, Read-Write</li>
 <li>Asynchronous Updates: No</li>
-<li>Required: OPTIONAL</li>
+<li>Required: RECOMMENDED</li>
+<li>Value Type: UINT16_LE</li>
 <li>Unit: milliseconds per channel</li>
-<li>Post-Reset Value: Implementation-specific-default</li>
+<li>Post-Reset Value: 100ms RECOMMENDED</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">UINT16_LE</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>MSEC</samp></td>
-</tr>
-</tbody>
-</table>
+<p id="rfc.section.8.8.3.p.2">Number of milliseconds that the scan should wait per channel for beacons or for collecting energy samples.  </p>
 <h1 id="rfc.section.8.8.4">
 <a href="#rfc.section.8.8.4">8.8.4.</a> <a href="#prop-mac-scan-beacon" id="prop-mac-scan-beacon">PROP 51: PROP_MAC_SCAN_BEACON</a>
 </h1>
 <p></p>
 
 <ul>
-<li>Type: Packet Stream, Output-Only</li>
+<li>Type: Packet-Stream, Output-Only</li>
+<li>Asynchronous Updates: Yes</li>
 <li>Required: REQUIRED</li>
-<li>Packed-Encoding: <samp>Ccdd</samp> (or <samp>Cct(ESSc)t(iCUdd)</samp>)</li>
+<li>Scope: NLI</li>
+<li>Value Type: Structure</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="center">Bytes:</th>
-<th class="center">1</th>
-<th class="center">1</th>
-<th class="center">2</th>
-<th class="center">n</th>
-<th class="center">2</th>
-<th class="center">n</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="center">Format:</td>
-<td class="center">UINT8</td>
-<td class="center">INT8</td>
-<td class="center">UINT16_LE</td>
-<td class="center">DATA</td>
-<td class="center">UINT16_LE</td>
-<td class="center">DATA</td>
-</tr>
-<tr>
-<td class="center">Fields:</td>
-<td class="center">CH</td>
-<td class="center">RSSI</td>
-<td class="center">MAC_LEN</td>
-<td class="center">MAC_DATA</td>
-<td class="center">NET_LEN</td>
-<td class="center">NET_DATA</td>
-</tr>
-</tbody>
-</table>
+<pre>
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|    CHANNEL    |      RSSI     | MAC_LEN(Bytes, Little endian) |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   MAC_DATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| NET_LEN(Bytes, Little endian) | NET_DATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</pre>
 <p id="rfc.section.8.8.4.p.2">Scan beacons have two embedded structures which contain information about the MAC layer and the NET layer. Their format depends on the MAC and NET layer currently in use.  </p>
-<p id="rfc.section.8.8.4.p.3">For example, in an 802.15.4 PHY, MAC_DATA would be formatted as follows: </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="center">Bytes:</th>
-<th class="center">8</th>
-<th class="center">2</th>
-<th class="center">2</th>
-<th class="center">1</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="center">Format:</td>
-<td class="center">EUI-64</td>
-<td class="center">UINT16_LE</td>
-<td class="center">UINT16_LE</td>
-<td class="center">UINT8</td>
-</tr>
-<tr>
-<td class="center">Fields:</td>
-<td class="center">LONG_ADDR</td>
-<td class="center">SHORT_ADDR</td>
-<td class="center">PAN-ID</td>
-<td class="center">LQI</td>
-</tr>
-</tbody>
-</table>
-<p id="rfc.section.8.8.4.p.4">For the standard network layer, the NET_DATA formatted as follows: </p>
-<p id="rfc.section.8.8.4.p.5">Bytes: | 1-3  |   1  |    <em>n</em>                             |  1   |  2 |  <em>n</em>    |  2| <em>n</em> --------|----|------|----------------------------|------|---|------|---------- Format: | PUI | UINT8 | UTF8                      |  ZT  |  UINT16_LE  | DATA   |UINT16_LE   | DATA Fields: | PROTO | FLAGS | NETWORK_NAME | 0x00 | XPANID_LEN| XPANID | STEERING_LEN | STEERING </p>
-<p id="rfc.section.8.8.4.p.6">Extra parameters may be added to each of the structures in the future, so care should be taken to read the length that prepends each structure.  </p>
-<p id="rfc.section.8.8.4.p.7">The RSSI is measured in dB.  The specific meaning of zero dB is implementation-specific, but MUST be consistant with definitions of other properties that express power. It is RECOMMENDED that zero dB represent one milliwatt of power (0dBm), as measured from the antenna connector.  </p>
+<p id="rfc.section.8.8.4.p.3">For example, in an 802.15.4 PHY, <samp>MAC_DATA</samp> would be formatted as follows: </p>
+<pre>
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                      EUI-64 (Upper word) ...                  :
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+:                  ... EUI-64 (Lower word)                      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  SHORT_ADDR (Little Endian)   |     PAN_ID (Little Endian)    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|      LQI      |
++-+-+-+-+-+-+-+-+
+</pre>
+<p id="rfc.section.8.8.4.p.4">For the standard network layer, the <samp>NET_DATA</samp> formatted as follows: </p>
+<pre>
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|        PROTOCOL (PUI, three-bytes shown)      |     FLAGS     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   NETWORK_NAME (UTF8) ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|      0x00     |   XPANID_LEN (Little endian)  | XPANID ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  STEERING_LEN(Little endian)  | STEERING_DATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</pre>
+<p id="rfc.section.8.8.4.p.5">Extra parameters may be added to each of the structures in the future, so care should be taken to read the length that prepends each structure.  </p>
+<p id="rfc.section.8.8.4.p.6">The RSSI is measured in dB.  The specific meaning of zero dB is implementation-specific, but MUST be consistant with definitions of other properties that express power. It is RECOMMENDED that zero dB represent one milliwatt of power (0dBm), as measured from the antenna connector.  </p>
 <h1 id="rfc.section.8.8.5">
 <a href="#rfc.section.8.8.5">8.8.5.</a> <a href="#prop-mac-15-4-laddr" id="prop-mac-15-4-laddr">PROP 52: PROP_MAC_15_4_LADDR</a>
 </h1>
@@ -3434,29 +3034,14 @@
 <ul>
 <li>Type: Single-Value, Read-Write</li>
 <li>Asynchronous Updates: No</li>
-<li>Required: <strong>ONLY</strong> used with 802.15.4 MAC</li>
-<li>Post-Reset Value: Tehnology-dependent. MAY  be <samp>PROP_HWADDR</samp> or be randomly generated.</li>
+<li>Required: <strong>ONLY</strong> if used with 802.15.4 MAC</li>
+<li>Value Type: EUI64_BE</li>
+<li>Post-Reset Value: Tehnology-dependent. MAY  be <samp>PROP_HWADDR</samp> or randomly generated.</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="center">Bytes:</th>
-<th class="center">8</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="center">Format:</td>
-<td class="center">EUI-64</td>
-</tr>
-<tr>
-<td class="center">Fields:</td>
-<td class="center">LADDR</td>
-</tr>
-</tbody>
-</table>
-<p id="rfc.section.8.8.5.p.2">TODO(RQ): Break this out into an 802.15.4-specific section </p>
-<p id="rfc.section.8.8.5.p.3">The 802.15.4 long address of this node.  </p>
+<p><a id="CREF8" class="info">[CREF8]<span class="info">RQ: Break PROP_MAC_15_4_LADDR out into an 802.15.4-specific section --</span></a></p>
+<p id="rfc.section.8.8.5.p.3">The 802.15.4 long (extended) address of this node.  </p>
 <p id="rfc.section.8.8.5.p.4">This property is only present on NCPs which implement 802.15.4 </p>
 <h1 id="rfc.section.8.8.6">
 <a href="#rfc.section.8.8.6">8.8.6.</a> <a href="#prop-mac-15-4-saddr" id="prop-mac-15-4-saddr">PROP 53: PROP_MAC_15_4_SADDR</a>
@@ -3466,28 +3051,19 @@
 <ul>
 <li>Type: Single-Value, Read-Write</li>
 <li>Asynchronous Updates: No</li>
-<li>Required: <strong>ONLY</strong> when used with 802.15.4 MAC</li>
-<li>Post-Reset Value: 0xFFFF</li>
+<li>Required: <ul>
+<li>
+<samp>CMD_PROP_VALUE_GET</samp>: REQUIRED when used with 802.15.4 MAC</li>
+<li>
+<samp>CMD_PROP_VALUE_SET</samp>: RECOMMENDED when used with 802.15.4 MAC</li>
+</ul>
+</li>
+<li>Value Type: UINT16_LE</li>
+<li>Post-Reset Value: 65535 (0xFFFF)</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="center">Bytes:</th>
-<th class="center">2</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="center">Format:</td>
-<td class="center">UINT16_LE</td>
-</tr>
-<tr>
-<td class="center">Fields:</td>
-<td class="center">SADDR</td>
-</tr>
-</tbody>
-</table>
-<p id="rfc.section.8.8.6.p.2">TODO(RQ): Break this out into an 802.15.4-specific section </p>
+<p id="rfc.section.8.8.6.p.2">&lt;!-- RQ -- Break PROP_MAC_15_4_SADDR out into an 802.15.4-specific section -- --&gt; </p>
 <p id="rfc.section.8.8.6.p.3">The 802.15.4 short address of this node.  </p>
 <p id="rfc.section.8.8.6.p.4">This property is only present on NCPs which implement 802.15.4 </p>
 <h1 id="rfc.section.8.8.7">
@@ -3498,28 +3074,19 @@
 <ul>
 <li>Type: Single-Value, Read-Write</li>
 <li>Asynchronous Updates: No</li>
-<li>Required: <strong>ONLY</strong> when used with 802.15.4 MAC</li>
-<li>Post-Reset Value: 0xFFFF ?</li>
+<li>Required: <ul>
+<li>
+<samp>CMD_PROP_VALUE_GET</samp>: REQUIRED when used with 802.15.4 MAC</li>
+<li>
+<samp>CMD_PROP_VALUE_SET</samp>: RECOMMENDED when used with 802.15.4 MAC</li>
+</ul>
+</li>
+<li>Value Type: UINT16_LE</li>
+<li>Post-Reset Value: 65535 (0xFFFF)</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="center">Bytes:</th>
-<th class="center">2</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="center">Format:</td>
-<td class="center">UINT16_LE</td>
-</tr>
-<tr>
-<td class="center">Fields:</td>
-<td class="center">PANID</td>
-</tr>
-</tbody>
-</table>
-<p id="rfc.section.8.8.7.p.2">TODO(RQ): Break this out into an 802.15.4-specific section </p>
+<p><a id="CREF9" class="info">[CREF9]<span class="info">RQ: Break PROP_MAC_15_4_PANID out into an 802.15.4-specific section --</span></a></p>
 <p id="rfc.section.8.8.7.p.3">The 802.15.4 PANID this node is associated with.  </p>
 <p id="rfc.section.8.8.7.p.4">This property is only present on NCPs which implement 802.15.4 </p>
 <h1 id="rfc.section.8.8.8">
@@ -3531,27 +3098,13 @@
 <li>Type: Single-Value, Read-Write</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: RECOMMENDED</li>
+<li>Value Type: BOOL</li>
 <li>Post-Reset Value: 0 (false)</li>
+<li>See also: (<a href="#prop-stream-raw" class="xref">Section 8.6.2</a>)</li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="center">Bytes:</th>
-<th class="center">1</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="center">Format:</td>
-<td class="center">BOOL</td>
-</tr>
-<tr>
-<td class="center">Fields:</td>
-<td class="center">RAW_STREAM_ENABLED</td>
-</tr>
-</tbody>
-</table>
-<p id="rfc.section.8.8.8.p.2">Set to true to enable raw MAC frames to be emitted from <samp>PROP_STREAM_RAW</samp>.  See <a href="#prop-stream-raw" class="xref">Section 8.6.2</a>.  </p>
+<p id="rfc.section.8.8.8.p.2">Set to true to enable raw MAC frames to be emitted from <samp>PROP_STREAM_RAW</samp>.  </p>
 <h1 id="rfc.section.8.8.9">
 <a href="#rfc.section.8.8.9">8.8.9.</a> <a href="#prop-mac-promiscuous-mode" id="prop-mac-promiscuous-mode">PROP 56: PROP_MAC_PROMISCUOUS_MODE</a>
 </h1>
@@ -3561,28 +3114,13 @@
 <li>Type: Single-Value, Read-Write</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: RECOMMENDED</li>
-<li>Unit: Enumeration</li>
+<li>Value Type: UINT8</li>
+<li>Units: Enumeration</li>
 <li>Post-Reset Value: <samp>MAC_PROMISCUOUS_MODE_OFF</samp>
 </li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="center">Bytes:</th>
-<th class="center">1</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="center">Format:</td>
-<td class="center">UINT8</td>
-</tr>
-<tr>
-<td class="center">Fields:</td>
-<td class="center">MAC_PROMISCUOUS_MODE</td>
-</tr>
-</tbody>
-</table>
 <p id="rfc.section.8.8.9.p.2">Possible Values: </p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
 <thead><tr>
@@ -3615,14 +3153,22 @@
 <p></p>
 
 <ul>
-<li>Type: Packet Stream, Output-Only</li>
+<li>Type: Packet-Stream, Output-Only</li>
 <li>Required: REQUIRED</li>
+<li>Value Type: UINT8, INT8</li>
+<li>Units: Channel Index, dB (RF Power)</li>
 </ul>
 
 <p> </p>
-<p id="rfc.section.8.8.10.p.2">Bytes: | 1 | 1 --------|----|- Format: | UINT8 | INT8 Fields: | CHANNEL | RSSI </p>
-<p id="rfc.section.8.8.10.p.3">This property is emitted during energy scan operation (SCAN_STATE_ENERGY) once per scanned channel.  </p>
-<p id="rfc.section.8.8.10.p.4">The RSSI is measured in dB.  The specific meaning of zero dB is implementation-specific, but MUST be consistant with definitions of other properties that express power. It is RECOMMENDED that zero dB represent one milliwatt of power (0dBm), as measured from the antenna connector.  </p>
+<pre>
+  0                   1
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|    CHANNEL    |      RSSI     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</pre>
+<p id="rfc.section.8.8.10.p.2">This property is emitted during energy scan operation (SCAN_STATE_ENERGY) once per scanned channel.  </p>
+<p id="rfc.section.8.8.10.p.3">The RSSI is measured in dB.  The specific meaning of zero dB is implementation-specific, but MUST be consistant with definitions of other properties that express power. It is RECOMMENDED that zero dB represent one milliwatt of power (0dBm), as measured from the antenna connector.  </p>
 <h1 id="rfc.section.8.8.11">
 <a href="#rfc.section.8.8.11">8.8.11.</a> <a href="#prop-mac-data-poll-period" id="prop-mac-data-poll-period">PROP 58: PROP_MAC_DATA_POLL_PERIOD</a>
 </h1>
@@ -3632,8 +3178,9 @@
 <li>Type: Single-Value, Read-Write</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: OPTIONAL</li>
+<li>Value Type: UINT32_LE</li>
 <li>Unit: milliseconds</li>
-<li>Post-Reset Value: 5000ms</li>
+<li>Post-Reset Value: 5000ms RECOMMENDED</li>
 <li>Required Capability: <samp>CAP_POWER_SAVE</samp>
 </li>
 <li>See Also: <a href="#prop-power-state" class="xref">Section 8.5.8</a>
@@ -3641,22 +3188,6 @@
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="center">Bytes:</th>
-<th class="center">1</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="center">Format:</td>
-<td class="center">UINT32_LE</td>
-</tr>
-<tr>
-<td class="center">Fields:</td>
-<td class="center">MAC_DATA_POLL_PERIOD</td>
-</tr>
-</tbody>
-</table>
 <p id="rfc.section.8.8.11.p.2">The (user-specified) data poll (802.15.4 MAC Data Request) period in milliseconds. Value zero means the poll period will be calculated by the stack to be the maximum interval acceptable by the parent. If the maximum poll interval is longer than the maximum interval acceptable by the parent, the later value is used instead.  </p>
 <p id="rfc.section.8.8.11.p.3">The value of this property is only used if <samp>PROP_POWER_STATE</samp> is set to <samp>POWER_STATE_LOW_POWER</samp>. In all other states, the value of this property is ignored.  </p>
 <p id="rfc.section.8.8.11.p.4">This property is only used on NCPs which support <samp>POWER_STATE_LOW_POWER</samp>.  </p>
@@ -3670,9 +3201,10 @@
 <li>Asynchronous Updates: No</li>
 <li>Per-Item Length: No</li>
 <li>Required: OPTIONAL</li>
-<li>Post-Reset Value: empty</li>
 <li>Required Capability: <samp>CAP_MAC_WHITELIST</samp>
 </li>
+<li>Item Type: EUI64_BE, UINT8</li>
+<li>Post-Reset Value: empty</li>
 <li>See Also: <a href="#prop-mac-whitelist-enabled" class="xref">Section 8.8.13</a>
 </li>
 </ul>
@@ -3682,29 +3214,21 @@
 <p id="rfc.section.8.8.12.p.3">When whitelisting is enabled, this property prevents the device from being able to communicate with devices which are not in this list. Also, if the RSSI field is not 127, the given RSSI value will always be reported instead of using the RSSI from the radio hardware.  </p>
 <p id="rfc.section.8.8.12.p.4">This property is intended to facilitate stack testing and debugging and SHOULD NOT be used in production.  </p>
 <p id="rfc.section.8.8.12.p.5">Item Format: </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="center">Bytes:</th>
-<th class="center">8</th>
-<th class="center">1</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="center">Format:</td>
-<td class="center">EUI-64-BE</td>
-<td class="center">UINT8</td>
-</tr>
-<tr>
-<td class="center">Fields:</td>
-<td class="center">ADDR</td>
-<td class="center">RSSI</td>
-</tr>
-</tbody>
-</table>
+<pre>
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                      EUI64 (Upper word) ...                   :
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+:                  ... EUI64 (Lower word)                       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     RSSI      |
++-+-+-+-+-+-+-+-+
+</pre>
 <p></p>
 
 <dl>
-<dt>ADDR</dt>
+<dt>EUI64</dt>
 <dd style="margin-left: 8">
 <br> EUI64 address of node</dd>
 <dt>RSSI</dt>
@@ -3722,30 +3246,15 @@
 <li>Type: Single-Value, Read-Write</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: OPTIONAL</li>
-<li>Post-Reset Value: 0 (false)</li>
 <li>Required capability: <samp>CAP_MAC_WHITELIST</samp>
 </li>
+<li>Value Type: BOOL</li>
+<li>Post-Reset Value: 0 (false)</li>
 <li>See Also: <a href="#prop-mac-whitelist" class="xref">Section 8.8.12</a>
 </li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">BOOL</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>WHITELIST_ENABLED</samp></td>
-</tr>
-</tbody>
-</table>
 <p id="rfc.section.8.8.13.p.2">TODO(RQ): Consider moving this to the debug section.  </p>
 <p id="rfc.section.8.8.13.p.3">Setting this to true SHALL cause <samp>PROP_MAC_BLACKLIST_ENABLED</samp> to be automatically set to false.  </p>
 <h1 id="rfc.section.8.8.14">
@@ -3757,29 +3266,14 @@
 <li>Type: Single-Value, Read-Write</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: OPTIONAL</li>
-<li>Post-Reset Value: 0 (false)</li>
 <li>Required capability: <samp>CAP_MAC_RAW</samp>, TODO: 802.15.4 PHY CAP</li>
+<li>Value Type: BOOL</li>
+<li>Post-Reset Value: 0 (false)</li>
 <li>See Also: <a href="#prop-mac-src-match-short-addresses" class="xref">Section 8.8.15</a>, <a href="#prop-mac-src-match-extended-addresses" class="xref">Section 8.8.16</a>
 </li>
 </ul>
 
 <p> </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">BOOL</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>SRC_MATCH_ENABLED</samp></td>
-</tr>
-</tbody>
-</table>
 <p id="rfc.section.8.8.14.p.2">Set to true to enable radio source matching or false to disable it. The source match functionality is used by radios when generating ACKs. The short and extended address lists are used for settings the Frame Pending bit in the ACKs.  </p>
 <h1 id="rfc.section.8.8.15">
 <a href="#rfc.section.8.8.15">8.8.15.</a> <a href="#prop-mac-src-match-short-addresses" id="prop-mac-src-match-short-addresses">PROP 4868: PROP_MAC_SRC_MATCH_SHORT_ADDRESSES</a>
@@ -3791,6 +3285,7 @@
 <li>Asynchronous Updates: No</li>
 <li>Per-Item Length: No</li>
 <li>Required: OPTIONAL</li>
+<li>Item Type: UINT16_LE</li>
 <li>Post-Reset Value: empty</li>
 <li>Required Capability: <samp>CAP_MAC_RAW</samp>, TODO: 802.15.4 PHY CAP</li>
 <li>See Also: <a href="#prop-mac-src-match-enabled" class="xref">Section 8.8.14</a>
@@ -3799,23 +3294,6 @@
 
 <p> </p>
 <p id="rfc.section.8.8.15.p.2">Configures the list of short addresses used for source matching. These short address are used for hardware generated ACKs.  </p>
-<p id="rfc.section.8.8.15.p.3">Item Format: </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="center">Bytes:</th>
-<th class="center">2</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="center">Format:</td>
-<td class="center">UINT16_LE</td>
-</tr>
-<tr>
-<td class="center">Fields:</td>
-<td class="center">SADDR</td>
-</tr>
-</tbody>
-</table>
 <h1 id="rfc.section.8.8.16">
 <a href="#rfc.section.8.8.16">8.8.16.</a> <a href="#prop-mac-src-match-extended-addresses" id="prop-mac-src-match-extended-addresses">PROP 4869: PROP_MAC_SRC_MATCH_EXTENDED_ADDRESSES</a>
 </h1>
@@ -3826,6 +3304,7 @@
 <li>Asynchronous Updates: No</li>
 <li>Per-Item Length: No</li>
 <li>Required: OPTIONAL</li>
+<li>Item Type: EUI64_BE</li>
 <li>Post-Reset Value: empty</li>
 <li>Required Capabilities: <samp>CAP_MAC_RAW</samp>, TODO: 802.15.4 PHY CAP</li>
 <li>See Also: <a href="#prop-mac-src-match-enabled" class="xref">Section 8.8.14</a>
@@ -3844,9 +3323,10 @@
 <li>Asynchronous Updates: No</li>
 <li>Per-Item Length: No</li>
 <li>Required: OPTIONAL</li>
-<li>Post-Reset Value: empty</li>
 <li>Required Capability: <samp>CAP_MAC_WHITELIST</samp>
 </li>
+<li>Item Type: EUI64_BE</li>
+<li>Post-Reset Value: empty</li>
 <li>See Also: <a href="#prop-mac-blacklist-enabled" class="xref">Section 8.8.18</a>
 </li>
 </ul>
@@ -3863,6 +3343,7 @@
 <li>Type: Single-Value, Read-Write</li>
 <li>Asynchronous Updates: No</li>
 <li>Required: OPTIONAL</li>
+<li>Value Type: BOOL</li>
 <li>Post-Reset Value: 0 (false)</li>
 <li>Required capability: <samp>CAP_MAC_WHITELIST</samp>
 </li>
@@ -3873,22 +3354,6 @@
 <p> </p>
 <p id="rfc.section.8.8.18.p.2">TODO(RQ): Consider moving this to the debug section.  </p>
 <p id="rfc.section.8.8.18.p.3">Setting this to true SHALL cause <samp>PROP_MAC_WHITELIST_ENABLED</samp> to be automatically set to false.  </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="right">Bytes:</th>
-<th class="center">1</th>
-</tr></thead>
-<tbody>
-<tr>
-<td class="right">Format:</td>
-<td class="center">BOOL</td>
-</tr>
-<tr>
-<td class="right">Fields:</td>
-<td class="center"><samp>BLACKLIST_ENABLED</samp></td>
-</tr>
-</tbody>
-</table>
 <h1 id="rfc.section.8.9">
 <a href="#rfc.section.8.9">8.9.</a> <a href="#prop-net" id="prop-net">NET Properties</a>
 </h1>
@@ -4228,7 +3693,7 @@
 </tr>
 </tbody>
 </table>
-<p><a id="CREF8" class="info">[CREF8]<span class="info">RQ: TODO: Elaborate on PROP_NET_JOIN_EXISTING --</span></a></p>
+<p><a id="CREF10" class="info">[CREF10]<span class="info">RQ: TODO: Elaborate on PROP_NET_JOIN_EXISTING --</span></a></p>
 <h1 id="rfc.section.8.9.10">
 <a href="#rfc.section.8.9.10">8.9.10.</a> <a href="#prop-net-key-swtich-guardtime" id="prop-net-key-swtich-guardtime">PROP 74: PROP_NET_KEY_SWITCH_GUARDTIME</a>
 </h1>
@@ -4241,7 +3706,7 @@
 </ul>
 
 <p> </p>
-<p><a id="CREF9" class="info">[CREF9]<span class="info">RQ: TODO: This likely doesn't belong in core, at least not in the small-number section.  --</span></a></p>
+<p><a id="CREF11" class="info">[CREF11]<span class="info">RQ: TODO: This likely doesn't belong in core, at least not in the small-number section.  --</span></a></p>
 <h1 id="rfc.section.8.9.11">
 <a href="#rfc.section.8.9.11">8.9.11.</a> <a href="#prop-net-pskc" id="prop-net-pskc">PROP 75: PROP_NET_PSKC</a>
 </h1>
@@ -4254,7 +3719,7 @@
 </ul>
 
 <p> </p>
-<p><a id="CREF10" class="info">[CREF10]<span class="info">RQ: TODO: This likely doesn't belong in core, at least not in the small-number section.  --</span></a></p>
+<p><a id="CREF12" class="info">[CREF12]<span class="info">RQ: TODO: This likely doesn't belong in core, at least not in the small-number section.  --</span></a></p>
 <h1 id="rfc.section.8.10">
 <a href="#rfc.section.8.10">8.10.</a> <a href="#prop-ipv6" id="prop-ipv6">IPv6 Properties</a>
 </h1>
@@ -4264,13 +3729,29 @@
 <p></p>
 
 <ul>
-<li>Type: Read-Only</li>
-<li>Packed-Encoding: <samp>6</samp>
-</li>
+<li>Type: Single-Value, Read-Write</li>
+<li>Asynchronous Updates: Yes</li>
+<li>Required: REQUIRED</li>
+<li>Post-Reset Value: Unspecified</li>
 </ul>
 
 <p> </p>
-<p id="rfc.section.8.10.1.p.2">The IPv6 link-local scope address.  </p>
+<table cellpadding="3" cellspacing="0" class="tt full center">
+<thead><tr>
+<th class="right">Bytes:</th>
+<th class="center">16</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="right">Format:</td>
+<td class="center">IPV6_ADDR</td>
+</tr>
+<tr>
+<td class="right">Fields:</td>
+<td class="center"><samp>IPV6_LL_ADDR</samp></td>
+</tr>
+</tbody>
+</table>
 <h1 id="rfc.section.8.10.2">
 <a href="#rfc.section.8.10.2">8.10.2.</a> <a href="#prop-ipv6-address-table" id="prop-ipv6-address-table">PROP 99: PROP_IPV6_ADDRESS_TABLE</a>
 </h1>
@@ -4447,7 +3928,7 @@
 <h1 id="rfc.appendix.A.1">
 <a href="#rfc.appendix.A.1">A.1.</a> <a href="#ncp-initialization" id="ncp-initialization">NCP Initialization</a>
 </h1>
-<p><a id="CREF11" class="info">[CREF11]<span class="info">RQ: FIXME: This example session is incomplete.</span></a></p>
+<p><a id="CREF13" class="info">[CREF13]<span class="info">RQ: FIXME: This example session is incomplete.</span></a></p>
 <p id="rfc.section.A.1.p.2">Check the protocol version to see if it is supported: </p>
 <p></p>
 
@@ -4502,7 +3983,7 @@
 <h1 id="rfc.appendix.A.2">
 <a href="#rfc.appendix.A.2">A.2.</a> <a href="#attaching-to-a-network" id="attaching-to-a-network">Attaching to a network</a>
 </h1>
-<p><a id="CREF12" class="info">[CREF12]<span class="info">RQ: FIXME: This example session is incomplete.</span></a></p>
+<p><a id="CREF14" class="info">[CREF14]<span class="info">RQ: FIXME: This example session is incomplete.</span></a></p>
 <p id="rfc.section.A.2.p.2">We make the assumption that the NCP is already associated with a network at physical and media access layers. The core layer steps proceed after the initial phase of initializing the specific network layer stack.  </p>
 <p id="rfc.section.A.2.p.3">Bring the network interface up: </p>
 <p></p>
@@ -4547,7 +4028,7 @@
 <h1 id="rfc.appendix.A.4">
 <a href="#rfc.appendix.A.4">A.4.</a> <a href="#attaching-to-a-saved-network" id="attaching-to-a-saved-network">Attaching to a saved network</a>
 </h1>
-<p><a id="CREF13" class="info">[CREF13]<span class="info">RQ: FIXME: This example session is incomplete.</span></a></p>
+<p><a id="CREF15" class="info">[CREF15]<span class="info">RQ: FIXME: This example session is incomplete.</span></a></p>
 <p id="rfc.section.A.4.p.2">Recall the saved network if you haven't already done so: </p>
 <p></p>
 
@@ -4575,7 +4056,7 @@
 <h1 id="rfc.appendix.A.5">
 <a href="#rfc.appendix.A.5">A.5.</a> <a href="#ncp-software-reset" id="ncp-software-reset">NCP Software Reset</a>
 </h1>
-<p><a id="CREF14" class="info">[CREF14]<span class="info">RQ: FIXME: This example session is incomplete.</span></a></p>
+<p><a id="CREF16" class="info">[CREF16]<span class="info">RQ: FIXME: This example session is incomplete.</span></a></p>
 <p></p>
 
 <ul>
@@ -4763,12 +4244,12 @@
 <a href="#rfc.appendix.B.3">B.3.</a> <a href="#i2c-recommendations" id="i2c-recommendations">I2C Recommendations</a>
 </h1>
 <p id="rfc.section.B.3.p.1">TBD </p>
-<p><a id="CREF15" class="info">[CREF15]<span class="info">RQ: It may make sense to have a look at what Bluetooth HCI is doing for native I2C framing and go with that.</span></a></p>
+<p><a id="CREF17" class="info">[CREF17]<span class="info">RQ: It may make sense to have a look at what Bluetooth HCI is doing for native I2C framing and go with that.</span></a></p>
 <h1 id="rfc.appendix.B.4">
 <a href="#rfc.appendix.B.4">B.4.</a> <a href="#native-usb-recommendations" id="native-usb-recommendations">Native USB Recommendations</a>
 </h1>
 <p id="rfc.section.B.4.p.1">TBD </p>
-<p><a id="CREF16" class="info">[CREF16]<span class="info">RQ: It may make sense to have a look at what Bluetooth HCI is doing for native USB framing and go with that.</span></a></p>
+<p><a id="CREF18" class="info">[CREF18]<span class="info">RQ: It may make sense to have a look at what Bluetooth HCI is doing for native USB framing and go with that.</span></a></p>
 <h1 id="rfc.appendix.C">
 <a href="#rfc.appendix.C">Appendix C.</a> <a href="#test-vectors" id="test-vectors">Test Vectors</a>
 </h1>
@@ -4823,7 +4304,7 @@
 </tr>
 </tbody>
 </table>
-<p><a id="CREF17" class="info">[CREF17]<span class="info">RQ: The PUI test-vector encodings need to be verified.</span></a></p>
+<p><a id="CREF19" class="info">[CREF19]<span class="info">RQ: The PUI test-vector encodings need to be verified.</span></a></p>
 <h1 id="rfc.appendix.C.2">
 <a href="#rfc.appendix.C.2">C.2.</a> <a href="#test-vector-reset-command" id="test-vector-reset-command">Test Vector: Reset Command</a>
 </h1>
@@ -4862,12 +4343,12 @@
 <a href="#rfc.appendix.C.4">C.4.</a> <a href="#test-vector-inbound-ipv6-packet" id="test-vector-inbound-ipv6-packet">Test Vector: Inbound IPv6 Packet</a>
 </h1>
 <p id="rfc.section.C.4.p.1">CMD_VALUE_IS(PROP_STREAM_NET) </p>
-<p><a id="CREF18" class="info">[CREF18]<span class="info">RQ: FIXME: This test vector is incomplete.</span></a></p>
+<p><a id="CREF20" class="info">[CREF20]<span class="info">RQ: FIXME: This test vector is incomplete.</span></a></p>
 <h1 id="rfc.appendix.C.5">
 <a href="#rfc.appendix.C.5">C.5.</a> <a href="#test-vector-outbound-ipv6-packet" id="test-vector-outbound-ipv6-packet">Test Vector: Outbound IPv6 Packet</a>
 </h1>
 <p id="rfc.section.C.5.p.1">CMD_VALUE_SET(PROP_STREAM_NET) </p>
-<p><a id="CREF19" class="info">[CREF19]<span class="info">RQ: FIXME: This test vector is incomplete.</span></a></p>
+<p><a id="CREF21" class="info">[CREF21]<span class="info">RQ: FIXME: This test vector is incomplete.</span></a></p>
 <h1 id="rfc.appendix.D">
 <a href="#rfc.appendix.D">Appendix D.</a> <a href="#appendix-comparison" id="appendix-comparison">Comparison with other protocols</a>
 </h1>
