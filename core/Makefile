@@ -45,6 +45,7 @@ draft-rquattle-spinel-core.xml: \
 	detail-properties-debug.md \
 	detail-properties-ipv6.md \
 	detail-properties-net.md \
+	detail-properties-phy.md \
 	detail-properties.md \
 	detail-status.md \
 	iana-considerations.md \

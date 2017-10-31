@@ -5,12 +5,10 @@
 * Type: Single-Value, Read-Only
 * Asynchronous Updates: Yes
 * Required: **REQUIRED**
+* Scope: NLI
+* Value Type: PUI
+* Units: Enumeration
 * Post-Reset Value: Reset Reason Code
-
-Bytes:  |    1-3
--------:|-------------
-Format: | PUI
-Fields: | `STATUS_CODE`
 
 This property describes the status code of the last NCP operation. For
 many commands, failure is indicated by emitting this property with the
@@ -34,7 +32,15 @@ See (#status-codes) for the complete list of status codes.
 * Type: Single-Value, Constant
 * Asynchronous Updates: No
 * Required: **REQUIRED**
+* Scope: NCP
+* Value Type: PUI, PUI
 * Post-Reset Value: 4, 3
+
+
+
+
+
+
 
 Bytes:  |       1-3       |      1-3
 --------|-----------------|---------------
@@ -68,13 +74,10 @@ be identical across all implemented NLIs.
 * Type: Single-Value, Constant
 * Asynchronous Updates: No
 * Required: **REQUIRED**
-* Scope: Firmware
+* Scope: NCP
+* Value Type: STRING
 * Post-Reset Value: Implementation-Specific
 
-Bytes:  |    *n*        | 1
--------:|---------------|------
-Format: | ASCII         | CONST
-Fields: | `NCP_VERSION` | 0x00
 
 Contains a zero-terminated ASCII string which describes the firmware
 currently running on the NCP.
@@ -120,12 +123,10 @@ identical across all implemented NLIs.
 * Type: Single-Value, Constant
 * Asynchronous Updates: No
 * Required: **REQUIRED**
+* Scope: NLI
+* Value Type: PUI
+* Units: Enumeration
 * Post-Reset Value: Implementation-Specific
-
-Bytes:  |    1-3
--------:|-------------
-Format: | PUI
-Fields: | `INTERFACE_TYPE`
 
 This unsigned packed integer identifies the network protocol
 implemented by this NCP. A registry of network interface type codes is
@@ -147,12 +148,10 @@ network protocol given by the NCP.
 * Type: Single-Value, Constant
 * Asynchronous Updates: No
 * Required: **REQUIRED**
+* Scope: NCP
+* Value Type: PUI
+* Units: Enumeration
 * Post-Reset Value: Implementation-Specific
-
-Bytes:  |    1-3
--------:|-------------
-Format: | PUI
-Fields: | `VENDOR_ID`
 
 <!-- JW -- I have no idea how to write the IANA registry creation text for this. -- -->
 <!-- RQ -- Maybe we should switch this over to be a string instead? -- -->
@@ -160,14 +159,13 @@ Fields: | `VENDOR_ID`
 ### PROP 5: PROP_CAPS {#prop-caps}
 
 * Type: Multiple-Value, Constant
+* Has Item Length Prefix: No
 * Asynchronous Updates: No
 * Required: **REQUIRED**
+* Scope: NLI
+* Item Type: PUI
+* Units: Enumeration
 * Post-Reset Value: Implementation-Specific
-
-Bytes:  |   1-3 |  1-3  | ...
--------:|-------|-------|-----
-Format: |  PUI  |  PUI  | ...
-Fields: | `CAP` | `CAP` | ...
 
 Describes the supported capabilities of this NCP. Encoded as a list of
 packed unsigned integers. See (#capabilities) for a list of values.
@@ -177,12 +175,10 @@ packed unsigned integers. See (#capabilities) for a list of values.
 * Type: Single-Value, Constant
 * Asynchronous Updates: No
 * Required: **REQUIRED**
+* Scope: NCP
+* Item Type: UINT8
+* Units: Count
 * Post-Reset Value: 1-4
-
-Bytes:  |    1
--------:|-------------
-Format: | INT
-Fields: | `INTERFACE_COUNT`
 
 Describes the number of concurrent interfaces supported by this NCP.
 Since the concurrent interface mechanism is still TBD, this value
@@ -196,17 +192,15 @@ identical across all implemented NLIs.
 * Type: Single-Value, Read/Write
 * Asynchronous Updates: Yes
 * Required:
-	* Read: Yes
-	* Write: **RECOMENDED**
+	* `CMD_PROP_VALUE_GET`: **REQUIRED**
+	* `CMD_PROP_VALUE_SET`: **RECOMENDED**
+* Scope: NLI
+* Item Type: UINT8
+* Units: Enumeration
 * Post-Reset Value: `POWER_STATE_ONLINE`
 * Related Capabilities:
     * `CAP_POWER_STATE`: Required when writable
 * See Also: (#prop-mac-data-poll-period)
-
-Bytes:  |    1
--------:|-------------
-Format: | INT
-Fields: | `POWER_STATE`
 
 A single octet coded that indicates the current power state of the
 NCP. Setting this property allows controls of the current NCP power
@@ -247,13 +241,10 @@ Code    | Name
 
 * Type: Single-Value, Read-Only
 * Asynchronous Updates: No
-* Post-Reset Value: Determined by Factory
 * Required: **REQUIRED**
-
-Bytes:  |    8
--------:|-------------
-Format: | EUI-64-BE
-Fields: | `HWADDR`
+* Scope: NLI
+* Value Type: EUI64_BE
+* Post-Reset Value: Determined by Factory
 
 The EUI-64 (TODO:CITE) format of the link-layer address of the device.
 **MAY** be different across multiple NLIs.
@@ -263,13 +254,10 @@ The EUI-64 (TODO:CITE) format of the link-layer address of the device.
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: No
 * Required: **OPTIONAL**
-* Post-Reset Value: 0
+* Scope: NLI
 * Required Capability: `CAP_LOCK`
-
-Bytes:  |    1
--------:|-------------
-Format: | Boolean
-Fields: | `LOCK`
+* Value Type: BOOL
+* Post-Reset Value: 0 (false)
 
 Property transaction lock. Used for grouping transactional changes to
 several properties for simultaneous commit, or to temporarily prevent
@@ -289,13 +277,11 @@ of `STATUS_ALREADY`.
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: No
 * Required: **OPTIONAL**
-* Post-Reset Value: `HOST_POWER_STATE_ONLINE`
+* Scope: NCP
 * Required Capability: `???` (TODO: Assign a capability)
-
-Bytes:  |    1
--------:|-------------
-Format: | INT
-Fields: | `HOST_POWER_STATE`
+* Value Type: UINT8
+* Units: Enumeration
+* Post-Reset Value: `HOST_POWER_STATE_ONLINE`
 
 Describes the current power state of the *OS*. This property is used
 by the OS to inform the NCP when it has changed power states. The NCP
@@ -370,16 +356,14 @@ NLI is not zero are not specified.
 ### PROP 4104: PROP_UNSOL_UPDATE_FILTER {#prop-unsol-update-filter}
 
 * Type: Multi-Value, Read-Write
+* Has Item Length Prefix: No
 * Asynchronous Updates: No
 * Required: **OPTIONAL**
-* Post-Reset Value: Empty
-* Scope: NCP
+* Scope: NLI
 * Required Capability: `CAP_UNSOL_UPDATE_FILTER`
-
-Bytes:  |    1-3    |     1-3   | ...
--------:|-----------|-----------|-----
-Format: |    PUI    |    PUI    | ...
-Fields: | `PROP_ID` | `PROP_ID` | ...
+* Item Type: PUI ((#packed-unsigned-integer))
+* Units: Enumeration (Property Keys)
+* Post-Reset Value: Empty
 
 Contains a list of property IDs which are *excluded* from generating
 unsolicited value updates. This property **MUST** be empty after NCP
@@ -410,16 +394,14 @@ NCP **MUST** ignore the unsupported properties.
 ### PROP 4105: PROP_UNSOL_UPDATE_LIST {#prop-unsol-update-list}
 
 * Type: Multi-Value, Constant
+* Has Item Length Prefix: No
 * Asynchronous Updates: No
 * Required: **OPTIONAL**
-* Post-Reset Value: Implementation Specific
-* Scope: Firmware
+* Scope: NLI
 * Required Capability: `CAP_UNSOL_UPDATE_FILTER`
-
-Bytes:  |    1-3    |     1-3   | ...
--------:|-----------|-----------|-----
-Format: |    PUI    |    PUI    | ...
-Fields: | `PROP_ID` | `PROP_ID` | ...
+* Item Type: PUI ((#packed-unsigned-integer))
+* Units: Enumeration (Property Keys)
+* Post-Reset Value: Implementation Specific
 
 Contains a list of properties which are capable of generating
 unsolicited value updates. This list can be used when populating
@@ -439,15 +421,10 @@ those properties **SHOULD NOT** not be included in this list.
 
 ### PROP 112: PROP_STREAM_DEBUG {#prop-stream-debug}
 
-* Type: Character-Stream, Output-Only
-* Asynchronous Updates: Yes
+* Type: Byte-Stream, Output-Only
 * Required: **OPTIONAL**
-* Scope: NLI
-
-Bytes:  |    *n*
--------:|--------------
-Format: | UTF8
-Fields: | `DEBUG_DATA`
+* Scope: NCP
+* Value Type: UTF8 Fragment
 
 This stream provides human-readable debugging output which may be
 displayed in the OS logs. It is intended to be treated as a one-way
@@ -467,16 +444,21 @@ first bytes of the next emission from this stream.
 ### PROP 113: PROP_STREAM_RAW {#prop-stream-raw}
 
 * Type: Packet-Stream, Input/Output
-* Asynchronous Updates: Yes
 * Required: **OPTIONAL**
 * Scope: NLI
 * Related Capabilities:
 	* `CAP_WRITABLE_RAW_STREAM`: Can be written to if present.
+* Value Type: Structure
 
-Bytes:  |        2       |     *n*    |       *n*
-:-------|:---------------|:-----------|:---------------
-Format: | UINT16-LE      | DATA       | OPTIONAL DATA
-Fields: | FRAME_DATA_LEN | FRAME_DATA | FRAME_METADATA
+~~~
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   FRAME_LEN (Little endian)   | FRAME_DATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   FRAME_METADATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+~~~
 
 This stream provides the capability of sending and receiving raw
 packets to and from the network. The exact format of the frame
@@ -494,7 +476,7 @@ the NCP.
 
 #### Frame Metadata Format {#frame-metadata-format}
 
-Any data past the end of `FRAME_DATA_LEN` is considered metadata and
+Any data past the end of `FRAME_DATA` is considered metadata and
 is **OPTIONAL**. Frame metadata **MAY** be empty or partially
 specified. The operational semantics of using frame metadata is not
 specified in the core protocol.
@@ -502,36 +484,39 @@ specified in the core protocol.
 ### PROP 114: PROP_STREAM_NET {#prop-stream-net}
 
 * Type: Packet-Stream, Input/Output
-* Asynchronous Updates: Yes
 * Required: **REQUIRED**
 * Scope: NLI
+* Value Type: Structure
+* See Also: (#prop-stream-net-insecure)
 
-Bytes:  |        2       |     *n*    |       *n*
-:-------|:---------------|:-----------|:---------------
-Format: | UINT16-LE      | IPv6       | OPTIONAL DATA
-Fields: | FRAME_DATA_LEN | FRAME_DATA | FRAME_METADATA
+~~~
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   FRAME_LEN (Little endian)   | FRAME_DATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   FRAME_METADATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+~~~
 
 This stream provides the capability of sending and receiving data
 packets to and from the currently attached network.
 
-Any data past the end of `FRAME_DATA_LEN` is considered metadata, the
+Any data past the end of `FRAME_LEN` is considered metadata, the
 format of which is described in (#frame-metadata-format).
 
 ### PROP 115: PROP_STREAM_NET_INSECURE {#prop-stream-net-insecure}
 
 * Type: Packet-Stream, Input/Output
-* Asynchronous Updates: Yes
 * Required: **REQUIRED**
 * Scope: NLI
+* Value Type: Structure
+* See Also: (#prop-stream-net)
 
-Bytes:  |        2       |     *n*    |       *n*
-:-------|:---------------|:-----------|:---------------
-Format: | UINT16-LE      | IPv6       | OPTIONAL DATA
-Fields: | FRAME_DATA_LEN | FRAME_DATA | FRAME_METADATA
+The structure of the value of this property is identical to that of
+PROP_STREAM_NET ((#prop-stream-net)).
 
 This stream provides the capability of sending and receiving plaintext
 non-authenticated data packets to and from the currently attached
 network.
 
-Any data past the end of `FRAME_DATA_LEN` is considered metadata, the
-format of which is described in (#frame-metadata-format).

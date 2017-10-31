@@ -4,13 +4,9 @@
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: Yes
 * Required: **REQUIRED**
-* Unit: Enumeration
-* Post-Reset Value: 0 (false)
-
-Bytes:  |    1
--------:|-------------
-Format: | UINT8
-Fields: | `SCAN_STATE`
+* Value Type: UINT8
+* Units: Enumeration
+* Post-Reset Value: `SCAN_STATE_IDLE`
 
 TODO(RQ): This needs to be re-thought out. I don't like the whole discovery
 thing being a separate scan state. Maybe we should add another property
@@ -38,61 +34,86 @@ Value switches to `SCAN_STATE_IDLE` when scan is complete.
 
 ### PROP 49: PROP_MAC_SCAN_MASK {#prop-mac-scan-mask}
 
-* Type: Multi-Value, Read-Write
+* Type: Multiple-Value, Read-Write
+* Has Item Length Prefix: No
 * Asynchronous Updates: No
 * Required: **REQUIRED**
-* Unit: Channel Index
-* Post-Reset Value: Same as PROP_PHY_CHAN_SUPPORTED
-
-Bytes:  |   1 |  1  | ...
--------:|-------|-------|-----
-Format: |  UINT8  |  UINT8  | ...
-Fields: | `CHANNEL` | `CHANNEL` | ...
+* Item Type: UINT8
+* Units: Channel Index
+* Post-Reset Value: Same as `PROP_PHY_CHAN_SUPPORTED`
 
 This property contains the list of channels that will be scanned.
+
+Setting this property to be empty **MUST** reinitialize it with the contents
+of `PROP_PHY_CHAN_SUPPORTED`.
 
 ### PROP 50: PROP_MAC_SCAN_PERIOD {#prop-mac-scan-period}
 
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: No
-* Required: **OPTIONAL**
+* Required: **RECOMMENDED**
+* Value Type: UINT16_LE
 * Unit: milliseconds per channel
-* Post-Reset Value: Implementation-specific-default
+* Post-Reset Value: 100ms **RECOMMENDED**
 
-Bytes:  |    1
--------:|-------------
-Format: | UINT16_LE
-Fields: | `MSEC`
+Number of milliseconds that the scan should wait per channel for
+beacons or for collecting energy samples.
 
 ### PROP 51: PROP_MAC_SCAN_BEACON {#prop-mac-scan-beacon}
 
-* Type: Packet Stream, Output-Only
+* Type: Packet-Stream, Output-Only
+* Asynchronous Updates: Yes
 * Required: **REQUIRED**
+* Scope: NLI
+* Value Type: Structure
 
-* Packed-Encoding: `Ccdd` (or `Cct(ESSc)t(iCUdd)`)
-
-Bytes: | 1  |   1  |    2    |   *n*    |    2    |   *n*
---------|----|------|---------|----------|---------|----------
-Format: | UINT8 | INT8 | UINT16_LE | DATA | UINT16_LE | DATA
-Fields: | CH | RSSI | MAC_LEN | MAC_DATA | NET_LEN | NET_DATA
+~~~
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|    CHANNEL    |      RSSI     | MAC_LEN(Bytes, Little endian) |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   MAC_DATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| NET_LEN(Bytes, Little endian) | NET_DATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+~~~
 
 Scan beacons have two embedded structures which contain
 information about the MAC layer and the NET layer. Their
 format depends on the MAC and NET layer currently in use.
 
-For example, in an 802.15.4 PHY, MAC_DATA would be formatted as follows:
+For example, in an 802.15.4 PHY, `MAC_DATA` would be formatted as follows:
 
-Bytes: | 8  |   2  |    2    |  1
---------|----|------|---------|----------
-Format: | EUI-64 | UINT16_LE | UINT16_LE | UINT8
-Fields: | LONG_ADDR | SHORT_ADDR | PAN-ID | LQI
+~~~
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                      EUI-64 (Upper word) ...                  :
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+:                  ... EUI-64 (Lower word)                      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  SHORT_ADDR (Little Endian)   |     PAN_ID (Little Endian)    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|      LQI      |
++-+-+-+-+-+-+-+-+
+~~~
 
-For the standard network layer, the NET_DATA formatted as follows:
+For the standard network layer, the `NET_DATA` formatted as follows:
 
-Bytes: | 1-3  |   1  |    *n*                             |  1   |  2 |  *n*    |  2| *n*
---------|----|------|----------------------------|------|---|------|----------
-Format: | PUI | UINT8 | UTF8                      |  ZT  |  UINT16_LE  | DATA   |UINT16_LE   | DATA
-Fields: | PROTO | FLAGS | NETWORK_NAME | 0x00 | XPANID_LEN| XPANID | STEERING_LEN | STEERING
+~~~
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|        PROTOCOL (PUI, three-bytes shown)      |     FLAGS     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   NETWORK_NAME (UTF8) ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|      0x00     |   XPANID_LEN (Little endian)  | XPANID ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  STEERING_LEN(Little endian)  | STEERING_DATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+~~~
 
 Extra parameters may be added to each of the structures
 in the future, so care should be taken to read the length
@@ -109,17 +130,13 @@ antenna connector.
 
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: No
-* Required: **ONLY** used with 802.15.4 MAC
-* Post-Reset Value: Tehnology-dependent. **MAY**  be `PROP_HWADDR` or be randomly generated.
+* Required: **ONLY** if used with 802.15.4 MAC
+* Value Type: EUI64_BE
+* Post-Reset Value: Tehnology-dependent. **MAY**  be `PROP_HWADDR` or randomly generated.
 
-Bytes: | 8
---------|----
-Format: | EUI-64
-Fields: | LADDR
+<!-- RQ -- Break PROP_MAC_15_4_LADDR out into an 802.15.4-specific section -- -->
 
-TODO(RQ): Break this out into an 802.15.4-specific section
-
-The 802.15.4 long address of this node.
+The 802.15.4 long (extended) address of this node.
 
 This property is only present on NCPs which implement 802.15.4
 
@@ -127,15 +144,13 @@ This property is only present on NCPs which implement 802.15.4
 
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: No
-* Required: **ONLY** when used with 802.15.4 MAC
-* Post-Reset Value: 0xFFFF
+* Required:
+    * `CMD_PROP_VALUE_GET`: **REQUIRED** when used with 802.15.4 MAC
+    * `CMD_PROP_VALUE_SET`: **RECOMMENDED** when used with 802.15.4 MAC
+* Value Type: UINT16_LE
+* Post-Reset Value: 65535 (0xFFFF)
 
-Bytes: | 2
---------|----
-Format: | UINT16_LE
-Fields: | SADDR
-
-TODO(RQ): Break this out into an 802.15.4-specific section
+\<!-- RQ -- Break PROP_MAC_15_4_SADDR out into an 802.15.4-specific section -- -->
 
 The 802.15.4 short address of this node.
 
@@ -145,15 +160,13 @@ This property is only present on NCPs which implement 802.15.4
 
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: No
-* Required: **ONLY** when used with 802.15.4 MAC
-* Post-Reset Value: 0xFFFF ?
+* Required:
+    * `CMD_PROP_VALUE_GET`: **REQUIRED** when used with 802.15.4 MAC
+    * `CMD_PROP_VALUE_SET`: **RECOMMENDED** when used with 802.15.4 MAC
+* Value Type: UINT16_LE
+* Post-Reset Value: 65535 (0xFFFF)
 
-Bytes: | 2
---------|----
-Format: | UINT16_LE
-Fields: | PANID
-
-TODO(RQ): Break this out into an 802.15.4-specific section
+<!-- RQ -- Break PROP_MAC_15_4_PANID out into an 802.15.4-specific section -- -->
 
 The 802.15.4 PANID this node is associated with.
 
@@ -164,28 +177,20 @@ This property is only present on NCPs which implement 802.15.4
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: No
 * Required: **RECOMMENDED**
+* Value Type: BOOL
 * Post-Reset Value: 0 (false)
-
-Bytes: | 1
---------|----
-Format: | BOOL
-Fields: | RAW_STREAM_ENABLED
+* See also: ((#prop-stream-raw))
 
 Set to true to enable raw MAC frames to be emitted from `PROP_STREAM_RAW`.
-See (#prop-stream-raw).
 
 ### PROP 56: PROP_MAC_PROMISCUOUS_MODE {#prop-mac-promiscuous-mode}
 
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: No
 * Required: **RECOMMENDED**
-* Unit: Enumeration
+* Value Type: UINT8
+* Units: Enumeration
 * Post-Reset Value: `MAC_PROMISCUOUS_MODE_OFF`
-
-Bytes: | 1
---------|----
-Format: | UINT8
-Fields: | MAC_PROMISCUOUS_MODE
 
 Possible Values:
 
@@ -199,13 +204,18 @@ See (#prop-stream-raw).
 
 ### PROP 57: PROP_MAC_ENERGY_SCAN_RESULT {#prop-mac-escan-result}
 
-* Type: Packet Stream, Output-Only
+* Type: Packet-Stream, Output-Only
 * Required: **REQUIRED**
+* Value Type: UINT8, INT8
+* Units: Channel Index, dB (RF Power)
 
-Bytes: | 1 | 1
---------|----|-
-Format: | UINT8 | INT8
-Fields: | CHANNEL | RSSI
+~~~
+  0                   1
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|    CHANNEL    |      RSSI     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+~~~
 
 This property is emitted during energy scan operation (SCAN_STATE_ENERGY)
 once per scanned channel.
@@ -223,15 +233,11 @@ antenna connector.
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: No
 * Required: **OPTIONAL**
+* Value Type: UINT32_LE
 * Unit: milliseconds
-* Post-Reset Value: 5000ms
+* Post-Reset Value: 5000ms **RECOMMENDED**
 * Required Capability: `CAP_POWER_SAVE`
 * See Also: (#prop-power-state)
-
-Bytes: | 1
---------|----
-Format: | UINT32_LE
-Fields: | MAC_DATA_POLL_PERIOD
 
 The (user-specified) data poll (802.15.4 MAC Data Request) period
 in milliseconds. Value zero means the poll period will be calculated
@@ -251,8 +257,9 @@ This property is only used on NCPs which support `POWER_STATE_LOW_POWER`.
 * Asynchronous Updates: No
 * Per-Item Length: No
 * Required: **OPTIONAL**
-* Post-Reset Value: empty
 * Required Capability: `CAP_MAC_WHITELIST`
+* Item Type: EUI64_BE, UINT8
+* Post-Reset Value: empty
 * See Also: (#prop-mac-whitelist-enabled)
 
 TODO(RQ): Consider moving this to the debug section.
@@ -267,12 +274,19 @@ and SHOULD NOT be used in production.
 
 Item Format:
 
-Bytes: | 8   | 1
---------|----|-----
-Format: | EUI-64-BE | UINT8
-Fields: | ADDR | RSSI
+~~~
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                      EUI64 (Upper word) ...                   :
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+:                  ... EUI64 (Lower word)                       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     RSSI      |
++-+-+-+-+-+-+-+-+
+~~~
 
-ADDR
+EUI64
 : EUI64 address of node
 
 RSSI
@@ -287,14 +301,10 @@ RSSI
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: No
 * Required: **OPTIONAL**
-* Post-Reset Value: 0 (false)
 * Required capability: `CAP_MAC_WHITELIST`
+* Value Type: BOOL
+* Post-Reset Value: 0 (false)
 * See Also: (#prop-mac-whitelist)
-
-Bytes:  |    1
--------:|-------------
-Format: | BOOL
-Fields: | `WHITELIST_ENABLED`
 
 TODO(RQ): Consider moving this to the debug section.
 
@@ -306,14 +316,10 @@ set to false.
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: No
 * Required: **OPTIONAL**
-* Post-Reset Value: 0 (false)
 * Required capability: `CAP_MAC_RAW`, TODO: 802.15.4 PHY CAP
+* Value Type: BOOL
+* Post-Reset Value: 0 (false)
 * See Also: (#prop-mac-src-match-short-addresses), (#prop-mac-src-match-extended-addresses)
-
-Bytes:  |    1
--------:|-------------
-Format: | BOOL
-Fields: | `SRC_MATCH_ENABLED`
 
 Set to true to enable radio source matching or false to disable it. The source match
 functionality is used by radios when generating ACKs. The short and extended address
@@ -325,6 +331,7 @@ lists are used for settings the Frame Pending bit in the ACKs.
 * Asynchronous Updates: No
 * Per-Item Length: No
 * Required: **OPTIONAL**
+* Item Type: UINT16_LE
 * Post-Reset Value: empty
 * Required Capability: `CAP_MAC_RAW`, TODO: 802.15.4 PHY CAP
 * See Also: (#prop-mac-src-match-enabled)
@@ -332,18 +339,12 @@ lists are used for settings the Frame Pending bit in the ACKs.
 Configures the list of short addresses used for source matching. These
 short address are used for hardware generated ACKs.
 
-Item Format:
-
-Bytes: | 2
---------|----
-Format: | UINT16_LE
-Fields: | SADDR
-
 ### PROP 4869: PROP_MAC_SRC_MATCH_EXTENDED_ADDRESSES  {#prop-mac-src-match-extended-addresses}
 * Type: Multi-Value, Read-Write
 * Asynchronous Updates: No
 * Per-Item Length: No
 * Required: **OPTIONAL**
+* Item Type: EUI64_BE
 * Post-Reset Value: empty
 * Required Capabilities: `CAP_MAC_RAW`, TODO: 802.15.4 PHY CAP
 * See Also: (#prop-mac-src-match-enabled)
@@ -357,8 +358,9 @@ long address are used for hardware generated ACKs.
 * Asynchronous Updates: No
 * Per-Item Length: No
 * Required: **OPTIONAL**
-* Post-Reset Value: empty
 * Required Capability: `CAP_MAC_WHITELIST`
+* Item Type: EUI64_BE
+* Post-Reset Value: empty
 * See Also: (#prop-mac-blacklist-enabled)
 
 TODO(RQ): Consider moving this to the debug section.
@@ -371,6 +373,7 @@ to communicate with devices which are in this list.
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: No
 * Required: **OPTIONAL**
+* Value Type: BOOL
 * Post-Reset Value: 0 (false)
 * Required capability: `CAP_MAC_WHITELIST`
 * See Also: (#prop-mac-blacklist)
@@ -380,7 +383,3 @@ TODO(RQ): Consider moving this to the debug section.
 Setting this to true **SHALL** cause `PROP_MAC_WHITELIST_ENABLED` to be automatically
 set to false.
 
-Bytes:  |    1
--------:|-------------
-Format: | BOOL
-Fields: | `BLACKLIST_ENABLED`

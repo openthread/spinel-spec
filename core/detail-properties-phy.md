@@ -2,18 +2,16 @@
 
 ### PROP 32: PROP_PHY_ENABLED {#prop-phy-enabled}
 
-* Type: Single-Value, Read-Write
+* Type: Single-Value, Read/Write
 * Asynchronous Updates: No
 * Required:
-    * Read: Yes
-    * Write: No
+    * `CMD_PROP_VALUE_GET`: **REQUIRED**
+    * `CMD_PROP_VALUE_SET`: **RECOMENDED**
+* Scope: NLI
+* Related Capabilities:
+  * `CAP_MAC_RAW` required to use `CMD_PROP_VALUE_SET`
+* Value Type: BOOL
 * Post-Reset Value: 0 (false)
-* Related Capabilities: SPINEL_CAP_MAC_RAW
-
-Bytes:  |    1
--------:|-------------
-Format: | BOOL
-Fields: | `PHY_ENABLED`
 
 Set to 1 if the PHY is enabled, set to 0 otherwise.
 May be directly enabled to bypass higher-level packet processing
@@ -25,31 +23,25 @@ can only be written if the `SPINEL_CAP_MAC_RAW` capability is present.
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: No
 * Required: **REQUIRED**
-* Unit: Channel Index
+* Value Type: UINT8
+* Units: Channel Index
 * Post-Reset Value: Unspecified
+* See Also: ((#prop-phy-chan-supported))
 
-Bytes:  |    1
--------:|-------------
-Format: | UINT8
-Fields: | `CHANNEL`
-
-Value is the current channel. Must be set to one of the
+Value is the current channel index. Must be set to one of the
 values contained in `PROP_PHY_CHAN_SUPPORTED`.
-
+m
 ### PROP 34: PROP_PHY_CHAN_SUPPORTED {#prop-phy-chan-supported}
 
 * Type: Multiple-Value, Constant
+* Has Item Length Prefix: No
 * Asynchronous Updates: No
 * Required: **REQUIRED**
-* Unit: Channel Index
-* Post-Reset Value: Implementation Specific
+* Item Type: UINT8
+* Units: Channel Index
+* See Also: ((#prop-phy-chan))
 
-Bytes:  |   1 |  1  | ...
--------:|-------|-------|-----
-Format: |  UINT8  |  UINT8  | ...
-Fields: | `CHANNEL` | `CHANNEL` | ...
-
-Value is a list of channel values that are supported by the
+Value is a list of channel indexes that are supported by the
 NCP.
 
 ### PROP 35: PROP_PHY_FREQ {#prop-phy-freq}
@@ -57,13 +49,11 @@ NCP.
 * Type: Single-Value, Read-Only
 * Asynchronous Updates: No
 * Required: **REQUIRED**
-* Unit: kHz
+* Scope: NLI
+* Value Type: UINT32_LE
+* Units: kHz
 * Post-Reset Value: Unspecified
-
-Bytes:  |    1
--------:|-------------
-Format: | UINT32_LE
-Fields: | `FREQ`
+* See Also: ((#prop-phy-chan))
 
 Value is the radio frequency (in kilohertz) of the
 current channel.
@@ -73,13 +63,9 @@ current channel.
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: No
 * Required: **OPTIONAL**
-* Unit: dB
-* Post-Reset Value: Implementation-specific default
-
-Bytes:  |    1
--------:|-------------
-Format: | INT8
-Fields: | `CCA_THRESHOLD`
+* Value Type: INT8
+* Unit: dB (RF Power)
+* Post-Reset Value: Implementation Specified
 
 Value is the CCA (clear-channel assessment) threshold. Set to
 -128 to disable.
@@ -98,15 +84,12 @@ that is supported by the underlying radio hardware.
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: No
 * Required: **REQUIRED**
-* Unit: dB
-* Post-Reset Value: 0dB
+* Value Type: INT8
+* Unit: dB (RF Power)
+* Post-Reset Value: 0dB **RECOMMENDED**
 
-Bytes:  |    1
--------:|-------------
-Format: | INT8
-Fields: | `TX_POWER`
-
-Value is the transmit power of the radio, measured in decibells.
+Value is the maximum transmit power the network stack is allowed
+to set the radio to, measured in decibels.
 
 The specific meaning of zero dB is implementation-specific,
 but **MUST** be consistant with definitions of other properties
@@ -122,13 +105,9 @@ that is supported by the underlying radio hardware.
 * Type: Single-Value, Read-Only
 * Asynchronous Updates: No
 * Required: **REQUIRED**
-* Unit: dB
+* Value Type: INT8
+* Unit: dB (RF Power)
 * Post-Reset Value: Unspecified
-
-Bytes:  |    1
--------:|-------------
-Format: | INT8
-Fields: | `RSSI`
 
 Value is the current RSSI (Received Signal Strength Indication)
 from the radio. This value can be used in energy scans and for
@@ -142,11 +121,11 @@ antenna connector.
 
 ### PROP 39: PROP_PHY_RX_SENSITIVITY {#prop-phy-rx-sensitivity}
 
-* Type: Single-Value, Read-Only
+* Type: Single-Value, Constant
 * Asynchronous Updates: No
 * Required: **OPTIONAL**
+* Value Type: INT8
 * Unit: dB
-* Post-Reset Value: Unspecified
 
 Bytes:  |    1
 -------:|-------------

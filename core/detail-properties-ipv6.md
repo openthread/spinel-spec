@@ -1,10 +1,15 @@
 ## IPv6 Properties {#prop-ipv6}
 
 ### PROP 96: PROP_IPV6_LL_ADDR {#prop-ipv6-ll-addr}
-* Type: Read-Only
-* Packed-Encoding: `6`
+* Type: Single-Value, Read-Write
+* Asynchronous Updates: Yes
+* Required: **REQUIRED**
+* Post-Reset Value: Unspecified
 
-The IPv6 link-local scope address.
+Bytes:  |    16
+-------:|-------------
+Format: | IPV6_ADDR
+Fields: | `IPV6_LL_ADDR`
 
 ### PROP 99: PROP_IPV6_ADDRESS_TABLE {#prop-ipv6-address-table}
 * Type: Read-Write
