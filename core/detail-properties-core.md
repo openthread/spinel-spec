@@ -33,22 +33,20 @@ See (#status-codes) for the complete list of status codes.
 * Asynchronous Updates: No
 * Required: **REQUIRED**
 * Scope: NCP
-* Value Type: PUI, PUI
+* Value Type: UINT8, UINT8
 * Post-Reset Value: 4, 3
 
-
-
-
-
-
-
-Bytes:  |       1-3       |      1-3
---------|-----------------|---------------
-Format: | PUI             | PUI
-Fields: | `MAJOR_VERSION` | `MINOR_VERSION`
-
 Describes the spinel protocol version information. This property
-contains four fields, each encoded as a packed unsigned integer:
+contains two fields:
+
+~~~
+  0                   1
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| MAJOR_VERSION | MINOR_VERSION |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+~~~
+Figure: PROP_PROTOCOL_VERSION Value Format
 
 `MAJOR_VERSION`
 : The major version number is used to identify backward incompatible
