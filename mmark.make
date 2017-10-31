@@ -67,7 +67,7 @@ $(XML2RFC_CACHE_DIR):
 
 %.xml: %.md
 	cd `dirname $@` && $(MMARK) -xml2 -page `basename $<` `basename $@`
-	$(SED) -i "" -e 's/fullname="$(EDITOR_NAME_HACK)"/fullname="$(EDITOR_NAME_HACK)" role="editor"/' $@
+	#$(SED) -i "" -e 's/fullname="$(EDITOR_NAME_HACK)"/fullname="$(EDITOR_NAME_HACK)" role="editor"/' $@
 
 %.html: %.xml $(XML2RFC_CACHE_DIR)
 	$(XML2RFC) --html $<

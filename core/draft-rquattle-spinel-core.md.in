@@ -1,5 +1,5 @@
 %%%
-    title           = "Spinel: A protocol for control and management of IPv6 network co-processors"
+    title           = "Spinel: A Protocol for Control and Management of Network Co-Processors"
     abbrev          = "Spinel Core"
     category        = "std"
     docName         = "draft-rquattle-spinel-core-@SOURCE_VERSION@"
@@ -9,8 +9,9 @@
 
     [pi]
     editing         = "yes"
+    strict          = "yes"
     compact         = "yes"
-    subcompact      = "yes"
+    subcompact      = "no"
     comments        = "yes"
 
     [[author]]
@@ -30,9 +31,9 @@
         country     = "USA"
 
     [[author]]
-    initials        = "j.h."
-    surname         = "woodyatt"
-    fullname        = "james woodyatt"
+    initials        = "J.H."
+    surname         = "Woodyatt"
+    fullname        = "James Woodyatt"
     organization    = "Nest Labs, Inc."
     role            = "editor"
 
@@ -110,11 +111,11 @@ specific IPv6 link types, e.g. Thread(R).
 
 {{terminology.md}}
 
-{{intro-properties.md}}
+{{intro-encoding.md}}
 
 {{intro-frames.md}}
 
-{{intro-encoding.md}}
+{{intro-properties.md}}
 
 {{detail-status.md}}
 
@@ -145,6 +146,15 @@ specific IPv6 link types, e.g. Thread(R).
 
 Thread is a registered trademark of The Thread Group, Inc.
 
-Special thanks to Nick Banks, Jonathan Hui, Abtin Keshavarzian, Yakun Xu, Piotr Szkotak, Arjuna Sivasithambaresan and Martin Turon for their substantial contributions and feedback related to this document.
+Special thanks to
+Nick Banks,
+Jonathan Hui,
+Abtin Keshavarzian,
+Yakun Xu,
+Piotr Szkotak,
+Arjuna Sivasithambaresan
+and Martin Turon
+for their substantial contributions and feedback related to this document.
 
-This document was prepared using [mmark](https://github.com/miekg/mmark) by (Miek Gieben) and [xml2rfc (version 2)](http://xml2rfc.ietf.org/).
+This document was prepared using [mmark](https://github.com/miekg/mmark)
+by (Miek Gieben) and [xml2rfc (version 2)](http://xml2rfc.ietf.org/).
