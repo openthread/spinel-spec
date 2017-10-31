@@ -32,20 +32,20 @@ available for profile specialization.
 
 What follows is a overview of how properties work.
 
-## Property Operators ##
+## Property Operators {#property-operators}
 
 Conceptually, the following operations are used by the OS to query or change a property's value:
 
-*   `VALUE_GET`
-*   `VALUE_SET`
-*   `VALUE_INSERT`
-*   `VALUE_REMOVE`
+*   `GET`
+*   `SET`
+*   `INSERT`
+*   `REMOVE`
 
 In addition, the following operations can be used by the NCP to indicate changes to the value of a property:
 
-*   `VALUE_IS`
-*   `VALUE_INSERTED`
-*   `VALUE_REMOVED`
+*   `IS`
+*   `INSERTED`
+*   `REMOVED`
 
 Not all properties support all of the above operations. Which operations are supported is generally determined by two things: what type of property it is and that property's readability/writability.
 
@@ -67,7 +67,7 @@ Single-value properties are properties that have a simple representation of a si
 *   Network name (Represented as a UTF-8 encoded string)
 *   802\.15.4 PAN ID (Represented as a unsigned 16-bit integer)
 
-The valid operators on these sorts of properties are `VALUE_GET` and `VALUE_SET`.
+The valid operators on these sorts of properties are `GET` and `SET`.
 
 ### Multiple-Value Properties ###
 
@@ -77,18 +77,18 @@ Multiple-Value Properties have more than one value associated with them. Example
 *   List of IPv6 addresses assigned to the interface.
 *   List of capabilities supported by the NCP.
 
-The valid operators on these sorts of properties are `VALUE_GET`, `VALUE_SET`, `VALUE_INSERT`, and `VALUE_REMOVE`.
+The valid operators on these sorts of properties are `GET`, `SET`, `INSERT`, and `REMOVE`.
 
-When the value is fetched using `VALUE_GET`, an individual property will return the entire list of items as either of the following:
+When the value is fetched using `GET`, an individual property will return the entire list of items as either of the following:
 
 1. The concatenation of all of the individual values. This is used in cases where the length of an individual item is fixed.
 2. The concatenation of all of the individual values, each prefixed by a 16-bit big-endian integer describing the length of the individual item. This would be used in cases where the length of an individual item is not constant.
 
 The order of the returned items, unless explicitly defined for that specific property, is undefined.
 
-`VALUE_SET` provides a way to completely replace all previous values, with the item format matching what would be used for `VALUE_GET`. Calling `VALUE_SET` with an empty value effectively instructs the NCP to empty that property.
+`SET` provides a way to completely replace all previous values, with the item format matching what would be used for `GET`. Calling `SET` with an empty value effectively instructs the NCP to empty that property.
 
-`VALUE_INSERT` and `VALUE_REMOVE` provide mechanisms for the insertion or removal of individual items *by value*. The payload for these operators is a single item.
+`INSERT` and `REMOVE` provide mechanisms for the insertion or removal of individual items *by value*. The payload for these operators is a single item.
 
 ### Stream Properties ###
 
@@ -98,8 +98,8 @@ Stream properties represent dynamic streams of data rather than a specific value
 *   Raw packet stream ((#prop-stream-raw))
 *   Debug message stream ((#prop-stream-debug))
 
-All such properties emit changes asynchronously using the `VALUE_IS` operator, sent from the NCP to the OS. For example, as IPv6 traffic is received by the NCP, the IPv6 packets are sent to the OS by way of asynchronous `VALUE_IS` operations for the network packet stream property.
+All such properties emit changes asynchronously using the `IS` operator, sent from the NCP to the OS. For example, as IPv6 traffic is received by the NCP, the IPv6 packets are sent to the OS by way of asynchronous `IS` operations for the network packet stream property.
 
-Some of these properties also support the OS sending data back to the NCP using the `VALUE_SET` operation. For example, this is how the OS sends IPv6 traffic to the NCP.
+Some of these properties also support the OS sending data back to the NCP using the `SET` operation. For example, this is how the OS sends IPv6 traffic to the NCP.
 
-The behavior and meaning of the `VALUE_GET`, `VALUE_INSERT`, `VALUE_REMOVE`, `VALUE_INSERTED`, and `VALUE_REMOVED` operations for stream properties is undefined and SHOULD NOT be used.
+The behavior and meaning of the `GET`, `INSERT`, `REMOVE`, `INSERTED`, and `REMOVED` operations for stream properties is undefined and SHOULD NOT be used.
