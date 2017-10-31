@@ -32,6 +32,12 @@ by setting the scan state to this value.
 The scan is complete when the NCP has indicated that the value of
 has changed to `SCAN_STATE_IDLE`.
 
+If an attempt to set this property to a value of anything other than
+`SCAN_STATE_IDLE` while the current value isn't `SCAN_STATE_IDLE`,
+the NCP **MUST** fail and respond with a last status of `STATUS_ALREADY`.
+However, setting this property to `SCAN_STATE_IDLE` while it is already
+`SCAN_STATE_IDLE` **MUST NOT** be considered an error.
+
 ### PROP 49: PROP_MAC_SCAN_MASK {#prop-mac-scan-mask}
 
 * Type: Multiple-Value, Read-Write

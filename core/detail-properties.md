@@ -25,9 +25,9 @@ Upon successful execution of one of the property manipulation commands, the
 NCP SHALL send one of the following commands (with the same property key that
 was used for the sending command) to indicate success:
 
-*	`CMD_PROP_VALUE_IS` ((#cmd-prop-value-is))
-*   `CMD_PROP_VALUE_INSERTED` ((#cmd-prop-value-inserted))
-*   `CMD_PROP_VALUE_REMOVED` ((#cmd-prop-value-removed))
+* `CMD_PROP_VALUE_IS` ((#cmd-prop-value-is))
+*  `CMD_PROP_VALUE_INSERTED` ((#cmd-prop-value-inserted))
+*  `CMD_PROP_VALUE_REMOVED` ((#cmd-prop-value-removed))
 
 When an NCP has successfully handled a `CMD_PROP_VALUE_INSERT` or
 `CMD_PROP_VALUE_REMOVE` command on a multi-value property, the NCP
