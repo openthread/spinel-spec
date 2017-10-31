@@ -127,11 +127,6 @@ antenna connector.
 * Value Type: INT8
 * Unit: dB
 
-Bytes:  |    1
--------:|-------------
-Format: | INT8
-Fields: | `RX_SENSITIVITY`
-
 Value is the radio receive sensitivity. This value can be used as
 lower bound noise floor for link metrics computation.
 
