@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rfc SYSTEM 'rfc2629.dtd' []>
-<rfc ipr="trust200902" category="std" docName="draft-rquattle-spinel-core-c7807a1">
+<rfc ipr="trust200902" category="std" docName="draft-rquattle-spinel-core-513efc0">
 <?rfc toc="yes"?>
 <?rfc symrefs="yes"?>
 <?rfc sortrefs="yes"?>
 <?rfc compact="yes"?>
-<?rfc subcompact="yes"?>
+<?rfc subcompact="no"?>
 <?rfc private=""?>
 <?rfc topblock="yes"?>
 <?rfc comments="yes"?>
 <front>
-<title abbrev="Spinel Core">Spinel: A protocol for control and management of IPv6 network co-processors</title>
+<title abbrev="Spinel Core">Spinel: A Protocol for Control and Management of Network Co-Processors</title>
 
 <author initials="R." surname="Quattlebaum" fullname="Robert S. Quattlebaum">
 <organization>Nest Labs, Inc.</organization>
@@ -27,7 +27,7 @@
 <uri></uri>
 </address>
 </author>
-<author role="editor" initials="j.h." surname="woodyatt" fullname="james woodyatt">
+<author role="editor" initials="J.H." surname="Woodyatt" fullname="James Woodyatt">
 <organization>Nest Labs, Inc.</organization>
 <address>
 <postal>
@@ -169,6 +169,206 @@ Transaction Identifier. May be a value between zero and fifteen. See <xref targe
 </section>
 </section>
 
+<section anchor="data-representation" title="Data Representation">
+<t>Spinel, being a low-level protocol between two devices which are
+likely to have a little-endian architecture, uses little-endian representations
+exclusively for all integers smaller than four bytes. For implementation
+convenience, values larger than four bytes (EUI64, IPv6 addresses, etc)
+are stored as they are traditionally represented (typically big-endian).
+</t>
+
+<section anchor="packed-unsigned-integer" title="Packed Unsigned Integers">
+<t>Certain types of integers, such as command or property identifiers,
+usually have a value on the wire that is less than 127. However, in
+order to not preclude the use of values larger than 255, we would need
+to add an extra byte. Doing this would add an extra byte to all
+packets, which can add up in terms of bandwidth. To address this,
+Spinel uses Packed Unsigned Integers, or PUIs.
+</t>
+<t>The PUI format used in Spinel is based on the <eref target="https://www.w3.org/TR/exi/#encodingUnsignedInteger">unsigned integer format
+in EXI</eref>, except that we limit the maximum value to the largest
+value that can be encoded to three octets. The maximum value that
+can be encoded is 2,097,151.
+</t>
+<t>For all values less than 127, the packed form of the number is simply
+a single octet which directly represents the number. For values larger
+than 127, the following process is used to encode the value:
+</t>
+<t>
+<list style="numbers">
+<t>The unsigned integer is broken up into <spanx style="emph">n</spanx> 7-bit chunks and placed
+into <spanx style="emph">n</spanx> bytess, leaving the most significant bit of each byte
+unused.</t>
+<t>Order the bytess from least-significant to most-significant.
+(Little-endian)</t>
+<t>Clear the most significant bit of the most significant byte. Set
+the least significant bit on all other bytes.</t>
+</list>
+</t>
+<t>Where <spanx style="emph">n</spanx> is the smallest number of 7-bit chunks you can use to
+represent the given value.
+</t>
+<t>Take the value 1337, for example:
+</t>
+
+<figure align="center"><artwork align="center">
+1337 =&gt; 0x0539
+     =&gt; [39 0A]
+     =&gt; [B9 0A]
+</artwork></figure>
+<t>To decode the value, you collect the 7-bit chunks until you find an
+octet with the most significant bit clear.
+</t>
+</section>
+</section>
+
+<section anchor="spinel-frames" title="Spinel Frames">
+<t>Spinel is a frame-based (rather than stream-based) protocol. Frames
+can be of any size between two bytes and MTU of the channel (which is
+RECOMMENDED to be at least 1300 bytes). Spinel frames SHALL be
+delivered reliably and in-order. It is the responsibility of the lower layer
+to make those guarantees.
+</t>
+<t>The mechanism responsible for transporting frames between the OS and
+the NCP (while also ensuring both reliable and in-order delivery) is
+called the <spanx style="emph">framing mechanism</spanx>. While Spinel does not mandate any
+specific framing mechanism be used, the RECOMMENDED mechanisms are
+outlined in <xref target="appendix-framing"/>. This layered approach privides a
+great deal of implementation flexibility.
+</t>
+
+<section anchor="frame-format" title="Frame Format">
+<t>A Spinel frame is the concatenation of the following elements:
+</t>
+<t>
+<list style="symbols">
+<t>A header comprising a single octet (see <xref target="header-format"/> below).</t>
+<t>A command identifier (PUI, See <xref target="packed-unsigned-integer"/>. Typically one byte)</t>
+<t>A command-defined payload, which may be empty.</t>
+</list>
+</t>
+
+<figure align="center" title="Structure of a typical Spinel frame
+"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     HEADER    |  COMMAND ID   | PAYLOAD ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
+<t>Since the size of the frame is a part of the framing mechanism, it is
+omitted from the frame.
+</t>
+<t>For example, each of the property operations described in <xref target="property-operators"/>
+is defined as a specific command identifier with the property
+key as the first part of the payload. Additional commands are defined
+for special purposes (see <xref target="commands"/>), and the command identifier
+registry has values reserved for future standard expansion,
+application specialization, and experimental purposes.
+</t>
+</section>
+
+<section anchor="header-format" title="Header">
+<t>The header comprises the following information elements packed into a
+single octet:
+</t>
+
+<figure align="center" title="Header Format
+"><artwork align="center">
+  0   1   2   3   4   5   6   7
++---+---+---+---+---+---+---+---+
+|  FLG  |  NLI  |      TID      |
++---+---+---+---+---+---+---+---+
+</artwork></figure>
+
+<section anchor="flg-flag" title="FLG: Flag">
+<t>The Flag (FLG) field in the two most significant bits of the header
+octet (<spanx style="verb">FLG</spanx>) is always set to the value two (or <spanx style="verb">10</spanx> in binary). Any
+frame received with these bits set to any other value SHALL NOT be
+considered a Spinel frame.
+</t>
+<t>This convention allows Spinel to be line compatible with BTLE HCI. By
+defining the first two bit in this way we can disambiguate between
+Spinel frames and HCI frames (which always start with either <spanx style="verb">0x01</spanx> or
+<spanx style="verb">0x04</spanx>) without any additional framing overhead.
+</t>
+</section>
+
+<section anchor="nli-network-link-identifier" title="NLI: Network Link Identifier">
+<t>The Network Link Identifier (NLI) field is used to distinguish between
+independent &quot;virtual&quot; network links. It is stored in the third and
+fourth most significant bits as an integer between 0 and 3.
+</t>
+<t>The NLI field allows for the control and management of an NCP that can
+be connected to more than one network simultaneously, as if multiple
+independent NCPs were present. The exact details regarding the usage
+of such a feature are not yet specified and considered outside the scope
+of this document.
+</t>
+<t>All NCPs conforming to this protocol SHALL implement NLI 0 and MAY
+provide additional network interfaces via NLI values 1, 2, and 3.
+</t>
+<t>Any commands sent to an unimplemented NLI MUST fail with:
+</t>
+<t>
+<list style="symbols">
+<t>Header byte identical to the offending command.</t>
+<t><spanx style="verb">CMD_PROP_VALUE_IS</spanx> for the command id.</t>
+<t><spanx style="verb">PROP_LAST_STATUS</spanx> as the property key.</t>
+<t><spanx style="verb">STATUS_INVALID_INTERFACE</spanx> as the value.</t>
+</list>
+</t>
+</section>
+
+<section anchor="tid-transaction-identifier" title="TID: Transaction Identifier">
+<t>The Transaction Identifier (TID) field in the four least significant
+bits of the header is used for correlating responses to the commands
+which generated them.
+</t>
+<t>When a command is sent from the OS, any reply to that command sent by
+the NCP will use the same value for the TID. When the OS receives a
+frame that matches the TID of the command it sent, it can easily
+recognize that frame as the actual response to that command.
+</t>
+<t>The zero value of TID is used for commands to which a correlated
+response is not expected or needed, such as for unsolicited update
+commands sent to the OS from the NCP.
+</t>
+<t>Note that while the frame format is symmetric between the
+frames being sent to the NCP versus frames being sent from
+the NCP, the behaviors are not. The NCP MUST NOT send
+a frame with a non-zero TID that is not a response to a frame
+it had recently received with that same TID. All unsolicited or
+asynchronous commands originating from the NCP MUST
+use TID zero (0).
+</t>
+</section>
+</section>
+
+<section anchor="command-id" title="Command ID">
+<t>The command identifier is a 21-bit unsigned integer encoded in up to
+three octets using the packed unsigned integer format described in
+<xref target="packed-unsigned-integer"/>. This encoding allows for up to 2,097,152
+individual commands, with the first 127 commands represented as a
+single octet. Command identifiers larger than 2,097,151 are explicitly
+forbidden.
+</t>
+<t>To date, no command id has been longer than one byte long, so all
+figures in this document will represent the command ID as only taking
+a single byte.
+</t>
+</section>
+
+<section anchor="payload" title="Payload">
+<t>The command payload follows the command identifier in a Spinel frame,
+containing the serialization of any arguments that the indicated
+command may require. The exact composition of a command payload is
+determined by the specific command identifier being used and MUST be
+empty if the command has no arguments.
+</t>
+</section>
+</section>
+
 <section anchor="property-overview" title="Property Overview">
 <t>Spinel is largely a property-based protocol. The NCP exposes various
 properties that the host can manipulate to control its behavior. The
@@ -208,19 +408,19 @@ available for profile specialization.
 </t>
 <t>
 <list style="symbols">
-<t><spanx style="verb">VALUE_GET</spanx></t>
-<t><spanx style="verb">VALUE_SET</spanx></t>
-<t><spanx style="verb">VALUE_INSERT</spanx></t>
-<t><spanx style="verb">VALUE_REMOVE</spanx></t>
+<t><spanx style="verb">GET</spanx></t>
+<t><spanx style="verb">SET</spanx></t>
+<t><spanx style="verb">INSERT</spanx></t>
+<t><spanx style="verb">REMOVE</spanx></t>
 </list>
 </t>
 <t>In addition, the following operations can be used by the NCP to indicate changes to the value of a property:
 </t>
 <t>
 <list style="symbols">
-<t><spanx style="verb">VALUE_IS</spanx></t>
-<t><spanx style="verb">VALUE_INSERTED</spanx></t>
-<t><spanx style="verb">VALUE_REMOVED</spanx></t>
+<t><spanx style="verb">IS</spanx></t>
+<t><spanx style="verb">INSERTED</spanx></t>
+<t><spanx style="verb">REMOVED</spanx></t>
 </list>
 </t>
 <t>Not all properties support all of the above operations. Which operations are supported is generally determined by two things: what type of property it is and that property's readability/writability.
@@ -250,7 +450,7 @@ available for profile specialization.
 <t>802.15.4 PAN ID (Represented as a unsigned 16-bit integer)</t>
 </list>
 </t>
-<t>The valid operators on these sorts of properties are <spanx style="verb">VALUE_GET</spanx> and <spanx style="verb">VALUE_SET</spanx>.
+<t>The valid operators on these sorts of properties are <spanx style="verb">GET</spanx> and <spanx style="verb">SET</spanx>.
 </t>
 </section>
 
@@ -264,9 +464,9 @@ available for profile specialization.
 <t>List of capabilities supported by the NCP.</t>
 </list>
 </t>
-<t>The valid operators on these sorts of properties are <spanx style="verb">VALUE_GET</spanx>, <spanx style="verb">VALUE_SET</spanx>, <spanx style="verb">VALUE_INSERT</spanx>, and <spanx style="verb">VALUE_REMOVE</spanx>.
+<t>The valid operators on these sorts of properties are <spanx style="verb">GET</spanx>, <spanx style="verb">SET</spanx>, <spanx style="verb">INSERT</spanx>, and <spanx style="verb">REMOVE</spanx>.
 </t>
-<t>When the value is fetched using <spanx style="verb">VALUE_GET</spanx>, an individual property will return the entire list of items as either of the following:
+<t>When the value is fetched using <spanx style="verb">GET</spanx>, an individual property will return the entire list of items as either of the following:
 </t>
 <t>
 <list style="numbers">
@@ -276,9 +476,9 @@ available for profile specialization.
 </t>
 <t>The order of the returned items, unless explicitly defined for that specific property, is undefined.
 </t>
-<t><spanx style="verb">VALUE_SET</spanx> provides a way to completely replace all previous values, with the item format matching what would be used for <spanx style="verb">VALUE_GET</spanx>. Calling <spanx style="verb">VALUE_SET</spanx> with an empty value effectively instructs the NCP to empty that property.
+<t><spanx style="verb">SET</spanx> provides a way to completely replace all previous values, with the item format matching what would be used for <spanx style="verb">GET</spanx>. Calling <spanx style="verb">SET</spanx> with an empty value effectively instructs the NCP to empty that property.
 </t>
-<t><spanx style="verb">VALUE_INSERT</spanx> and <spanx style="verb">VALUE_REMOVE</spanx> provide mechanisms for the insertion or removal of individual items <spanx style="emph">by value</spanx>. The payload for these operators is a single item.
+<t><spanx style="verb">INSERT</spanx> and <spanx style="verb">REMOVE</spanx> provide mechanisms for the insertion or removal of individual items <spanx style="emph">by value</spanx>. The payload for these operators is a single item.
 </t>
 </section>
 
@@ -292,267 +492,251 @@ available for profile specialization.
 <t>Debug message stream (<xref target="prop-stream-debug"/>)</t>
 </list>
 </t>
-<t>All such properties emit changes asynchronously using the <spanx style="verb">VALUE_IS</spanx> operator, sent from the NCP to the OS. For example, as IPv6 traffic is received by the NCP, the IPv6 packets are sent to the OS by way of asynchronous <spanx style="verb">VALUE_IS</spanx> operations for the network packet stream property.
+<t>All such properties emit changes asynchronously using the <spanx style="verb">IS</spanx> operator, sent from the NCP to the OS. For example, as IPv6 traffic is received by the NCP, the IPv6 packets are sent to the OS by way of asynchronous <spanx style="verb">IS</spanx> operations for the network packet stream property.
 </t>
-<t>Some of these properties also support the OS sending data back to the NCP using the <spanx style="verb">VALUE_SET</spanx> operation. For example, this is how the OS sends IPv6 traffic to the NCP.
+<t>Some of these properties also support the OS sending data back to the NCP using the <spanx style="verb">SET</spanx> operation. For example, this is how the OS sends IPv6 traffic to the NCP.
 </t>
-<t>The behavior and meaning of the <spanx style="verb">VALUE_GET</spanx>, <spanx style="verb">VALUE_INSERT</spanx>, <spanx style="verb">VALUE_REMOVE</spanx>, <spanx style="verb">VALUE_INSERTED</spanx>, and <spanx style="verb">VALUE_REMOVED</spanx> operations for stream properties is undefined and SHOULD NOT be used.
-</t>
-</section>
-</section>
-</section>
-
-<section anchor="spinel-frames" title="Spinel Frames">
-<t>Spinel is a frame-based (rather than stream-based) protocol. Frames
-can be of any size between two bytes and MTU of the channel (which is
-RECOMMENDED to be at least 1300 bytes). Spinel frames SHALL be
-delivered reliably and in-order.
-</t>
-<t>The mechanism responsible for transporting frames between the OS and
-the NCP (while also ensuring both reliable and in-order delivery) is
-called the <spanx style="emph">framing mechanism</spanx>. While Spinel does not mandate any
-specific framing mechanism be used, this document does make detailed
-recommendations in <xref target="appendix-framing"/>. This layered approach privides
-a great deal of implementation flexibility.
-</t>
-
-<section anchor="frame-format" title="Frame Format">
-<t>A Spinel frame is the concatenation of the following elements:
-</t>
-<t>
-<list style="symbols">
-<t>A header comprising a single octet (see <xref target="header-format"/> below).</t>
-<t>A command identifier (up to three octets, see
-<xref target="packed-unsigned-integer"/> for format)</t>
-<t>An optional command payload (Contents of which are defined by the
-specific command being sent)</t>
-</list>
-</t>
-<texttable>
-<ttcol align="center">Octets:</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1-3</ttcol>
-<ttcol align="center">n</ttcol>
-
-<c>Fields:</c><c>HEADER</c><c>CMD</c><c>CMD_PAYLOAD</c>
-</texttable>
-<t>For example, each of the property operations described in the previous
-section is defined as a specific command identifier with the property
-key as the first part of the payload. Additional commands are defined
-for special purposes (see <xref target="commands"/>), and the command identifier
-registry has values reserved for future standard expansion,
-application specialization, and experimental purposes.
-</t>
-</section>
-
-<section anchor="header-format" title="Header Format">
-<t>The header comprises the following information elements packed into a
-single octet:
-</t>
-
-<figure align="center"><artwork align="center">
-  0   1   2   3   4   5   6   7
-+---+---+---+---+---+---+---+---+
-|  FLG  |  NLI  |      TID      |
-+---+---+---+---+---+---+---+---+
-</artwork></figure>
-<t><cref source="RQ">Eventually, when https://github.com/miekg/mmark/issues/95
-is addressed, the above table should be swapped out with this:
-
-| 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
-|---|---|---|---|---|---|---|---|
-|  FLG ||  NLI ||      TID   ||||</cref></t>
-
-<section anchor="flg-flag" title="FLG: Flag">
-<t>The Flag (FLG) field in the two most significant bits of the header
-octet (<spanx style="verb">FLG</spanx>) is always set to the value two (or <spanx style="verb">10</spanx> in binary). Any
-frame received with these bits set to any other value SHALL NOT be
-considered a Spinel frame.
-</t>
-<t>This convention allows Spinel to be line compatible with BTLE HCI. By
-defining the first two bit in this way we can disambiguate between
-Spinel frames and HCI frames (which always start with either <spanx style="verb">0x01</spanx> or
-<spanx style="verb">0x04</spanx>) without any additional framing overhead.
-</t>
-</section>
-
-<section anchor="nli-network-link-identifier" title="NLI: Network Link Identifier">
-<t>The Network Link Identifier (NLI) field is used to distinguish between
-independent &quot;virtual&quot; network links. It is stored in the third and
-fourth most significant bits as a number between 0 and 3.
-</t>
-<t>The NLI field allows for the control and management of an NCP that can
-be connected to more than one network simultaneously, as if multiple
-independent NCPs were present. The exact implementation of such
-capability is outside the scope of this document.
-</t>
-<t>All NCPs conforming to this protocol SHALL implement NLI 0 and MAY
-provide additional network interfaces via NLI values 1, 2, and 3.
-</t>
-<t>Any commands sent to an unimplemented NLI MUST fail with
-<spanx style="verb">STATUS_UNIMPLEMENTED</spanx>.
-</t>
-</section>
-
-<section anchor="tid-transaction-identifier" title="TID: Transaction Identifier">
-<t>The Transaction Identifier (TID) field in the four least significant
-bits of the header is used for correlating responses to the commands
-which generated them.
-</t>
-<t>When a command is sent from the OS, any reply to that command sent by
-the NCP will use the same value for the TID. When the OS receives a
-frame that matches the TID of the command it sent, it can easily
-recognize that frame as the actual response to that command.
-</t>
-<t>The zero value of TID is used for commands to which a correlated
-response is not expected or needed, such as for unsolicited update
-commands sent to the OS from the NCP.
-</t>
-</section>
-
-<section anchor="cmd-command-identifier" title="CMD: Command Identifier">
-<t>The command identifier is a 21-bit unsigned integer encoded in up to
-three octets using the packed unsigned integer format described in
-<xref target="packed-unsigned-integer"/>. This encoding allows for up to 2,097,152
-individual commands, with the first 127 commands represented as a
-single octet. Command identifiers larger than 2,097,151 are explicitly
-forbidden.
-</t>
-</section>
-
-<section anchor="cmdpayload-command-payload" title="CMD_PAYLOAD: Command Payload">
-<t>The command payload follows the command identifier in a Spinel frame,
-containing the serialization of any arguments that the indicated
-command may require. The exact composition of a command payload is
-determined by the specific command identifier being used and MUST be
-empty if the command has no arguments.
+<t>The behavior and meaning of the <spanx style="verb">GET</spanx>, <spanx style="verb">INSERT</spanx>, <spanx style="verb">REMOVE</spanx>, <spanx style="verb">INSERTED</spanx>, and <spanx style="verb">REMOVED</spanx> operations for stream properties is undefined and SHOULD NOT be used.
 </t>
 </section>
 </section>
 </section>
 
-<section anchor="data-packing" title="Data Packing">
-<t><spanx style="strong">NOTE</spanx>:
-    This section will be removed from this draft shortly.
+<section anchor="status-codes" title="Status Codes">
+<t>The Spinel core protocol defines some standard status codes. Status
+codes are used to indicate either the success of a transaction or the
+specific reason that a specific transaction failed. Their names,
+assigned numbers and a short description of their operational
+semantics are shown in the following table:
 </t>
-<t>Data serialization for properties is performed using a light-weight data packing format which was loosely inspired by <eref target="https://www.freedesktop.org/wiki/Software/dbus/">the D-Bus</eref> developed by the X Desktop Group.
-</t>
-<t>As with D-Bus, the Spinel data packing format also defines a terse modeling language for describing the format of data packed for interchange between the OS and the NCP. With Spinel, however, the modeling language is an optional notational convenience, mainly of use in protocol definitions. As most NCP programming environments are highly constrained, it is not necessary to implement a structured validating parser for Spinel packed data to implement the Spinel protocol.
-</t>
-<t>Goals:
-</t>
-<t>
-<list style="symbols">
-<t>Be lightweight and favor direct representation of values.</t>
-<t>Support lists and structures.</t>
-<t>Allow fields to be appended to structures while maintaining backward compatibility.</t>
-<t>Use an easily readable and memorable language for data modeling.</t>
-</list>
-</t>
-<t>The Spinel data packing format is a method of encoding and decoding several &quot;primitive&quot; types of scalar data, e.g. fixed width integers, fixed-size network addresses, et cetera, and some simple aggregate types, i.e. arrays of a specific type, structures with fields of varying type, Unicode text strings.
-</t>
-<t>Each primitive datatype has an ASCII character associated with it in the corresponding modeling language. Fields in structures are identified by their position. The data model for any encoding of the Spinel data packing format can be represented as a strings of modeling language characters characters. These strings are called &quot;type signatures&quot; and some examples follow:
-</t>
-<t>
-<list style="symbols">
-<t><spanx style="verb">C</spanx>: An unsigned integer encoded as a single octet.</t>
-<t><spanx style="verb">C6U</spanx>: An unsigned integer encoded as a single octet, followed by a 128-but IPv6 address, followed by a Unicode text string.</t>
-</list>
-</t>
-<t>In each case, the data is represented exactly as described. For example, an array of 10 IPv6 address is stored as 160 octets.
-</t>
-
-<section anchor="primitive-types" title="Primitive Types">
-<texttable>
-<ttcol align="center">Char</ttcol>
+<texttable title="Enumeration of status codes
+">
+<ttcol align="left">Id</ttcol>
 <ttcol align="left">Name</ttcol>
-<ttcol align="left">Description</ttcol>
 
-<c><spanx style="verb">.</spanx></c><c>DATATYPE_VOID</c><c>Empty data type. Used internally.</c>
-<c><spanx style="verb">b</spanx></c><c>DATATYPE_BOOL</c><c>Boolean value. Encoded in 8-bits as either 0x00 or 0x01. All other values are illegal.</c>
-<c><spanx style="verb">C</spanx></c><c>DATATYPE_UINT8</c><c>Unsigned 8-bit integer.</c>
-<c><spanx style="verb">c</spanx></c><c>DATATYPE_INT8</c><c>Signed 8-bit integer.</c>
-<c><spanx style="verb">S</spanx></c><c>DATATYPE_UINT16</c><c>Unsigned 16-bit integer.</c>
-<c><spanx style="verb">s</spanx></c><c>DATATYPE_INT16</c><c>Signed 16-bit integer.</c>
-<c><spanx style="verb">L</spanx></c><c>DATATYPE_UINT32</c><c>Unsigned 32-bit integer.</c>
-<c><spanx style="verb">l</spanx></c><c>DATATYPE_INT32</c><c>Signed 32-bit integer.</c>
-<c><spanx style="verb">i</spanx></c><c>DATATYPE_UINT_PACKED</c><c>Packed Unsigned Integer. See <xref target="packed-unsigned-integer"/>.</c>
-<c><spanx style="verb">6</spanx></c><c>DATATYPE_IPv6ADDR</c><c>IPv6 Address. (Big-endian)</c>
-<c><spanx style="verb">E</spanx></c><c>DATATYPE_EUI64</c><c>EUI-64 Address. (Big-endian)</c>
-<c><spanx style="verb">e</spanx></c><c>DATATYPE_EUI48</c><c>EUI-48 Address. (Big-endian)</c>
-<c><spanx style="verb">D</spanx></c><c>DATATYPE_DATA</c><c>Arbitrary data. See <xref target="data-blobs"/>.</c>
-<c><spanx style="verb">d</spanx></c><c>DATATYPE_DATA_WLEN</c><c>Arbitrary data with prepended length. See <xref target="data-blobs"/>.</c>
-<c><spanx style="verb">U</spanx></c><c>DATATYPE_UTF8</c><c>A text string encoded in UTF8 and terminated by a trailing zero byte.</c>
-<c><spanx style="verb">t(...)</spanx></c><c>DATATYPE_STRUCT</c><c>Structured datatype with prepended length. See <xref target="structured-data"/>.</c>
-<c><spanx style="verb">A(...)</spanx></c><c>DATATYPE_ARRAY</c><c>Array of datatypes. Compound type. See <xref target="arrays"/>.</c>
+<c>0</c><c><spanx style="verb">STATUS_OK</spanx></c>
+<c>1</c><c><spanx style="verb">STATUS_FAILURE</spanx></c>
+<c>2</c><c><spanx style="verb">STATUS_UNIMPLEMENTED</spanx></c>
+<c>3</c><c><spanx style="verb">STATUS_INVALID_ARGUMENT</spanx></c>
+<c>4</c><c><spanx style="verb">STATUS_INVALID_STATE</spanx></c>
+<c>5</c><c><spanx style="verb">STATUS_INVALID_COMMAND</spanx></c>
+<c>6</c><c><spanx style="verb">STATUS_INVALID_INTERFACE</spanx></c>
+<c>7</c><c><spanx style="verb">STATUS_INTERNAL_ERROR</spanx></c>
+<c>8</c><c><spanx style="verb">STATUS_SECURITY_ERROR</spanx></c>
+<c>9</c><c><spanx style="verb">STATUS_PARSE_ERROR</spanx></c>
+<c>10</c><c><spanx style="verb">STATUS_IN_PROGRESS</spanx></c>
+<c>11</c><c><spanx style="verb">STATUS_NOMEM</spanx></c>
+<c>12</c><c><spanx style="verb">STATUS_BUSY</spanx></c>
+<c>13</c><c><spanx style="verb">STATUS_PROP_NOT_FOUND</spanx></c>
+<c>14</c><c><spanx style="verb">STATUS_PACKET_DROPPED</spanx></c>
+<c>15</c><c><spanx style="verb">STATUS_EMPTY</spanx></c>
+<c>16</c><c><spanx style="verb">STATUS_CMD_TOO_BIG</spanx></c>
+<c>17</c><c><spanx style="verb">STATUS_NO_ACK</spanx></c>
+<c>18</c><c><spanx style="verb">STATUS_CCA_FAILURE</spanx></c>
+<c>19</c><c><spanx style="verb">STATUS_ALREADY</spanx></c>
+<c>20</c><c><spanx style="verb">STATUS_ITEM_NOT_FOUND</spanx></c>
+<c>21</c><c><spanx style="verb">STATUS_INVALID_COMMAND_FOR_PROP</spanx></c>
+<c><spanx style="emph">TBD</spanx></c><c><spanx style="verb">STATUS_PROP_VALUE_TOO_BIG</spanx></c>
 </texttable>
-<t>All multi-octet values are little-endian unless explicitly stated otherwise.
-</t>
-</section>
-
-<section anchor="packed-unsigned-integer" title="Packed Unsigned Integer">
-<t>Certain types of integers, such as command or property identifiers, usually have a value on the wire that is less than 127. However, in order to not preclude the use of values larger than 255, we would need to add an extra octet. Doing this would add an extra octet to the majority of instances, which can add up in terms of bandwidth.
-</t>
-<t>The packed unsigned integer format is based on the <eref target="https://www.w3.org/TR/exi/#encodingUnsignedInteger">unsigned integer format in EXI</eref>, except that we limit the maximum value to the largest value that can be encoded to three octets o(2,097,151).
-</t>
-<t>For all values less than 127, the packed form of the number is simply a single octet which directly represents the number. For values larger than 127, the following process is used to encode the value:
-</t>
 <t>
-<list style="numbers">
-<t>The unsigned integer is broken up into <spanx style="emph">n</spanx> 7-bit chunks and placed into <spanx style="emph">n</spanx> octets, leaving the most significant bit of each octet unused.</t>
-<t>Order the octets from least-significant to most-significant. (Little-endian)</t>
-<t>Clear the most significant bit of the most significant octet. Set the least significant bit on all other octets.</t>
+<list style="hanging">
+<t hangText="STATUS_OK">
+<vspace />
+Indicates that the operation has completed successfully.</t>
+<t hangText="STATUS_FAILURE">
+<vspace />
+Indicates that the operation has failed for an unspecified reason. The
+use of this status code SHOULD be avoided. If a more specific status
+code exists that better explains the failure, then that status code MUST
+be used instead.</t>
+<t hangText="STATUS_UNIMPLEMENTED">
+<vspace />
+Indicates that the given operation has not been implemented.</t>
+<t hangText="STATUS_INVALID_ARGUMENT">
+<vspace />
+Indicates that an argument to the given operation is invalid. The value may
+be out of range or improperly formatted. This status code is also returned
+when setting an invalid value to a property.</t>
+<t hangText="STATUS_INVALID_STATE">
+<vspace />
+Indicates that the given operation is invalid for the current state of
+the device.</t>
+<t hangText="STATUS_INVALID_COMMAND">
+<vspace />
+The given command id is not recognized.</t>
+<t hangText="STATUS_INVALID_INTERFACE">
+<vspace />
+The given NLI is not supported.</t>
+<t hangText="STATUS_INTERNAL_ERROR">
+<vspace />
+An internal runtime error has occurred.
+TODO(RQ): What sort of error would cause this to be emitted?</t>
+<t hangText="STATUS_SECURITY_ERROR">
+<vspace />
+A security or authentication error has occurred.
+TODO(RQ): Elaborate on when this would be returned.</t>
+<t hangText="STATUS_PARSE_ERROR">
+<vspace />
+An error has occurred while parsing the command.</t>
+<t hangText="STATUS_IN_PROGRESS">
+<vspace />
+An error has occurred while parsing the command.
+TODO(RQ): Are we still using this? Elaborate on when this would be returned.</t>
+<t hangText="STATUS_NOMEM">
+<vspace />
+The operation has been prevented due to memory pressure.</t>
+<t hangText="STATUS_BUSY">
+<vspace />
+The device is currently performing a mutually exclusive operation. For
+example, you will get this status code if you attempt to change the value
+of <spanx style="verb">PROP_NET_STACK_UP</spanx> while performing an energy scan. This status differs
+from <spanx style="verb">STATUS_INVALID_STATE</spanx> in that it will resolve spontaneously.</t>
+<t hangText="STATUS_PROP_NOT_FOUND">
+<vspace />
+The given property key is not recognized.</t>
+<t hangText="STATUS_PACKET_DROPPED">
+<vspace />
+The packet was dropped. This status code is only emitted when sending
+data to a packet stream with a TID other than zero.</t>
+<t hangText="STATUS_EMPTY">
+<vspace />
+The result of the operation is empty.
+TODO(RQ): Elaborate on when this would be returned.</t>
+<t hangText="STATUS_CMD_TOO_BIG">
+<vspace />
+The command was too large to fit in the internal buffer. This is generally
+indicates some sort of misconfiguration.</t>
+<t hangText="STATUS_NO_ACK">
+<vspace />
+The packet was not acknowledged.
+This status code is only emitted when sending data to a packet stream with
+a TID other than zero.</t>
+<t hangText="STATUS_CCA_FAILURE">
+<vspace />
+The packet was not sent due to a CCA failure.
+This status code is only emitted when sending data to a packet stream with
+a TID other than zero.</t>
+<t hangText="STATUS_ALREADY">
+<vspace />
+The operation is already in progress, or the property already has the value.
+This is emitted by <spanx style="verb">PROP_LOCK</spanx> (<xref target="prop-lock"/>) and <spanx style="verb">PROP_MAC_SCAN_STATE</spanx>
+(<xref target="prop-mac-scan-state"/>).</t>
+<t hangText="STATUS_ITEM_NOT_FOUND">
+<vspace />
+The given item could not be found in the property. This status code MAY
+be used to indicate a failure to remove a specific value from a
+multiple-value property.
+TODO(RQ): Are we still using this?</t>
+<t hangText="STATUS_INVALID_COMMAND_FOR_PROP">
+<vspace />
+The given command cannot be performed on this property. For example, if
+a property was read-only, this status would be emitted if you attempted
+to perform a <spanx style="verb">CMD_PROP_VALUE_SET</spanx> on it.</t>
+<t hangText="STATUS_PROP_VALUE_TOO_BIG">
+<vspace />
+The value for this property is too large.</t>
 </list>
 </t>
-<t>Where <spanx style="emph">n</spanx> is the smallest number of 7-bit chunks you can use to
-represent the given value.
-</t>
-<t>Take the value 1337, for example:
-</t>
 
-<figure align="center"><artwork align="center">
-1337 =&gt; 0x0539
-     =&gt; [39 0A]
-     =&gt; [B9 0A]
-</artwork></figure>
-<t>To decode the value, you collect the 7-bit chunks until you find an octet with the most significant bit clear.
+<section anchor="reset-codes" title="Reset Codes">
+<t>All status codes which fall into the inclusive range of 112-127
+are considered <spanx style="emph">reset codes</spanx>. These codes are emitted asynchronously
+after an NCP reset and provide a way to differentiate different
+causes of resets. If the first command the AP sends to the NCP
+after a reset is to fetch <spanx style="verb">PROP_LAST_STATUS</spanx>, then the reset code
+MUST be returned.
 </t>
-</section>
+<texttable title="Enumeration of reset codes
+">
+<ttcol align="left">Id</ttcol>
+<ttcol align="left">Name</ttcol>
 
-<section anchor="data-blobs" title="Data Blobs">
-<t>There are two types for data blobs: <spanx style="verb">d</spanx> and <spanx style="verb">D</spanx>.
+<c>112</c><c><spanx style="verb">STATUS_RESET_POWER_ON</spanx></c>
+<c>113</c><c><spanx style="verb">STATUS_RESET_EXTERNAL</spanx></c>
+<c>114</c><c><spanx style="verb">STATUS_RESET_SOFTWARE</spanx></c>
+<c>115</c><c><spanx style="verb">STATUS_RESET_FAULT</spanx></c>
+<c>116</c><c><spanx style="verb">STATUS_RESET_CRASH</spanx></c>
+<c>117</c><c><spanx style="verb">STATUS_RESET_ASSERT</spanx></c>
+<c>118</c><c><spanx style="verb">STATUS_RESET_OTHER</spanx></c>
+<c>119</c><c><spanx style="verb">STATUS_RESET_UNKNOWN</spanx></c>
+<c>120</c><c><spanx style="verb">STATUS_RESET_WATCHDOG</spanx></c>
+</texttable>
+<t>Of these defined reset codes, only <spanx style="verb">STATUS_RESET_POWER_ON</spanx>,
+<spanx style="verb">STATUS_RESET_EXTERNAL</spanx>, and <spanx style="verb">STATUS_RESET_SOFTWARE</spanx> are emitted
+during normal operation. All other reset codes generally indicate
+some sort of software bug or hardware failure.
+</t>
+<t>Unexpected/unrequested resets are always an indication of a problem,
+no matter what the code value is.
 </t>
 <t>
-<list style="symbols">
-<t><spanx style="verb">d</spanx> has the length of the data (in octets) prepended to the data (with the length encoded as type <spanx style="verb">S</spanx>). The size of the length field is not included in the length.</t>
-<t><spanx style="verb">D</spanx> does not have a prepended length: the length of the data is implied by the octets remaining to be parsed. It is an error for <spanx style="verb">D</spanx> to not be the last type in a type in a type signature.</t>
+<list style="hanging">
+<t hangText="STATUS_RESET_POWER_ON">
+<vspace />
+Cold power-on start.</t>
+<t hangText="STATUS_RESET_EXTERNAL">
+<vspace />
+External device reset. This is generally caused by RESET pin on the NCP
+being asserted.</t>
+<t hangText="STATUS_RESET_SOFTWARE">
+<vspace />
+Software-requested orderly reset. This is generally caused by the AP sending
+the NCP <spanx style="verb">CMD_RESET</spanx>.</t>
+<t hangText="STATUS_RESET_FAULT">
+<vspace />
+Internal software abortive reset.
+TODO: Elaborate on what this means. Consider repurposing this code.</t>
+<t hangText="STATUS_RESET_CRASH">
+<vspace />
+Unrecoverable software execution failure.</t>
+<t hangText="STATUS_RESET_ASSERT">
+<vspace />
+Software invariant property not respected.</t>
+<t hangText="STATUS_RESET_OTHER">
+<vspace />
+Unspecified cause.</t>
+<t hangText="STATUS_RESET_UNKNOWN">
+<vspace />
+Failure while recovering cause of reset.</t>
+<t hangText="STATUS_RESET_WATCHDOG">
+<vspace />
+Watchdog timer expired, forcing a reset.</t>
 </list>
 </t>
-<t>This dichotomy allows for more efficient encoding by eliminating redundancy. If the rest of the frame is a data blob, encoding the length would be redundant because we already know how many octets are in the rest of the frame.
-</t>
-<t>In some cases we use <spanx style="verb">d</spanx> even if it is the last field in a type signature. We do this to allow for us to be able to append additional fields to the type signature if necessary in the future. This is usually the case with embedded structs, like in the scan results.
-</t>
-<t>For example, let's say we have a buffer that is encoded with the datatype signature of <spanx style="verb">CLLD</spanx>. In this case, it is pretty easy to tell where the start and end of the data blob is: the start is 9 octets from the start of the buffer, and its length is the length of the buffer minus 9. (9 is the number of octets taken up by a octet and two longs)
-</t>
-<t>The datatype signature <spanx style="verb">CLLDU</spanx> is illegal because we can't determine where the last field (a zero-terminated UTF8 string) starts. But the datatype <spanx style="verb">CLLdU</spanx> <spanx style="emph">is</spanx> legal, because the parser can determine the exact length of the data blob-- allowing it to know where the start of the next field would be.
-</t>
 </section>
 
-<section anchor="structured-data" title="Structured Data">
-<t>The structure data type (<spanx style="verb">t(...)</spanx>) is a way of bundling together several fields into a single structure. It can be thought of as a <spanx style="verb">d</spanx> type except that instead of being opaque, the fields in the content are known and the parsing frame for the type signature bounded by the <spanx style="verb">(</spanx> and <spanx style="verb">)</spanx> characters is limited by the length of the structure in octets. This is useful for things like scan results where you have substructures which are defined by different layers. The limiting constraint of the length of the structure allowed the type signature of the structure contents to end in <spanx style="verb">D</spanx> to signify a data blob of implied length.
+<section anchor="status-code-ranges" title="Status Code Ranges">
+<t>IANA maintains a registry of Spinel <spanx style="verb">STATUS_CODE</spanx> numbers, with
+varying registration policies assigned for different ranges according
+to the following table:
 </t>
-<t>For example, consider the type signature <spanx style="verb">Lt(ES)t(6D)</spanx>. In this hypothetical case, the first struct is defined by the MAC layer, and the second struct is defined by the PHY layer. Because of the use of structures, we know exactly what part comes from that layer. Additionally, we can add fields to each structure without introducing backward compatability problems: Data encoded as <spanx style="verb">Lt(ESU)t(6D)</spanx> (Notice the extra <spanx style="verb">U</spanx>) will decode just fine as <spanx style="verb">Lt(ES)t(6D)</spanx>. Additionally, if we don't care about the MAC layer and only care about the network layer, we could parse as <spanx style="verb">Lt()t(6D)</spanx>.
-</t>
-<t>Note that data encoded as <spanx style="verb">Lt(ES)t(6D)</spanx> will also parse as <spanx style="verb">Ldd</spanx>, with the structures from both layers now being opaque data blobs.
-</t>
+<texttable>
+<ttcol align="left">Status Code Range</ttcol>
+<ttcol align="left">Reservation Policy</ttcol>
+
+<c>0 - 127</c><c>Standards Action</c>
+<c>128 - 15,359</c><c>Unassigned</c>
+<c>15,360 - 16,383</c><c>Private Use</c>
+<c>16,384 - 1,999,999</c><c>Unassigned</c>
+<c>2,000,000 - 2,097,151</c><c>Experimental Use</c>
+</texttable>
 </section>
 
-<section anchor="arrays" title="Arrays">
-<t>An array is simply a concatenated set of <spanx style="emph">n</spanx> data encodings. For example, the type <spanx style="verb">A(6)</spanx> is simply a list of IPv6 addresses---one after the other. The type <spanx style="verb">A(6E)</spanx> likewise a concatenation of IPv6-address/EUI-64 pairs.
+<section anchor="how-status-is-indicated" title="How Status is Indicated">
+<t>Status codes are sent from the NCP to the OS via <spanx style="verb">PROP_LAST_STATUS</spanx>
+using the <spanx style="verb">CMD_VALUE_IS</spanx> command to indicate the return status of a
+previous command. As with any response, the TID field of the FLAG byte
+is used to correlate the response with the request.
 </t>
-<t>If an array contains many fields, the fields will often be surrounded by a structure (<spanx style="verb">t(...)</spanx>). This effectively prepends each item in the array with its length. This is useful for improving parsing performance or to allow additional fields to be added in the future in a backward compatible way. If there is a high certainty that additional fields will never be added, the struct may be omitted (saving two octets per item).
+<t>Note that most successfully executed commands do not indicate a last
+status of <spanx style="verb">STATUS_OK</spanx>. The usual way the NCP indicates a successful
+command is to mirror the property change back to the OS. For example,
+if you do a <spanx style="verb">CMD_VALUE_SET</spanx> on <spanx style="verb">PROP_PHY_ENABLED</spanx>, the NCP would
+indicate success by responding with a <spanx style="verb">CMD_VALUE_IS</spanx> for
+<spanx style="verb">PROP_PHY_ENABLED</spanx>. If the command failed, <spanx style="verb">PROP_LAST_STATUS</spanx> would be
+emitted instead.
 </t>
-<t>This specification does not define a way to embed an array as a field alongside other fields.
+<t>See <xref target="prop-last-status"/> for more information on <spanx style="verb">PROP_LAST_STATUS</spanx>.
 </t>
 </section>
 </section>
@@ -582,13 +766,16 @@ represent the given value.
 </texttable>
 
 <section anchor="cmd-noop" title="CMD 0: (OS -&gt; NCP) CMD_NOOP">
-<texttable>
-<ttcol align="center">Octets:</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1</ttcol>
 
-<c>Fields:</c><c>HEADER</c><c>CMD_NOOP</c>
-</texttable>
+<figure align="center" title="Structure of CMD_NOOP
+"><artwork align="center">
+ 0                   1
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|1 0|NLI|  TID  |    CMD_NOOP   |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+^     HEADER    ^    COMMAND    ^
+</artwork></figure>
 <t>No-Operation. Commands the NCP to reply with a <spanx style="verb">STATUS_OK</spanx> code. This is primarily used for liveliness checks.
 </t>
 <t>The command payload for this command SHOULD be empty. The receiver MUST ignore any non-empty command payload.
@@ -598,13 +785,15 @@ represent the given value.
 </section>
 
 <section anchor="cmd-reset" title="CMD 1: (OS -&gt; NCP) CMD_RESET">
-<texttable>
-<ttcol align="center">Octets:</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1</ttcol>
 
-<c>Fields:</c><c>HEADER</c><c>CMD_RESET</c>
-</texttable>
+<figure align="center" title="Structure of CMD_RESET
+"><artwork align="center">
+ 0                   1
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|1 0|NLI|  TID  |   CMD_RESET   |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
 <t>Reset NCP. Commands the NCP to perform a software reset. Due to the nature of this command, the TID is ignored. The OS should instead wait for a <spanx style="verb">CMD_PROP_VALUE_IS</spanx> command from the NCP indicating <spanx style="verb">PROP_LAST_STATUS</spanx> has been set to <spanx style="verb">STATUS_RESET_SOFTWARE</spanx> (see <xref target="status-codes"/>).
 </t>
 <t>The command payload SHOULD be empty, and it SHOULD NOT be processed.
@@ -614,14 +803,15 @@ represent the given value.
 </section>
 
 <section anchor="cmd-prop-value-get" title="CMD 2: (OS -&gt; NCP) CMD_PROP_VALUE_GET">
-<texttable>
-<ttcol align="center">Octets:</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1-3</ttcol>
 
-<c>Fields:</c><c>HEADER</c><c>CMD_PROP_VALUE_GET</c><c>PROP_ID</c>
-</texttable>
+<figure align="center" title="Structure of CMD_PROP_VALUE_GET
+"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|1 0|NLI|  TID  |      CMD      | PROP_KEY (PUI, 1-3 bytes) ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
 <t>Get property value. Commands the NCP to emit a <spanx style="verb">CMD_PROP_VALUE_IS</spanx> command for the given property identifier.
 </t>
 <t>The payload for this command is the property identifier encoded in the packed unsigned integer format described in <xref target="packed-unsigned-integer"/>.
@@ -631,15 +821,17 @@ represent the given value.
 </section>
 
 <section anchor="cmd-prop-value-set" title="CMD 3: (OS -&gt; NCP) CMD_PROP_VALUE_SET">
-<texttable>
-<ttcol align="center">Octets:</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1-3</ttcol>
-<ttcol align="center">n</ttcol>
 
-<c>Fields:</c><c>HEADER</c><c>CMD_PROP_VALUE_SET</c><c>PROP_ID</c><c>VALUE</c>
-</texttable>
+<figure align="center" title="Structure of CMD_PROP_VALUE_SET
+"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|1 0|NLI|  TID  |      CMD      | PROP_KEY (PUI, 1-3 bytes) ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  NEW PROPERTY VALUE ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
 <t>Set property value. Commands the NCP to set the given property to the specific given value, replacing any previous value, and to emit a <spanx style="verb">CMD_PROP_VALUE_IS</spanx> command for the <spanx style="verb">PROP_LAST_STATUS</spanx> command indicating <spanx style="verb">STATUS_OK</spanx> if successful.
 </t>
 <t>The payload for this command is the property identifier encoded in the packed unsigned integer format described in <xref target="packed-unsigned-integer"/>, followed by the property value. The exact format of the property value is defined by the property.
@@ -649,15 +841,17 @@ represent the given value.
 </section>
 
 <section anchor="cmd-prop-value-insert" title="CMD 4: (OS -&gt; NCP) CMD_PROP_VALUE_INSERT">
-<texttable>
-<ttcol align="center">Octets:</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1-3</ttcol>
-<ttcol align="center">n</ttcol>
 
-<c>Fields:</c><c>HEADER</c><c>CMD_PROP_VALUE_INSERT</c><c>PROP_ID</c><c>VALUE</c>
-</texttable>
+<figure align="center" title="Structure of CMD_PROP_VALUE_INSERT
+"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|1 0|NLI|  TID  |      CMD      | PROP_KEY (PUI, 1-3 bytes) ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  ITEM TO INSERT ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
 <t>Insert value into list property. Commands the NCP to insert the given value into a list-oriented property, without removing other items in the list. The resulting order of items in the list is defined by the individual property being operated on.
 </t>
 <t>The payload for this command is the property identifier encoded in the packed unsigned integer format described in <xref target="packed-unsigned-integer"/>, followed by the value to be inserted. The exact format of the value is defined by the property.
@@ -669,15 +863,17 @@ represent the given value.
 </section>
 
 <section anchor="cmd-prop-value-remove" title="CMD 5: (OS -&gt; NCP) CMD_PROP_VALUE_REMOVE">
-<texttable>
-<ttcol align="center">Octets:</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1-3</ttcol>
-<ttcol align="center">n</ttcol>
 
-<c>Fields:</c><c>HEADER</c><c>CMD_PROP_VALUE_REMOVE</c><c>PROP_ID</c><c>VALUE</c>
-</texttable>
+<figure align="center" title="Structure of CMD_PROP_VALUE_REMOVE
+"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|1 0|NLI|  TID  |      CMD      | PROP_KEY (PUI, 1-3 bytes) ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  ITEM TO REMOVE ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
 <t>Remove value from list property. Commands the NCP to remove the given value from a list-oriented property, without affecting other items in the list. The resulting order of items in the list is defined by the individual property being operated on.
 </t>
 <t>Note that this command operates <spanx style="emph">by value</spanx>, not by index!
@@ -691,15 +887,17 @@ represent the given value.
 </section>
 
 <section anchor="cmd-prop-value-is" title="CMD 6: (NCP -&gt; OS) CMD_PROP_VALUE_IS">
-<texttable>
-<ttcol align="center">Octets:</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1-3</ttcol>
-<ttcol align="center">n</ttcol>
 
-<c>Fields:</c><c>HEADER</c><c>CMD_PROP_VALUE_IS</c><c>PROP_ID</c><c>VALUE</c>
-</texttable>
+<figure align="center" title="Structure of CMD_PROP_VALUE_SET
+"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|1 0|NLI|  TID  |      CMD      | PROP_KEY (PUI, 1-3 bytes) ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  CURRENT PROPERTY VALUE ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
 <t>Property value notification. This command can be sent by the NCP in response to a previous command from the OS, or it can be sent by the NCP in an unsolicited fashion to notify the OS of various state changes asynchronously.
 </t>
 <t>The payload for this command is the property identifier encoded in the packed unsigned integer format described in <xref target="packed-unsigned-integer"/>, followed by the current value of the given property.
@@ -707,15 +905,19 @@ represent the given value.
 </section>
 
 <section anchor="cmd-prop-value-inserted" title="CMD 7: (NCP -&gt; OS) CMD_PROP_VALUE_INSERTED">
-<texttable>
-<ttcol align="center">Octets:</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1-3</ttcol>
-<ttcol align="center">n</ttcol>
 
-<c>Fields:</c><c>HEADER</c><c>CMD_PROP_VALUE_INSERTED</c><c>PROP_ID</c><c>VALUE</c>
-</texttable>
+<figure align="center" title="Structure of CMD_PROP_VALUE_INSERTED
+"><artwork align="center">
+  0                   1
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|1 0|NLI|  TID  |      CMD      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PROP_KEY (PUI, 1-3 bytes) ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| ITEM TO BE INSERTED ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
 <t>Property value insertion notification. This command can be sent by the NCP in response to the <spanx style="verb">CMD_PROP_VALUE_INSERT</spanx> command, or it can be sent by the NCP in an unsolicited fashion to notify the OS of various state changes asynchronously.
 </t>
 <t>The payload for this command is the property identifier encoded in the packed unsigned integer format described in <xref target="packed-unsigned-integer"/>, followed by the value that was inserted into the given property.
@@ -727,15 +929,19 @@ represent the given value.
 </section>
 
 <section anchor="cmd-prop-value-removed" title="CMD 8: (NCP -&gt; OS) CMD_PROP_VALUE_REMOVED">
-<texttable>
-<ttcol align="center">Octets:</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1-3</ttcol>
-<ttcol align="center">n</ttcol>
 
-<c>Fields:</c><c>HEADER</c><c>CMD_PROP_VALUE_REMOVED</c><c>PROP_ID</c><c>VALUE</c>
-</texttable>
+<figure align="center" title="Structure of CMD_PROP_VALUE_REMOVED
+"><artwork align="center">
+  0                   1
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|1 0|NLI|  TID  |      CMD      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PROP_KEY (PUI, 1-3 bytes) ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| ITEM TO BE REMOVED ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
 <t>Property value removal notification command. This command can be sent by the NCP in response to the <spanx style="verb">CMD_PROP_VALUE_REMOVE</spanx> command, or it can be sent by the NCP in an unsolicited fashion to notify the OS of various state changes asynchronously.
 </t>
 <t>Note that this command operates <spanx style="emph">by value</spanx>, not by index!
@@ -749,15 +955,17 @@ represent the given value.
 </section>
 
 <section anchor="cmd-peek" title="CMD 18: (OS -&gt; NCP) CMD_PEEK">
-<texttable>
-<ttcol align="center">Octets:</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">4</ttcol>
-<ttcol align="center">2</ttcol>
 
-<c>Fields:</c><c>HEADER</c><c>CMD_PEEK</c><c>ADDRESS</c><c>COUNT</c>
-</texttable>
+<figure align="center" title="Structure of CMD_PEEK
+"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|1 0|NLI|  TID  |      CMD      |   ADDRESS (LITTLE ENDIAN) ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   ... ADDRESS (LITTLE ENDIAN)  |     COUNT (LITTLE ENDIAN)     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
 <t>This command allows the NCP to fetch values from the RAM of the NCP for debugging purposes. Upon success, <spanx style="verb">CMD_PEEK_RET</spanx> is sent from the NCP to the OS. Upon failure, <spanx style="verb">PROP_LAST_STATUS</spanx> is emitted with the appropriate error indication.
 </t>
 <t>Due to the low-level nature of this command, certain error conditions may induce the NCP to reset.
@@ -771,16 +979,19 @@ represent the given value.
 </section>
 
 <section anchor="cmd-peek-ret" title="CMD 19: (NCP -&gt; OS) CMD_PEEK_RET">
-<texttable>
-<ttcol align="center">Octets:</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">4</ttcol>
-<ttcol align="center">2</ttcol>
-<ttcol align="center">n</ttcol>
 
-<c>Fields:</c><c>HEADER</c><c>CMD_PEEK_RET</c><c>ADDRESS</c><c>COUNT</c><c>BYTES</c>
-</texttable>
+<figure align="center" title="Structure of CMD_PEEK_RET
+"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|1 0|NLI|  TID  |      CMD      |   ADDRESS (LITTLE ENDIAN) ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   ... ADDRESS (LITTLE ENDIAN)  |     COUNT (LITTLE ENDIAN)     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  VALUE OF MEMORY ADDRESS ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
 <t>This command contains the contents of memory that was requested by a previous call to <spanx style="verb">CMD_PEEK</spanx>.
 </t>
 <t>This command requires the capability <spanx style="verb">CAP_PEEK_POKE</spanx> to be present.
@@ -788,16 +999,19 @@ represent the given value.
 </section>
 
 <section anchor="cmd-poke" title="CMD 20: (OS -&gt; NCP) CMD_POKE">
-<texttable>
-<ttcol align="center">Octets:</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">4</ttcol>
-<ttcol align="center">2</ttcol>
-<ttcol align="center">n</ttcol>
 
-<c>Fields:</c><c>HEADER</c><c>CMD_POKE</c><c>ADDRESS</c><c>COUNT</c><c>BYTES</c>
-</texttable>
+<figure align="center" title="Structure of CMD_POKE
+"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|1 0|NLI|  TID  |      CMD      |   ADDRESS (LITTLE ENDIAN) ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   ... ADDRESS (LITTLE ENDIAN)  |     COUNT (LITTLE ENDIAN)     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  VALUE TO WRITE TO MEMORY ADDRESS ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
 <t>This command writes the bytes to the specified memory address for debugging purposes.
 </t>
 <t>Due to the low-level nature of this command, certain error conditions may induce the NCP to reset.
@@ -811,11 +1025,26 @@ represent the given value.
 <section anchor="cmd-prop-value-multi-get" title="CMD 21: (OS -&gt; NCP) CMD_PROP_VALUE_MULTI_GET">
 <t>
 <list style="symbols">
-<t>Argument-Encoding: <spanx style="verb">A(i)</spanx></t>
 <t>Required Capability: <spanx style="verb">CAP_CMD_MULTI</spanx></t>
 </list>
 </t>
-<t>Fetch the value of multiple properties in one command. Arguments are an array of property IDs. If all properties are fetched successfully, a <spanx style="verb">CMD_PROP_VALUES_ARE</spanx> command is sent back to the OS containing the property identifier and value of each fetched property. The order of the results in <spanx style="verb">CMD_PROP_VALUES_ARE</spanx> match the order of properties given in <spanx style="verb">CMD_PROP_VALUE_GET</spanx>.
+
+<figure align="center" title="Structure of CMD_PROP_VALUE_MULTI_GET
+"><artwork align="center">
+  0                   1
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|1 0|NLI|  TID  |      CMD      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PROP_KEY 1 (PUI, 1-3 bytes) ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PROP_KEY 2 (PUI, 1-3 bytes) ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PROP_KEY 3 (PUI, 1-3 bytes) ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+:            etc ...            :
+</artwork></figure>
+<t>Fetch the value of multiple properties in one command. Arguments are a list of property IDs. If all properties are fetched successfully, a <spanx style="verb">CMD_PROP_VALUES_ARE</spanx> command is sent back to the OS containing the property identifier and value of each fetched property. The order of the results in <spanx style="verb">CMD_PROP_VALUES_ARE</spanx> match the order of properties given in <spanx style="verb">CMD_PROP_VALUE_GET</spanx>.
 </t>
 <t>Errors fetching individual properties are reflected as indicating a change to <spanx style="verb">PROP_LAST_STATUS</spanx> for that property's place.
 </t>
@@ -826,131 +1055,110 @@ represent the given value.
 <section anchor="cmd-prop-value-multi-set" title="CMD 22: (OS -&gt; NCP) CMD_PROP_VALUE_MULTI_SET">
 <t>
 <list style="symbols">
-<t>Argument-Encoding: <spanx style="verb">A(iD)</spanx></t>
 <t>Required Capability: <spanx style="verb">CAP_CMD_MULTI</spanx></t>
 </list>
 </t>
-<texttable>
-<ttcol align="center">Octets:</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">n</ttcol>
+<t>This command sets the value of several properties at once in the given order.
+The setting of properties stops at the first error, ignoring any later properties.
+</t>
 
-<c>Fields:</c><c>HEADER</c><c>CMD_PROP_VALUE_MULTI_SET</c><c>Property/Value Pairs</c>
-</texttable>
-<t>With each property/value pair being:
+<figure align="center" title="Structure of CMD_PROP_VALUE_MULTI_SET
+"><artwork align="center">
+  0                   1
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|1 0|NLI|  TID  |      CMD      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PROP/VALUE PAIR 1 ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PROP/VALUE PAIR 2 ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PROP/VALUE PAIR 3 ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+:            etc ...            :
+</artwork></figure>
+<t>With each property/value pair above being:
 </t>
-<texttable>
-<ttcol align="center">Octets:</ttcol>
-<ttcol align="center">2</ttcol>
-<ttcol align="center">1-3</ttcol>
-<ttcol align="center">n</ttcol>
 
-<c>Fields:</c><c>LENGTH</c><c>PROP_ID</c><c>PROP_VALUE</c>
-</texttable>
-<t>This command sets the value of several properties at once in the given order. The setting of properties stops at the first error, ignoring any later properties.
+<figure align="center"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|    LENGTH (LITTLE ENDIAN)     | PROP_KEY (PUI, 1-3 bytes) ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  NEW PROPERTY VALUE ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
+<t>The LENGTH field is the sum of the length of the property key and the new
+property value.
 </t>
-<t>The result of this command is generally <spanx style="verb">CMD_PROP_VALUES_ARE</spanx> unless (for example) a parsing error has occured (in which case <spanx style="verb">CMD_PROP_VALUE_IS</spanx> for <spanx style="verb">PROP_LAST_STATUS</spanx> would be the result). The order of the results in <spanx style="verb">CMD_PROP_VALUES_ARE</spanx> match the order of properties given in <spanx style="verb">CMD_PROP_VALUE_MULTI_SET</spanx>.
+<t>The result of this command is generally <spanx style="verb">CMD_PROP_VALUES_ARE</spanx> unless
+(for example) a parsing error has occured (in which case
+<spanx style="verb">CMD_PROP_VALUE_IS</spanx> for <spanx style="verb">PROP_LAST_STATUS</spanx> would be the result). The
+order of the results in <spanx style="verb">CMD_PROP_VALUES_ARE</spanx> match the order of
+properties given in <spanx style="verb">CMD_PROP_VALUE_MULTI_SET</spanx>.
 </t>
-<t>Since the processing of properties to set stops at the first error, the resulting <spanx style="verb">CMD_PROP_VALUES_ARE</spanx> can contain fewer items than the requested number of properties to set.
+<t>Since the processing of properties to set stops at the first error,
+the resulting <spanx style="verb">CMD_PROP_VALUES_ARE</spanx> can contain fewer items than the
+requested number of properties to set.
 </t>
-<t>Not all properties can be set using this method. As a general rule of thumb, any property that blocks when setting will fail for that individual property with <spanx style="verb">STATUS_INVALID_COMMAND_FOR_PROP</spanx>.
+<t>Not all properties can be set using this method. As a general rule of
+thumb, any property that blocks when setting will fail for that
+individual property with <spanx style="verb">STATUS_INVALID_COMMAND_FOR_PROP</spanx>.
 </t>
 </section>
 
 <section anchor="cmd-prop-values-are" title="CMD 23: (NCP -&gt; OS) CMD_PROP_VALUES_ARE">
 <t>
 <list style="symbols">
-<t>Argument-Encoding: <spanx style="verb">A(iD)</spanx></t>
 <t>Required Capability: <spanx style="verb">CAP_CMD_MULTI</spanx></t>
 </list>
 </t>
-<texttable>
-<ttcol align="center">Octets:</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">1</ttcol>
-<ttcol align="center">n</ttcol>
 
-<c>Fields:</c><c>HEADER</c><c>CMD_PROP_VALUES_ARE</c><c>Property/Value Pairs</c>
-</texttable>
-<t>With each property/value pair being:
+<figure align="center" title="Structure of CMD_PROP_VALUE_MULTI_ARE
+"><artwork align="center">
+  0                   1
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|1 0|NLI|  TID  |      CMD      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PROP/VALUE PAIR 1 ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PROP/VALUE PAIR 2 ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PROP/VALUE PAIR 3 ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+:            etc ...            :
+</artwork></figure>
+<t>With each property/value pair above being:
 </t>
-<texttable>
-<ttcol align="center">Octets:</ttcol>
-<ttcol align="center">2</ttcol>
-<ttcol align="center">1-3</ttcol>
-<ttcol align="center">n</ttcol>
 
-<c>Fields:</c><c>LENGTH</c><c>PROP_ID</c><c>PROP_VALUE</c>
-</texttable>
-<t>This command is emitted by the NCP as the response to both the <spanx style="verb">CMD_PROP_VALUE_MULTI_GET</spanx> and <spanx style="verb">CMD_PROP_VALUE_MULTI_SET</spanx> commands. It is roughly analogous to <spanx style="verb">CMD_PROP_VALUE_IS</spanx>, except that it contains more than one property.
+<figure align="center"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|    LENGTH (LITTLE ENDIAN)     | PROP_KEY (PUI, 1-3 bytes) ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  CURRENT PROPERTY VALUE ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
+<t>This command is emitted by the NCP as the response to both the
+<spanx style="verb">CMD_PROP_VALUE_MULTI_GET</spanx> and <spanx style="verb">CMD_PROP_VALUE_MULTI_SET</spanx> commands. It
+is roughly analogous to <spanx style="verb">CMD_PROP_VALUE_IS</spanx>, except that it contains
+more than one property.
 </t>
-<t>This command SHOULD NOT be emitted asynchronously, or in response to any command other than <spanx style="verb">CMD_PROP_VALUE_MULTI_GET</spanx> or <spanx style="verb">CMD_PROP_VALUE_MULTI_SET</spanx>.
+<t>This command must <spanx style="strong">ONLY</spanx> be emitted by the NCP in response to either
+<spanx style="verb">CMD_PROP_VALUE_MULTI_GET</spanx> or <spanx style="verb">CMD_PROP_VALUE_MULTI_SET</spanx>. This command
+MUST NOT be emitted in response to any other command, or emitted
+asynchronously.
 </t>
-<t>The arguments are a list of structures containing the emitted property and the associated value. These are presented in the same order as given in the associated initiating command. In cases where getting or setting a specific property resulted in an error, the associated slot in this command will describe <spanx style="verb">PROP_LAST_STATUS</spanx>.
+<t>The arguments are a list of structures containing the emitted property
+and the associated value. These are presented in the same order as
+given in the associated initiating command. In cases where getting or
+setting a specific property resulted in an error, the associated slot
+in this command will describe <spanx style="verb">PROP_LAST_STATUS</spanx>.
 </t>
 </section>
-</section>
-
-<section anchor="status-codes" title="Status Codes">
-<t>Status codes are sent from the NCP to the OS via <spanx style="verb">PROP_LAST_STATUS</spanx> using the <spanx style="verb">CMD_VALUE_IS</spanx> command to indicate the return status of a previous command. As with any response, the TID field of the FLAG byte is used to correlate the response with the request.
-</t>
-<t>Note that most successfully executed commands do not indicate a last status of <spanx style="verb">STATUS_OK</spanx>. The usual way the NCP indicates a successful command is to mirror the property change back to the OS. For example, if you do a <spanx style="verb">CMD_VALUE_SET</spanx> on <spanx style="verb">PROP_PHY_ENABLED</spanx>, the NCP would indicate success by responding with a <spanx style="verb">CMD_VALUE_IS</spanx> for <spanx style="verb">PROP_PHY_ENABLED</spanx>. If the command failed, <spanx style="verb">PROP_LAST_STATUS</spanx> would be emitted instead.
-</t>
-<t>See <xref target="prop-last-status"/> for more information on <spanx style="verb">PROP_LAST_STATUS</spanx>.
-</t>
-<t>IANA maintains a registry of Spinel <spanx style="verb">STATUS_CODE</spanx> numbers, with varying registration policies assigned for different ranges according to the following table:
-</t>
-<texttable>
-<ttcol align="left">Status Code Range</ttcol>
-<ttcol align="left">Reservation Policy</ttcol>
-
-<c>0 - 127</c><c>Standards Action</c>
-<c>128 - 15,359</c><c>Unassigned</c>
-<c>15,360 - 16,383</c><c>Private Use</c>
-<c>16,384 - 1,999,999</c><c>Unassigned</c>
-<c>2,000,000 - 2,097,151</c><c>Experimental Use</c>
-</texttable>
-<t>The Spinel core protoocol defines some standard status codes. Their names, assigned numbers and a short description of their operational semantics are shown in the following table:
-</t>
-<texttable>
-<ttcol align="left">Code</ttcol>
-<ttcol align="left">Name</ttcol>
-<ttcol align="left">Description</ttcol>
-
-<c>0</c><c><spanx style="verb">STATUS_OK</spanx></c><c>Operation has completed successfully.</c>
-<c>1</c><c><spanx style="verb">STATUS_FAILURE</spanx></c><c>Operation has failed for an unspecified reason.</c>
-<c>2</c><c><spanx style="verb">STATUS_UNIMPLEMENTED</spanx></c><c>The given operation has not been implemented.</c>
-<c>3</c><c><spanx style="verb">STATUS_INVALID_ARGUMENT</spanx></c><c>An argument to the given operation is invalid.</c>
-<c>4</c><c><spanx style="verb">STATUS_INVALID_STATE</spanx></c><c>The given operation is invalid for the current state of the device.</c>
-<c>5</c><c><spanx style="verb">STATUS_INVALID_COMMAND</spanx></c><c>The given command is not recognized.</c>
-<c>6</c><c><spanx style="verb">STATUS_INVALID_INTERFACE</spanx></c><c>The given network link identifier is not supported.</c>
-<c>7</c><c><spanx style="verb">STATUS_INTERNAL_ERROR</spanx></c><c>An internal runtime error has occurred.</c>
-<c>8</c><c><spanx style="verb">STATUS_SECURITY_ERROR</spanx></c><c>A security or authentication error has occurred.</c>
-<c>9</c><c><spanx style="verb">STATUS_PARSE_ERROR</spanx></c><c>An error has occurred while parsing the command.</c>
-<c>10</c><c><spanx style="verb">STATUS_IN_PROGRESS</spanx></c><c>An error has occurred while parsing the command.</c>
-<c>11</c><c><spanx style="verb">STATUS_NOMEM</spanx></c><c>The operation has been prevented due to memory pressure.</c>
-<c>12</c><c><spanx style="verb">STATUS_BUSY</spanx></c><c>The device is currently performing a mutually exclusive operation.</c>
-<c>13</c><c><spanx style="verb">STATUS_PROP_NOT_FOUND</spanx></c><c>The given property is not recognized.</c>
-<c>14</c><c><spanx style="verb">STATUS_PACKET_DROPPED</spanx></c><c>The packet was dropped.</c>
-<c>15</c><c><spanx style="verb">STATUS_EMPTY</spanx></c><c>The result of the operation is empty.</c>
-<c>16</c><c><spanx style="verb">STATUS_CMD_TOO_BIG</spanx></c><c>The command was too large to fit in the internal buffer.</c>
-<c>17</c><c><spanx style="verb">STATUS_NO_ACK</spanx></c><c>The packet was not acknowledged.</c>
-<c>18</c><c><spanx style="verb">STATUS_CCA_FAILURE</spanx></c><c>The packet was not sent due to a CCA failure.</c>
-<c>19</c><c><spanx style="verb">STATUS_ALREADY</spanx></c><c>The operation is already in progress, or the property already has the value.</c>
-<c>20</c><c><spanx style="verb">STATUS_ITEM_NOT_FOUND</spanx></c><c>The given item could not be found in the property.</c>
-<c>21</c><c><spanx style="verb">STATUS_INVALID_COMMAND_FOR_PROP</spanx></c><c>The given command cannot be performed on this property.</c>
-<c>??</c><c><spanx style="verb">STATUS_PROP_VALUE_TOO_BIG</spanx></c><c>The value fo this property is too large.</c>
-<c>112</c><c><spanx style="verb">STATUS_RESET_POWER_ON</spanx></c><c>Cold power-on start.</c>
-<c>113</c><c><spanx style="verb">STATUS_RESET_EXTERNAL</spanx></c><c>External device reset.</c>
-<c>114</c><c><spanx style="verb">STATUS_RESET_SOFTWARE</spanx></c><c>Internal software orderly reset.</c>
-<c>115</c><c><spanx style="verb">STATUS_RESET_FAULT</spanx></c><c>Internal software abortive reset.</c>
-<c>116</c><c><spanx style="verb">STATUS_RESET_CRASH</spanx></c><c>Unrecoverable software execution failure.</c>
-<c>117</c><c><spanx style="verb">STATUS_RESET_ASSERT</spanx></c><c>Software invariant property not respected.</c>
-<c>118</c><c><spanx style="verb">STATUS_RESET_OTHER</spanx></c><c>Unspecified cause.</c>
-<c>119</c><c><spanx style="verb">STATUS_RESET_UNKNOWN</spanx></c><c>Failure while recovering cause of reset.</c>
-<c>120</c><c><spanx style="verb">STATUS_RESET_WATCHDOG</spanx></c><c>Software failed to make sufficient progress.</c>
-</texttable>
 </section>
 
 <section anchor="capabilities" title="Capabilities">
@@ -1150,21 +1358,22 @@ values.
 <t>Asynchronous Updates: No</t>
 <t>Required: REQUIRED</t>
 <t>Scope: NCP</t>
-<t>Value Type: PUI, PUI</t>
+<t>Value Type: UINT8, UINT8</t>
 <t>Post-Reset Value: 4, 3</t>
 </list>
 </t>
-<texttable>
-<ttcol align="center">Bytes:</ttcol>
-<ttcol align="center">1-3</ttcol>
-<ttcol align="center">1-3</ttcol>
-
-<c>Format:</c><c>PUI</c><c>PUI</c>
-<c>Fields:</c><c><spanx style="verb">MAJOR_VERSION</spanx></c><c><spanx style="verb">MINOR_VERSION</spanx></c>
-</texttable>
 <t>Describes the spinel protocol version information. This property
-contains four fields, each encoded as a packed unsigned integer:
+contains two fields:
 </t>
+
+<figure align="center" title="PROP_PROTOCOL_VERSION Value Format
+"><artwork align="center">
+  0                   1
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| MAJOR_VERSION | MINOR_VERSION |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
 <t>
 <list style="hanging">
 <t hangText="MAJOR_VERSION">
@@ -1887,13 +2096,6 @@ antenna connector.
 <t>Unit: dB</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>INT8</c>
-<c>Fields:</c><c><spanx style="verb">RX_SENSITIVITY</spanx></c>
-</texttable>
 <t>Value is the radio receive sensitivity. This value can be used as
 lower bound noise floor for link metrics computation.
 </t>
@@ -1919,32 +2121,41 @@ antenna connector.
 <t>Post-Reset Value: <spanx style="verb">SCAN_STATE_IDLE</spanx></t>
 </list>
 </t>
-<t>TODO(RQ): This needs to be re-thought out. I don't like the whole discovery
-thing being a separate scan state. Maybe we should add another property
-for scanning only compatible networks.
-</t>
-<t>Possible Values:
-</t>
+<texttable title="Enumeration of scan states
+">
+<ttcol align="center">Id</ttcol>
+<ttcol align="center">Name</ttcol>
+
+<c>0</c><c><spanx style="verb">SCAN_STATE_IDLE</spanx></c>
+<c>1</c><c><spanx style="verb">SCAN_STATE_BEACON</spanx></c>
+<c>2</c><c><spanx style="verb">SCAN_STATE_ENERGY</spanx></c>
+</texttable>
 <t>
-<list style="symbols">
-<t>0: <spanx style="verb">SCAN_STATE_IDLE</spanx></t>
-<t>1: <spanx style="verb">SCAN_STATE_BEACON</spanx></t>
-<t>2: <spanx style="verb">SCAN_STATE_ENERGY</spanx></t>
-<t>3: <spanx style="verb">SCAN_STATE_DISCOVER</spanx> DEPRECATED</t>
+<list style="hanging">
+<t hangText="SCAN_STATE_IDLE">
+<vspace />
+Indicates that the scanning subsystem is not currently scanning.
+You can set the scan state to this value to cancel a scan in progress.</t>
+<t hangText="SCAN_STATE_BEACON">
+<vspace />
+Indicates that the scanning subsystem is performing an active scan
+for nearby networks. You can start an active scan by setting the scan
+state to this value.</t>
+<t hangText="SCAN_STATE_ENERGY">
+<vspace />
+Indicates that the scanning subsystem is performing a passive
+scan to determine RF energy levels. You can start a passive scan
+by setting the scan state to this value.</t>
 </list>
 </t>
-<t>Set to <spanx style="verb">SCAN_STATE_BEACON</spanx> to start an active scan.
-Beacons will be emitted from <spanx style="verb">PROP_MAC_SCAN_BEACON</spanx>.
+<t>The scan is complete when the NCP has indicated that the value of
+has changed to <spanx style="verb">SCAN_STATE_IDLE</spanx>.
 </t>
-<t>Set to <spanx style="verb">SCAN_STATE_ENERGY</spanx> to start an energy scan.
-Channel energy result will be reported by emissions
-of <spanx style="verb">PROP_MAC_ENERGY_SCAN_RESULT</spanx> (per channel).
-</t>
-<t>DEPRECATED: Set to <spanx style="verb">SCAN_STATE_DISOVER</spanx> to start a Thread MLE discovery
-scan operation. Discovery scan result will be emitted from
-<spanx style="verb">PROP_MAC_SCAN_BEACON</spanx>.
-</t>
-<t>Value switches to <spanx style="verb">SCAN_STATE_IDLE</spanx> when scan is complete.
+<t>If an attempt to set this property to a value of anything other than
+<spanx style="verb">SCAN_STATE_IDLE</spanx> while the current value isn't <spanx style="verb">SCAN_STATE_IDLE</spanx>,
+the NCP MUST fail and respond with a last status of <spanx style="verb">STATUS_ALREADY</spanx>.
+However, setting this property to <spanx style="verb">SCAN_STATE_IDLE</spanx> while it is already
+<spanx style="verb">SCAN_STATE_IDLE</spanx> MUST NOT be considered an error.
 </t>
 </section>
 
@@ -2036,7 +2247,7 @@ format depends on the MAC and NET layer currently in use.
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |   NETWORK_NAME (UTF8) ...
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|      0x00     |   XPANID_LEN (Little endian)  | XPANID ...
+|0 0 0 0 0 0 0 0|   XPANID_LEN (Little endian)  | XPANID ...
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |  STEERING_LEN(Little endian)  | STEERING_DATA ...
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -2085,8 +2296,7 @@ antenna connector.
 <t>Post-Reset Value: 65535 (0xFFFF)</t>
 </list>
 </t>
-<t>&lt;!-- RQ -- Break PROP_MAC_15_4_SADDR out into an 802.15.4-specific section -- --&gt;
-</t>
+<t><cref source="RQ">Break PROP_MAC_15_4_SADDR out into an 802.15.4-specific section --</cref></t>
 <t>The 802.15.4 short address of this node.
 </t>
 <t>This property is only present on NCPs which implement 802.15.4
@@ -3253,9 +3463,18 @@ NCP---which might not have it's own independent IPv6 address.
 <section anchor="acknowledgments" title="Acknowledgments">
 <t>Thread is a registered trademark of The Thread Group, Inc.
 </t>
-<t>Special thanks to Nick Banks, Jonathan Hui, Abtin Keshavarzian, Yakun Xu, Piotr Szkotak, Arjuna Sivasithambaresan and Martin Turon for their substantial contributions and feedback related to this document.
+<t>Special thanks to
+Nick Banks,
+Jonathan Hui,
+Abtin Keshavarzian,
+Yakun Xu,
+Piotr Szkotak,
+Arjuna Sivasithambaresan
+and Martin Turon
+for their substantial contributions and feedback related to this document.
 </t>
-<t>This document was prepared using <eref target="https://github.com/miekg/mmark">mmark</eref> by (Miek Gieben) and <eref target="http://xml2rfc.ietf.org/">xml2rfc (version 2)</eref>.
+<t>This document was prepared using <eref target="https://github.com/miekg/mmark">mmark</eref>
+by (Miek Gieben) and <eref target="http://xml2rfc.ietf.org/">xml2rfc (version 2)</eref>.
 </t>
 </section>
 
