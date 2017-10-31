@@ -8,29 +8,29 @@
 * Units: Enumeration
 * Post-Reset Value: `SCAN_STATE_IDLE`
 
-TODO(RQ): This needs to be re-thought out. I don't like the whole discovery
-thing being a separate scan state. Maybe we should add another property
-for scanning only compatible networks.
+Id | Name
+---|-----------
+0| `SCAN_STATE_IDLE`
+1| `SCAN_STATE_BEACON`
+2| `SCAN_STATE_ENERGY`
+Table: Enumeration of scan states
 
-Possible Values:
+`SCAN_STATE_IDLE`
+: Indicates that the scanning subsystem is not currently scanning.
+You can set the scan state to this value to cancel a scan in progress.
 
-* 0: `SCAN_STATE_IDLE`
-* 1: `SCAN_STATE_BEACON`
-* 2: `SCAN_STATE_ENERGY`
-* 3: `SCAN_STATE_DISCOVER` DEPRECATED
+`SCAN_STATE_BEACON`
+: Indicates that the scanning subsystem is performing an active scan
+for nearby networks. You can start an active scan by setting the scan
+state to this value.
 
-Set to `SCAN_STATE_BEACON` to start an active scan.
-Beacons will be emitted from `PROP_MAC_SCAN_BEACON`.
+`SCAN_STATE_ENERGY`
+: Indicates that the scanning subsystem is performing a passive
+scan to determine RF energy levels. You can start a passive scan
+by setting the scan state to this value.
 
-Set to `SCAN_STATE_ENERGY` to start an energy scan.
-Channel energy result will be reported by emissions
-of `PROP_MAC_ENERGY_SCAN_RESULT` (per channel).
-
-DEPRECATED: Set to `SCAN_STATE_DISOVER` to start a Thread MLE discovery
-scan operation. Discovery scan result will be emitted from
-`PROP_MAC_SCAN_BEACON`.
-
-Value switches to `SCAN_STATE_IDLE` when scan is complete.
+The scan is complete when the NCP has indicated that the value of
+has changed to `SCAN_STATE_IDLE`.
 
 ### PROP 49: PROP_MAC_SCAN_MASK {#prop-mac-scan-mask}
 
@@ -109,7 +109,7 @@ For the standard network layer, the `NET_DATA` formatted as follows:
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |   NETWORK_NAME (UTF8) ...
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|      0x00     |   XPANID_LEN (Little endian)  | XPANID ...
+|0 0 0 0 0 0 0 0|   XPANID_LEN (Little endian)  | XPANID ...
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |  STEERING_LEN(Little endian)  | STEERING_DATA ...
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -150,7 +150,7 @@ This property is only present on NCPs which implement 802.15.4
 * Value Type: UINT16_LE
 * Post-Reset Value: 65535 (0xFFFF)
 
-\<!-- RQ -- Break PROP_MAC_15_4_SADDR out into an 802.15.4-specific section -- -->
+<!-- RQ -- Break PROP_MAC_15_4_SADDR out into an 802.15.4-specific section -- -->
 
 The 802.15.4 short address of this node.
 
