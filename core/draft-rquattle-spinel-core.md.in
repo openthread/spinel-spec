@@ -116,9 +116,9 @@ specific IPv6 link types, e.g. Thread(R).
 
 {{intro-encoding.md}}
 
-{{detail-commands.md}}
-
 {{detail-status.md}}
+
+{{detail-commands.md}}
 
 {{detail-capabilities.md}}
 
