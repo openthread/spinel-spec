@@ -49,6 +49,7 @@ draft-rquattle-spinel-core.xml: \
 	detail-properties.md \
 	detail-status.md \
 	iana-considerations.md \
+	intro.md \
 	intro-encoding.md \
 	intro-frames.md \
 	intro-properties.md \
