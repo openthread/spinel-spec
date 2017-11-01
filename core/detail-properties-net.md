@@ -2,15 +2,12 @@
 
 ### PROP 65: PROP_NET_IF_UP  {#prop-net-if-up}
 
-* Type: Single-Value, Read-Write
+* Type: Single-Value, Read/Write
 * Asynchronous Updates: Yes
+* Scope: NLI
 * Required: **REQUIRED**
+* Value Type: BOOL
 * Post-Reset Value: 0 (false)
-
-Bytes:  |    1
--------:|-------------
-Format: | BOOL
-Fields: | `NET_IF_UP`
 
 Network interface up/down status. Non-zero (set to 1) indicates up, zero indicates down.
 
@@ -25,15 +22,12 @@ It bring up link-local IPv6 capabilities on PROP_STREAM_NET_INSECURE.
 
 ### PROP 66: PROP_NET_STACK_UP  {#prop-net-stack-up}
 
-* Type: Single-Value, Read-Write
+* Type: Single-Value, Read/Write
 * Asynchronous Updates: Yes
+* Scope: NLI
 * Required: **REQUIRED**
+* Value Type: BOOL
 * Post-Reset Value: 0 (false)
-
-Bytes:  |    1
--------:|-------------
-Format: | BOOL
-Fields: | `NET_STACK_UP`
 
 Network protocol stack operational status. Non-zero (set to 1) indicates up, zero indicates down.
 
@@ -42,16 +36,13 @@ Setting this to true implies also setting `PROP_NET_IF_UP` to true.
 
 ### PROP 67: PROP_NET_ROLE {#prop-net-role}
 
-* Type: Single-Value, Read-Only\*
+* Type: Single-Value, Read-Only
 * Asynchronous Updates: Yes
+* Scope: NLI
 * Required: **REQUIRED**
+* Value Type: UINT8
 * Unit: Enumeration
 * Post-Reset Value: 0 (`NET_ROLE_DETACHED`)
-
-Bytes:  |    1
--------:|-------------
-Format: | UINT8
-Fields: | `NET_ROLE`
 
 Indicates what role the current device is playing on the network. This property is
 read-only, with the exception that the AP can indicate that it wants the NCP to
@@ -92,111 +83,138 @@ NET_ROLE_PEER
 
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: Yes
-* Required: **REQUIRED** for standard network layer
+* Scope: NLI
+* Required: **REQUIRED** for `CAP_NET_STANDARD`
+* Value Type: Zero-terminated UTF8 String
 * Post-Reset Value: Empty
 
-Bytes:  |    *n*        | 1
--------:|---------------|------
-Format: | UTF8         | CONST
-Fields: | `NETWORK_NAME` | 0x00
-
-Contains a zero-terminated UTF8 string which describes the name of
+Contains a *zero-terminated* UTF8 string which describes the name of
 the current network. This is analogous to the SSID in 802.11. The maximum
 length of the string is technology specific. Setting this property to a value
-that is too large will cause `STATUS_PROP_VALUE_TOO_BIG` to be emitted.
+that is too large **MUST** cause `STATUS_PROP_VALUE_TOO_BIG` to be emitted.
 
 When this value is being retrieved, all trailing zero bytes in the network name
-**MUST** be stripped. When this value is being set, all trailing zero bytes
-**SHOULD** be stripped.
+**MUST** be stripped by the NCP. When this value is being set, all trailing zero bytes
+**SHOULD** be stripped by the AP.
 
 See (#security-network-name) for security considerations regarding UTF8
 normalization.
+
+This property **SHOULD** only be changed by the AP when `PROP_NET_STACK_UP` is
+false. The behavior of changing this property when `PROP_NET_STACK_UP` is true is
+unspecified.
 
 ### PROP 69: PROP_NET_XPANID   {#prop-net-xpanid}
 
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: Yes
-* Required: **REQUIRED** for standard network layer
+* Scope: NLI
+* Required: **REQUIRED** for `CAP_NET_STANDARD`
+* Value Type: Eight (8) bytes of opaque data
 * Post-Reset Value: All zeros
-
-Bytes:  |    8
--------:|---------------------
-Format: | XPANID
-Fields: | `NET_XPANID`
 
 Contains the extended personal-area network identifier for the current
 network. It allows for different networks with identical names to not
 conflict with each other. It is defined to be eight bytes long.
 
-For network technologies which don't have the concept of an XPANID,
-this property is hard-coded to always be all zeros.
+This property is not used by all network technologies. In cases where it is not used,
+both `CMD_PROP_VALUE_GET` and `CMD_PROP_VALUE_SET` calls should return with an
+`CMD_PROP_VALUE_IS` for this property with a value of all zeros.
+
+This property **SHOULD** only be changed by the AP when `PROP_NET_STACK_UP` is
+false. The behavior of changing this property when `PROP_NET_STACK_UP` is true is
+unspecified.
 
 ### PROP 70: PROP_NET_MASTER_KEY   {#prop-net-master-key}
 
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: Yes
-* Required: **REQUIRED** for standard network layer
-* Post-Reset Value: Unspecified
-
-Bytes:  |    *n*
--------:|---------------------
-Format: | DATA
-Fields: | `NET_MASTER_KEY`
+* Scope: NLI
+* Required: **REQUIRED** for `CAP_NET_STANDARD`
+* Value Type: Cryptographic key (usually 16 bytes)
+* Post-Reset Value: Unspecified value that is the length required by the underlying
+network technology.
 
 Master key material. The exact length of the value for this property is defined by
 the technology, but is generally 16-bytes (128-bit).
 
+**This is not a password**, it is the raw cryptographic key used to authenticate
+this node to other nodes on the network and (possibly) to secure network traffic.
+It must be generated from either a cryptographically-secure random number generator
+or the output of a suitable password-based key derivation funciton (the specification of
+which would be network technology dependent).
+
+If the AP attempts to set a master key of a length that is not a supported by the
+underlying technology, the NCP **MUST** fail with `STATUS_INVALID_ARGUMENT`.
+
+Network technologies which support unsecured/unauthenticated operation
+**MAY** allow this property to be cleared to be empty.
+
+This property **SHOULD** only be changed by the AP when `PROP_NET_STACK_UP` is
+false. The behavior of changing this property when `PROP_NET_STACK_UP` is true is
+unspecified.
 
 ### PROP 71: PROP_NET_KEY_SEQUENCE_COUNTER   {#prop-net-key-sequence-counter}
+
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: No
-* Required: **REQUIRED** for standard network layer
+* Scope: NLI
+* Required: **REQUIRED** for `CAP_NET_STANDARD`
+* Value Type: UINT32_LE
 * Post-Reset Value: 0
 
-Bytes:  |    4
--------:|---------------------
-Format: | UINT32
-Fields: | `NET_KEY_SEQUENCE_COUNTER`
+This property is not used by all network technologies. In cases where it is not used,
+both `CMD_PROP_VALUE_GET` and `CMD_PROP_VALUE_SET` calls should return with an
+`CMD_PROP_VALUE_IS` for this property with a value of zero (0).
+
+This property **SHOULD** only be changed by the AP when `PROP_NET_STACK_UP` is
+false. The behavior of changing this property when `PROP_NET_STACK_UP` is true is
+unspecified.
 
 ### PROP 72: PROP_NET_PARTITION_ID   {#prop-net-partition-id}
+
 * Type: Single-Value, Read-Only
 * Asynchronous Updates: Yes
-* Required: **OPTIONAL**
-* Post-Reset Value: Unspecified
-
-Bytes:  |    4
--------:|---------------------
-Format: | UINT32
-Fields: | `NET_PARTITION_ID`
+* Scope: NLI
+* Required: **REQUIRED** for `CAP_NET_STANDARD`
+* Value Type: UINT32_LE
+* Post-Reset Value: 0
 
 The partition ID of the partition that this node is a member of.
 
-For network technologies which don't have the concept of a partition id,
-this property is hard-coded to always be zero.
+This property is not used by all network technologies. In cases where it is not used,
+ `CMD_PROP_VALUE_GET` calls should return with an `CMD_PROP_VALUE_IS` for this
+ property with a value of zero (0).
 
 ### PROP 73: PROP_NET_REQUIRE_JOIN_EXISTING   {#prop-net-require-join-existing}
+
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: Yes
-* Required:
-    * Read: **OPTIONAL**
-    * Write: **REQUIRED**
+* Scope: NLI
+* Required: **REQUIRED** for `CAP_NET_STANDARD`
+* Value Type: BOOL
 * Post-Reset Value: 0 (false)
 
-Bytes:  |    1
--------:|---------------------
-Format: | BOOL
-Fields: | `NET_REQUIRE_JOIN_EXISTING`
+This property is used to force the NLI to fail hard (as opposed to creating a new partition)
+if there are no nodes in radio range on the same network. This is useful when
+joining a network for the first time to ensure that there was no errors or mistakes in
+the provision.
 
-<!-- RQ -- TODO: Elaborate on PROP_NET_JOIN_EXISTING -- -->
+To use this property, the AP follows these steps:
 
-### PROP 74: PROP_NET_KEY_SWITCH_GUARDTIME   {#prop-net-key-swtich-guardtime}
-* Type: Read-Write
-* Packed-Encoding: `L`
+1. Provisions the NLI for the network by setting all of the required properties (technology-specific).
+2. Sets `PROP_NET_REQUIRE_JOIN_EXISTING` to true.
+3. Sets `PROP_NET_STACK_UP` to true.
 
-<!-- RQ -- TODO: This likely doesn't belong in core, at least not in the small-number section.  -- -->
+Upon successful association with another nearby node, the NLI sends the AP an
+asynchronous update setting `PROP_NET_REQUIRE_JOIN_EXISTING` to false.
 
-### PROP 75: PROP_NET_PSKC   {#prop-net-pskc}
-* Type: Read-Write
-* Packed-Encoding: `D`
+If there were no nearby nodes, the NLI sends the AP several asynchronous updates
+in the following order with a TID of zero:
 
-<!-- RQ -- TODO: This likely doesn't belong in core, at least not in the small-number section.  -- -->
+* `PROP_NET_STACK_UP` IS false
+* `PROP_NET_IF_UP` IS false
+* `PROP_NET_LAST_STATUS` IS ...
+    * `STATUS_JOIN_FAIL_SECURITY`
+    * `STATUS_JOIN_FAIL_LONELY`
+    * `STATUS_JOIN_FAIL_OTHER`

@@ -31,6 +31,9 @@ Id          | Name
  20         | `STATUS_ITEM_NOT_FOUND`
  21         | `STATUS_INVALID_COMMAND_FOR_PROP`
 *TBD*       | `STATUS_PROP_VALUE_TOO_BIG`
+*TBD*       | `STATUS_JOIN_FAIL_SECURITY`
+*TBD*       | `STATUS_JOIN_FAIL_LONELY`
+*TBD*       | `STATUS_JOIN_FAIL_OTHER`
 Table: Enumeration of status codes
 
 `STATUS_OK`
@@ -127,6 +130,20 @@ Table: Enumeration of status codes
 
 `STATUS_PROP_VALUE_TOO_BIG`
 : The value for this property is too large.
+
+`STATUS_JOIN_FAIL_SECURITY`
+: The NLI failed to join the network due to a security problem. Usually
+indicates that the wrong credential is being used.
+(See (#prop-net-require-join-existing))
+
+`STATUS_JOIN_FAIL_LONELY`
+: The NLI failed to join the network because it could not find a peer.
+Usually indicates that the device is out of range.
+(See (#prop-net-require-join-existing))
+
+`STATUS_JOIN_FAIL_OTHER`
+: The NLI failed to join the network for an unspecified reason.
+(See (#prop-net-require-join-existing))
 
 ## Reset Codes {#reset-codes}
 
