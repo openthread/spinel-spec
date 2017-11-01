@@ -36,6 +36,9 @@ NCP
 NLI
 : Network Link Identifier. May be a value between zero and three. See (#nli-network-link-identifier) for more information.
 
+Partition
+: TODO: Writeme.
+
 PHY
 : Physical layer. Refers to characteristics and parameters related to the physical implementation and operation of a networking medium.
 

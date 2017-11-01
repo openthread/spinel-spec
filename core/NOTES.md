@@ -179,11 +179,11 @@ Provides links to other related sections.
 ~~~
 * Type: Single-Value, Read/Write
 * Asynchronous Updates: No
-* Required: **REQUIRED**
 * Scope: NCP
+* Required: **REQUIRED**
+* Required Capability: `CAP_BLEH_BLEH`
 * Related Capabilities:
   * `CAP_BLAH_BLAH`
-* Required Capability: `CAP_BLEH_BLEH`
 * Value Type: PUI ((#packed-unsigned-integer))
 * Units: Enumeration
 * Post-Reset Value: 0
@@ -194,13 +194,13 @@ Provides links to other related sections.
 
 ~~~
 * Type: Multi-Value, Read-Write
+* Scope: NLI
 * Has Item Length Prefix: No
 * Asynchronous Updates: No
 * Required: **OPTIONAL**
-* Scope: NLI
+* Required Capability: `CAP_BLEH_BLEH`
 * Related Capabilities:
   * `CAP_BLAH_BLAH`
-* Required Capability: `CAP_BLEH_BLEH`
 * Item Type: PUI ((#packed-unsigned-integer))
 * Units: Enumeration
 * Post-Reset Value: Empty

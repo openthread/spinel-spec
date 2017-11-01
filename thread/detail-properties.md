@@ -3,6 +3,20 @@
 Properties for Thread(R) are allocated out of Spinel's `Tech` property
 section (see (draft-rquattle-spinel-core#property-sections)).
 
+
+### PROP 74: PROP_NET_KEY_SWITCH_GUARDTIME   {#prop-net-key-swtich-guardtime}
+* Type: Read-Write
+* Packed-Encoding: `L`
+
+
+### PROP 75: PROP_NET_PSKC   {#prop-net-pskc}
+* Type: Read-Write
+* Packed-Encoding: `D`
+
+
+
+
+
 ### PROP 80: PROP_THREAD_LEADER_ADDR
 * Type: Read-Only
 * Packed-Encoding: `6`
