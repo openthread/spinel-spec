@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rfc SYSTEM 'rfc2629.dtd' []>
-<rfc ipr="trust200902" category="std" docName="draft-rquattle-spinel-core-c87731a-dirty">
+<rfc ipr="trust200902" category="std" docName="draft-rquattle-spinel-core-cbd8d9e">
 <?rfc toc="yes"?>
 <?rfc symrefs="yes"?>
 <?rfc sortrefs="yes"?>
@@ -158,6 +158,9 @@ Network Control Processor.</t>
 <t hangText="NLI">
 <vspace />
 Network Link Identifier. May be a value between zero and three. See <xref target="nli-network-link-identifier"/> for more information.</t>
+<t hangText="Partition">
+<vspace />
+TODO: Writeme.</t>
 <t hangText="PHY">
 <vspace />
 Physical layer. Refers to characteristics and parameters related to the physical implementation and operation of a networking medium.</t>
@@ -532,6 +535,9 @@ semantics are shown in the following table:
 <c>20</c><c><spanx style="verb">STATUS_ITEM_NOT_FOUND</spanx></c>
 <c>21</c><c><spanx style="verb">STATUS_INVALID_COMMAND_FOR_PROP</spanx></c>
 <c><spanx style="emph">TBD</spanx></c><c><spanx style="verb">STATUS_PROP_VALUE_TOO_BIG</spanx></c>
+<c><spanx style="emph">TBD</spanx></c><c><spanx style="verb">STATUS_JOIN_FAIL_SECURITY</spanx></c>
+<c><spanx style="emph">TBD</spanx></c><c><spanx style="verb">STATUS_JOIN_FAIL_LONELY</spanx></c>
+<c><spanx style="emph">TBD</spanx></c><c><spanx style="verb">STATUS_JOIN_FAIL_OTHER</spanx></c>
 </texttable>
 <t>
 <list style="hanging">
@@ -630,6 +636,20 @@ to perform a <spanx style="verb">CMD_PROP_VALUE_SET</spanx> on it.</t>
 <t hangText="STATUS_PROP_VALUE_TOO_BIG">
 <vspace />
 The value for this property is too large.</t>
+<t hangText="STATUS_JOIN_FAIL_SECURITY">
+<vspace />
+The NLI failed to join the network due to a security problem. Usually
+indicates that the wrong credential is being used.
+(See <xref target="prop-net-require-join-existing"/>)</t>
+<t hangText="STATUS_JOIN_FAIL_LONELY">
+<vspace />
+The NLI failed to join the network because it could not find a peer.
+Usually indicates that the device is out of range.
+(See <xref target="prop-net-require-join-existing"/>)</t>
+<t hangText="STATUS_JOIN_FAIL_OTHER">
+<vspace />
+The NLI failed to join the network for an unspecified reason.
+(See <xref target="prop-net-require-join-existing"/>)</t>
 </list>
 </t>
 
@@ -1152,6 +1172,32 @@ and the associated value. These are presented in the same order as
 given in the associated initiating command. In cases where getting or
 setting a specific property resulted in an error, the associated slot
 in this command will describe <spanx style="verb">PROP_LAST_STATUS</spanx>.
+</t>
+</section>
+
+<section anchor="cmd-reset-nli" title="CMD 24: (AP -&gt; NCP) CMD_RESET_NLI">
+
+<figure align="center" title="Structure of CMD_RESET_NLI
+"><artwork align="center">
+ 0                   1
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|1 0|NLI|  TID  |     CMD 24    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
+<t>Reset a specific NLI. Commands the NLI to return all properties and state to their defined
+&quot;at reset&quot; values. The intent of this command is to be analogous to <spanx style="verb">CMD_RESET</spanx>,
+except that it applies only to a single NLI.
+</t>
+<t>If the value of <spanx style="verb">PROP_INTERFACE_COUNT</spanx> is equal to one (1), then the NCP MAY
+treat this command as a synonym for <spanx style="verb">CMD_RESET</spanx> (<xref target="cmd-reset"/>). Thus, the AP
+MUST NOT treat an NCP software reset as an unexpected reset unless
+<spanx style="verb">PROP_INTERFACE_COUNT</spanx> was previously detremined to be greater than one (1).
+</t>
+<t>Otherwise, upon success this command emits <spanx style="verb">STATUS_OK</spanx> from <spanx style="verb">PROP_LAST_STATUS</spanx>.
+The resetting of all of the NLI's state MUST NOT cause any asynchronous property
+updates to be emitted, with the exception of <spanx style="verb">PROP_STREAM_DEBUG</spanx>
+(<xref target="prop-stream-debug"/>).
 </t>
 </section>
 </section>
@@ -2585,19 +2631,14 @@ long address are used for hardware generated ACKs.
 <section anchor="prop-net-if-up" title="PROP 65: PROP_NET_IF_UP">
 <t>
 <list style="symbols">
-<t>Type: Single-Value, Read-Write</t>
+<t>Type: Single-Value, Read/Write</t>
 <t>Asynchronous Updates: Yes</t>
+<t>Scope: NLI</t>
 <t>Required: REQUIRED</t>
+<t>Value Type: BOOL</t>
 <t>Post-Reset Value: 0 (false)</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>BOOL</c>
-<c>Fields:</c><c><spanx style="verb">NET_IF_UP</spanx></c>
-</texttable>
 <t>Network interface up/down status. Non-zero (set to 1) indicates up, zero indicates down.
 </t>
 <t>Setting this to false implies also setting <spanx style="verb">PROP_NET_STACK_UP</spanx> to false.
@@ -2615,19 +2656,14 @@ It bring up link-local IPv6 capabilities on PROP_STREAM_NET_INSECURE.
 <section anchor="prop-net-stack-up" title="PROP 66: PROP_NET_STACK_UP">
 <t>
 <list style="symbols">
-<t>Type: Single-Value, Read-Write</t>
+<t>Type: Single-Value, Read/Write</t>
 <t>Asynchronous Updates: Yes</t>
+<t>Scope: NLI</t>
 <t>Required: REQUIRED</t>
+<t>Value Type: BOOL</t>
 <t>Post-Reset Value: 0 (false)</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>BOOL</c>
-<c>Fields:</c><c><spanx style="verb">NET_STACK_UP</spanx></c>
-</texttable>
 <t>Network protocol stack operational status. Non-zero (set to 1) indicates up, zero indicates down.
 </t>
 <t>Setting this to true implies also setting <spanx style="verb">PROP_NET_IF_UP</spanx> to true.
@@ -2637,20 +2673,15 @@ It bring up link-local IPv6 capabilities on PROP_STREAM_NET_INSECURE.
 <section anchor="prop-net-role" title="PROP 67: PROP_NET_ROLE">
 <t>
 <list style="symbols">
-<t>Type: Single-Value, Read-Only*</t>
+<t>Type: Single-Value, Read-Only</t>
 <t>Asynchronous Updates: Yes</t>
+<t>Scope: NLI</t>
 <t>Required: REQUIRED</t>
+<t>Value Type: UINT8</t>
 <t>Unit: Enumeration</t>
 <t>Post-Reset Value: 0 (<spanx style="verb">NET_ROLE_DETACHED</spanx>)</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>UINT8</c>
-<c>Fields:</c><c><spanx style="verb">NET_ROLE</spanx></c>
-</texttable>
 <t>Indicates what role the current device is playing on the network. This property is
 read-only, with the exception that the AP can indicate that it wants the NCP to
 detach and then attempt to reattach by setting this property to <spanx style="verb">NET_ROLE_DETACHED</spanx>
@@ -2699,29 +2730,27 @@ role is used while obtaining the network provision during in-band commissioning.
 <list style="symbols">
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: Yes</t>
-<t>Required: REQUIRED for standard network layer</t>
+<t>Scope: NLI</t>
+<t>Required: REQUIRED for <spanx style="verb">CAP_NET_STANDARD</spanx></t>
+<t>Value Type: Zero-terminated UTF8 String</t>
 <t>Post-Reset Value: Empty</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">n</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>UTF8</c><c>CONST</c>
-<c>Fields:</c><c><spanx style="verb">NETWORK_NAME</spanx></c><c>0x00</c>
-</texttable>
-<t>Contains a zero-terminated UTF8 string which describes the name of
+<t>Contains a <spanx style="emph">zero-terminated</spanx> UTF8 string which describes the name of
 the current network. This is analogous to the SSID in 802.11. The maximum
 length of the string is technology specific. Setting this property to a value
-that is too large will cause <spanx style="verb">STATUS_PROP_VALUE_TOO_BIG</spanx> to be emitted.
+that is too large MUST cause <spanx style="verb">STATUS_PROP_VALUE_TOO_BIG</spanx> to be emitted.
 </t>
 <t>When this value is being retrieved, all trailing zero bytes in the network name
-MUST be stripped. When this value is being set, all trailing zero bytes
-SHOULD be stripped.
+MUST be stripped by the NCP. When this value is being set, all trailing zero bytes
+SHOULD be stripped by the AP.
 </t>
 <t>See <xref target="security-network-name"/> for security considerations regarding UTF8
 normalization.
+</t>
+<t>This property SHOULD only be changed by the AP when <spanx style="verb">PROP_NET_STACK_UP</spanx> is
+false. The behavior of changing this property when <spanx style="verb">PROP_NET_STACK_UP</spanx> is true is
+unspecified.
 </t>
 </section>
 
@@ -2730,23 +2759,23 @@ normalization.
 <list style="symbols">
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: Yes</t>
-<t>Required: REQUIRED for standard network layer</t>
+<t>Scope: NLI</t>
+<t>Required: REQUIRED for <spanx style="verb">CAP_NET_STANDARD</spanx></t>
+<t>Value Type: Eight (8) bytes of opaque data</t>
 <t>Post-Reset Value: All zeros</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">8</ttcol>
-
-<c>Format:</c><c>XPANID</c>
-<c>Fields:</c><c><spanx style="verb">NET_XPANID</spanx></c>
-</texttable>
 <t>Contains the extended personal-area network identifier for the current
 network. It allows for different networks with identical names to not
 conflict with each other. It is defined to be eight bytes long.
 </t>
-<t>For network technologies which don't have the concept of an XPANID,
-this property is hard-coded to always be all zeros.
+<t>This property is not used by all network technologies. In cases where it is not used,
+both <spanx style="verb">CMD_PROP_VALUE_GET</spanx> and <spanx style="verb">CMD_PROP_VALUE_SET</spanx> calls should return with an
+<spanx style="verb">CMD_PROP_VALUE_IS</spanx> for this property with a value of all zeros.
+</t>
+<t>This property SHOULD only be changed by the AP when <spanx style="verb">PROP_NET_STACK_UP</spanx> is
+false. The behavior of changing this property when <spanx style="verb">PROP_NET_STACK_UP</spanx> is true is
+unspecified.
 </t>
 </section>
 
@@ -2755,19 +2784,31 @@ this property is hard-coded to always be all zeros.
 <list style="symbols">
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: Yes</t>
-<t>Required: REQUIRED for standard network layer</t>
-<t>Post-Reset Value: Unspecified</t>
+<t>Scope: NLI</t>
+<t>Required: REQUIRED for <spanx style="verb">CAP_NET_STANDARD</spanx></t>
+<t>Value Type: Cryptographic key (usually 16 bytes)</t>
+<t>Post-Reset Value: Unspecified value that is the length required by the underlying
+network technology.</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">n</ttcol>
-
-<c>Format:</c><c>DATA</c>
-<c>Fields:</c><c><spanx style="verb">NET_MASTER_KEY</spanx></c>
-</texttable>
 <t>Master key material. The exact length of the value for this property is defined by
 the technology, but is generally 16-bytes (128-bit).
+</t>
+<t><spanx style="strong">This is not a password</spanx>, it is the raw cryptographic key used to authenticate
+this node to other nodes on the network and (possibly) to secure network traffic.
+It must be generated from either a cryptographically-secure random number generator
+or the output of a suitable password-based key derivation funciton (the specification of
+which would be network technology dependent).
+</t>
+<t>If the AP attempts to set a master key of a length that is not a supported by the
+underlying technology, the NCP MUST fail with <spanx style="verb">STATUS_INVALID_ARGUMENT</spanx>.
+</t>
+<t>Network technologies which support unsecured/unauthenticated operation
+MAY allow this property to be cleared to be empty.
+</t>
+<t>This property SHOULD only be changed by the AP when <spanx style="verb">PROP_NET_STACK_UP</spanx> is
+false. The behavior of changing this property when <spanx style="verb">PROP_NET_STACK_UP</spanx> is true is
+unspecified.
 </t>
 </section>
 
@@ -2776,17 +2817,20 @@ the technology, but is generally 16-bytes (128-bit).
 <list style="symbols">
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: No</t>
-<t>Required: REQUIRED for standard network layer</t>
+<t>Scope: NLI</t>
+<t>Required: REQUIRED for <spanx style="verb">CAP_NET_STANDARD</spanx></t>
+<t>Value Type: UINT32_LE</t>
 <t>Post-Reset Value: 0</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">4</ttcol>
-
-<c>Format:</c><c>UINT32</c>
-<c>Fields:</c><c><spanx style="verb">NET_KEY_SEQUENCE_COUNTER</spanx></c>
-</texttable>
+<t>This property is not used by all network technologies. In cases where it is not used,
+both <spanx style="verb">CMD_PROP_VALUE_GET</spanx> and <spanx style="verb">CMD_PROP_VALUE_SET</spanx> calls should return with an
+<spanx style="verb">CMD_PROP_VALUE_IS</spanx> for this property with a value of zero (0).
+</t>
+<t>This property SHOULD only be changed by the AP when <spanx style="verb">PROP_NET_STACK_UP</spanx> is
+false. The behavior of changing this property when <spanx style="verb">PROP_NET_STACK_UP</spanx> is true is
+unspecified.
+</t>
 </section>
 
 <section anchor="prop-net-partition-id" title="PROP 72: PROP_NET_PARTITION_ID">
@@ -2794,21 +2838,17 @@ the technology, but is generally 16-bytes (128-bit).
 <list style="symbols">
 <t>Type: Single-Value, Read-Only</t>
 <t>Asynchronous Updates: Yes</t>
-<t>Required: OPTIONAL</t>
-<t>Post-Reset Value: Unspecified</t>
+<t>Scope: NLI</t>
+<t>Required: REQUIRED for <spanx style="verb">CAP_NET_STANDARD</spanx></t>
+<t>Value Type: UINT32_LE</t>
+<t>Post-Reset Value: 0</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">4</ttcol>
-
-<c>Format:</c><c>UINT32</c>
-<c>Fields:</c><c><spanx style="verb">NET_PARTITION_ID</spanx></c>
-</texttable>
 <t>The partition ID of the partition that this node is a member of.
 </t>
-<t>For network technologies which don't have the concept of a partition id,
-this property is hard-coded to always be zero.
+<t>This property is not used by all network technologies. In cases where it is not used,
+ <spanx style="verb">CMD_PROP_VALUE_GET</spanx> calls should return with an <spanx style="verb">CMD_PROP_VALUE_IS</spanx> for this
+ property with a value of zero (0).
 </t>
 </section>
 
@@ -2817,42 +2857,44 @@ this property is hard-coded to always be zero.
 <list style="symbols">
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: Yes</t>
-<t>Required:
-<list style="symbols">
-<t>Read: OPTIONAL</t>
-<t>Write: REQUIRED</t>
-</list></t>
+<t>Scope: NLI</t>
+<t>Required: REQUIRED for <spanx style="verb">CAP_NET_STANDARD</spanx></t>
+<t>Value Type: BOOL</t>
 <t>Post-Reset Value: 0 (false)</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">1</ttcol>
-
-<c>Format:</c><c>BOOL</c>
-<c>Fields:</c><c><spanx style="verb">NET_REQUIRE_JOIN_EXISTING</spanx></c>
-</texttable>
-<t><cref source="RQ">TODO: Elaborate on PROP_NET_JOIN_EXISTING --</cref></t>
-</section>
-
-<section anchor="prop-net-key-swtich-guardtime" title="PROP 74: PROP_NET_KEY_SWITCH_GUARDTIME">
+<t>This property is used to force the NLI to fail hard (as opposed to creating a new partition)
+if there are no nodes in radio range on the same network. This is useful when
+joining a network for the first time to ensure that there was no errors or mistakes in
+the provision.
+</t>
+<t>To use this property, the AP follows these steps:
+</t>
 <t>
-<list style="symbols">
-<t>Type: Read-Write</t>
-<t>Packed-Encoding: <spanx style="verb">L</spanx></t>
+<list style="numbers">
+<t>Provisions the NLI for the network by setting all of the required properties (technology-specific).</t>
+<t>Sets <spanx style="verb">PROP_NET_REQUIRE_JOIN_EXISTING</spanx> to true.</t>
+<t>Sets <spanx style="verb">PROP_NET_STACK_UP</spanx> to true.</t>
 </list>
 </t>
-<t><cref source="RQ">TODO: This likely doesn't belong in core, at least not in the small-number section.  --</cref></t>
-</section>
-
-<section anchor="prop-net-pskc" title="PROP 75: PROP_NET_PSKC">
+<t>Upon successful association with another nearby node, the NLI sends the AP an
+asynchronous update setting <spanx style="verb">PROP_NET_REQUIRE_JOIN_EXISTING</spanx> to false.
+</t>
+<t>If there were no nearby nodes, the NLI sends the AP several asynchronous updates
+in the following order with a TID of zero:
+</t>
 <t>
 <list style="symbols">
-<t>Type: Read-Write</t>
-<t>Packed-Encoding: <spanx style="verb">D</spanx></t>
+<t><spanx style="verb">PROP_NET_STACK_UP</spanx> IS false</t>
+<t><spanx style="verb">PROP_NET_IF_UP</spanx> IS false</t>
+<t><spanx style="verb">PROP_NET_LAST_STATUS</spanx> IS ...
+<list style="symbols">
+<t><spanx style="verb">STATUS_JOIN_FAIL_SECURITY</spanx></t>
+<t><spanx style="verb">STATUS_JOIN_FAIL_LONELY</spanx></t>
+<t><spanx style="verb">STATUS_JOIN_FAIL_OTHER</spanx></t>
+</list></t>
 </list>
 </t>
-<t><cref source="RQ">TODO: This likely doesn't belong in core, at least not in the small-number section.  --</cref></t>
 </section>
 </section>
 

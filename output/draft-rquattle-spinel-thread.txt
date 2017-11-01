@@ -9,7 +9,7 @@ Expires: May 5, 2018                                    November 1, 2017
 
 
                          Spinel Thread Support
-               draft-rquattle-spinel-thread-4e3dbd4-dirty
+               draft-rquattle-spinel-thread-caf7411-dirty
 
 Abstract
 
@@ -65,47 +65,47 @@ Table of Contents
    2.  Requirements  . . . . . . . . . . . . . . . . . . . . . . . .   3
      2.1.  Capabilities  . . . . . . . . . . . . . . . . . . . . . .   3
      2.2.  Properties  . . . . . . . . . . . . . . . . . . . . . . .   4
-       2.2.1.  PROP 80: PROP_THREAD_LEADER_ADDR  . . . . . . . . . .   4
-       2.2.2.  PROP 81: PROP_THREAD_PARENT . . . . . . . . . . . . .   4
-       2.2.3.  PROP 82: PROP_THREAD_CHILD_TABLE  . . . . . . . . . .   4
-       2.2.4.  PROP 83: PROP_THREAD_LEADER_RID . . . . . . . . . . .   4
-       2.2.5.  PROP 84: PROP_THREAD_LEADER_WEIGHT  . . . . . . . . .   4
-       2.2.6.  PROP 85: PROP_THREAD_LOCAL_LEADER_WEIGHT  . . . . . .   5
-       2.2.7.  PROP 86: PROP_THREAD_NETWORK_DATA . . . . . . . . . .   5
-       2.2.8.  PROP 87: PROP_THREAD_NETWORK_DATA_VERSION . . . . . .   5
-       2.2.9.  PROP 88: PROP_THREAD_STABLE_NETWORK_DATA  . . . . . .   5
-       2.2.10. PROP 89: PROP_THREAD_STABLE_NETWORK_DATA_VERSION  . .   5
-       2.2.11. PROP 90: PROP_THREAD_ON_MESH_NETS . . . . . . . . . .   5
-       2.2.12. PROP 91: PROP_THREAD_OFF_MESH_ROUTES  . . . . . . . .   6
-       2.2.13. PROP 92: PROP_THREAD_ASSISTING_PORTS  . . . . . . . .   6
-       2.2.14. PROP 93: PROP_THREAD_ALLOW_LOCAL_NET_DATA_CHANGE  . .   6
-       2.2.15. PROP 94: PROP_THREAD_MODE . . . . . . . . . . . . . .   6
-       2.2.16. PROP 5376: PROP_THREAD_CHILD_TIMEOUT  . . . . . . . .   7
-       2.2.17. PROP 5377: PROP_THREAD_RLOC16 . . . . . . . . . . . .   7
-       2.2.18. PROP 5378: PROP_THREAD_ROUTER_UPGRADE_THRESHOLD . . .   7
-       2.2.19. PROP 5379: PROP_THREAD_CONTEXT_REUSE_DELAY  . . . . .   7
-       2.2.20. PROP 5380: PROP_THREAD_NETWORK_ID_TIMEOUT . . . . . .   7
-       2.2.21. PROP 5381: PROP_THREAD_ACTIVE_ROUTER_IDS  . . . . . .   7
-       2.2.22. PROP 5382: PROP_THREAD_RLOC16_DEBUG_PASSTHRU  . . . .   7
-       2.2.23. PROP 5383: PROP_THREAD_ROUTER_ROLE_ENABLED  . . . . .   8
-       2.2.24. PROP 5384: PROP_THREAD_ROUTER_DOWNGRADE_THRESHOLD . .   8
-       2.2.25. PROP 5385: PROP_THREAD_ROUTER_SELECTION_JITTER  . . .   8
-       2.2.26. PROP 5386: PROP_THREAD_PREFERRED_ROUTER_ID  . . . . .   8
-       2.2.27. PROP 5387: PROP_THREAD_NEIGHBOR_TABLE . . . . . . . .   8
-       2.2.28. PROP 5388: PROP_THREAD_CHILD_COUNT_MAX  . . . . . . .   9
-       2.2.29. PROP 5389: PROP_THREAD_LEADER_NETWORK_DATA  . . . . .   9
-       2.2.30. PROP 5390: PROP_THREAD_STABLE_LEADER_NETWORK_DATA . .   9
-       2.2.31. PROP 5391: PROP_THREAD_JOINERS  . . . . . . . . . . .   9
-       2.2.32. PROP 5392: PROP_THREAD_COMMISSIONER_ENABLED . . . . .   9
-       2.2.33. PROP 5393: PROP_THREAD_TMF_PROXY_ENABLED  . . . . . .  10
-       2.2.34. PROP 5394: PROP_THREAD_TMF_PROXY_STREAM . . . . . . .  10
-       2.2.35. PROP 5395: PROP_THREAD_DISOVERY_SCAN_JOINER_FLAG  . .  10
-       2.2.36. PROP 5396:
-               PROP_THREAD_DISCOVERY_SCAN_ENABLE_FILTERING . . . . .  10
-       2.2.37. PROP 5397: PROP_THREAD_DISCOVERY_SCAN_PANID . . . . .  11
-       2.2.38. PROP 5398: PROP_THREAD_STEERING_DATA  . . . . . . . .  11
-   3.  Security Considerations . . . . . . . . . . . . . . . . . . .  11
-   4.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  11
+       2.2.1.  PROP 74: PROP_NET_KEY_SWITCH_GUARDTIME  . . . . . . .   4
+       2.2.2.  PROP 75: PROP_NET_PSKC  . . . . . . . . . . . . . . .   4
+       2.2.3.  PROP 80: PROP_THREAD_LEADER_ADDR  . . . . . . . . . .   4
+       2.2.4.  PROP 81: PROP_THREAD_PARENT . . . . . . . . . . . . .   4
+       2.2.5.  PROP 82: PROP_THREAD_CHILD_TABLE  . . . . . . . . . .   4
+       2.2.6.  PROP 83: PROP_THREAD_LEADER_RID . . . . . . . . . . .   4
+       2.2.7.  PROP 84: PROP_THREAD_LEADER_WEIGHT  . . . . . . . . .   5
+       2.2.8.  PROP 85: PROP_THREAD_LOCAL_LEADER_WEIGHT  . . . . . .   5
+       2.2.9.  PROP 86: PROP_THREAD_NETWORK_DATA . . . . . . . . . .   5
+       2.2.10. PROP 87: PROP_THREAD_NETWORK_DATA_VERSION . . . . . .   5
+       2.2.11. PROP 88: PROP_THREAD_STABLE_NETWORK_DATA  . . . . . .   5
+       2.2.12. PROP 89: PROP_THREAD_STABLE_NETWORK_DATA_VERSION  . .   5
+       2.2.13. PROP 90: PROP_THREAD_ON_MESH_NETS . . . . . . . . . .   5
+       2.2.14. PROP 91: PROP_THREAD_OFF_MESH_ROUTES  . . . . . . . .   6
+       2.2.15. PROP 92: PROP_THREAD_ASSISTING_PORTS  . . . . . . . .   6
+       2.2.16. PROP 93: PROP_THREAD_ALLOW_LOCAL_NET_DATA_CHANGE  . .   6
+       2.2.17. PROP 94: PROP_THREAD_MODE . . . . . . . . . . . . . .   6
+       2.2.18. PROP 5376: PROP_THREAD_CHILD_TIMEOUT  . . . . . . . .   7
+       2.2.19. PROP 5377: PROP_THREAD_RLOC16 . . . . . . . . . . . .   7
+       2.2.20. PROP 5378: PROP_THREAD_ROUTER_UPGRADE_THRESHOLD . . .   7
+       2.2.21. PROP 5379: PROP_THREAD_CONTEXT_REUSE_DELAY  . . . . .   7
+       2.2.22. PROP 5380: PROP_THREAD_NETWORK_ID_TIMEOUT . . . . . .   7
+       2.2.23. PROP 5381: PROP_THREAD_ACTIVE_ROUTER_IDS  . . . . . .   7
+       2.2.24. PROP 5382: PROP_THREAD_RLOC16_DEBUG_PASSTHRU  . . . .   7
+       2.2.25. PROP 5383: PROP_THREAD_ROUTER_ROLE_ENABLED  . . . . .   8
+       2.2.26. PROP 5384: PROP_THREAD_ROUTER_DOWNGRADE_THRESHOLD . .   8
+       2.2.27. PROP 5385: PROP_THREAD_ROUTER_SELECTION_JITTER  . . .   8
+       2.2.28. PROP 5386: PROP_THREAD_PREFERRED_ROUTER_ID  . . . . .   8
+       2.2.29. PROP 5387: PROP_THREAD_NEIGHBOR_TABLE . . . . . . . .   8
+       2.2.30. PROP 5388: PROP_THREAD_CHILD_COUNT_MAX  . . . . . . .   9
+       2.2.31. PROP 5389: PROP_THREAD_LEADER_NETWORK_DATA  . . . . .   9
+       2.2.32. PROP 5390: PROP_THREAD_STABLE_LEADER_NETWORK_DATA . .   9
+       2.2.33. PROP 5391: PROP_THREAD_JOINERS  . . . . . . . . . . .   9
+       2.2.34. PROP 5392: PROP_THREAD_COMMISSIONER_ENABLED . . . . .  10
+       2.2.35. PROP 5393: PROP_THREAD_TMF_PROXY_ENABLED  . . . . . .  10
+       2.2.36. PROP 5394: PROP_THREAD_TMF_PROXY_STREAM . . . . . . .  10
+       2.2.37. PROP 5395: PROP_THREAD_DISOVERY_SCAN_JOINER_FLAG  . .  10
+       2.2.38. PROP 5396:
+               PROP_THREAD_DISCOVERY_SCAN_ENABLE_FILTERING . . . . .  11
+       2.2.39. PROP 5397: PROP_THREAD_DISCOVERY_SCAN_PANID . . . . .  11
+       2.2.40. PROP 5398: PROP_THREAD_STEERING_DATA  . . . . . . . .  11
 
 
 
@@ -114,6 +114,8 @@ Quattlebaum & woodyatt     Expires May 5, 2018                  [Page 2]
 Internet-Draft                Spinel Thread                November 2017
 
 
+   3.  Security Considerations . . . . . . . . . . . . . . . . . . .  11
+   4.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  11
    5.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  11
      5.1.  Normative References  . . . . . . . . . . . . . . . . . .  11
      5.2.  Informative References  . . . . . . . . . . . . . . . . .  12
@@ -163,8 +165,6 @@ Internet-Draft                Spinel Thread                November 2017
 
 
 
-
-
 Quattlebaum & woodyatt     Expires May 5, 2018                  [Page 3]
 
 Internet-Draft                Spinel Thread                November 2017
@@ -176,7 +176,17 @@ Internet-Draft                Spinel Thread                November 2017
    property section (see (draft-rquattle-spinel-core#property-
    sections)).
 
-2.2.1.  PROP 80: PROP_THREAD_LEADER_ADDR
+2.2.1.  PROP 74: PROP_NET_KEY_SWITCH_GUARDTIME
+
+   o  Type: Read-Write
+   o  Packed-Encoding: "L"
+
+2.2.2.  PROP 75: PROP_NET_PSKC
+
+   o  Type: Read-Write
+   o  Packed-Encoding: "D"
+
+2.2.3.  PROP 80: PROP_THREAD_LEADER_ADDR
 
    o  Type: Read-Only
    o  Packed-Encoding: "6"
@@ -184,7 +194,7 @@ Internet-Draft                Spinel Thread                November 2017
    The IPv6 address of the leader.  (Note: May change to long and short
    address of leader)
 
-2.2.2.  PROP 81: PROP_THREAD_PARENT
+2.2.4.  PROP 81: PROP_THREAD_PARENT
 
    o  Type: Read-Only
    o  Packed-Encoding: "ES"
@@ -192,7 +202,7 @@ Internet-Draft                Spinel Thread                November 2017
 
    The long address and short address of the parent of this node.
 
-2.2.3.  PROP 82: PROP_THREAD_CHILD_TABLE
+2.2.5.  PROP 82: PROP_THREAD_CHILD_TABLE
 
    o  Type: Read-Only
    o  Packed-Encoding: "A(t(ES))"
@@ -200,22 +210,12 @@ Internet-Draft                Spinel Thread                November 2017
    Table containing the long and short addresses of all the children of
    this node.
 
-2.2.4.  PROP 83: PROP_THREAD_LEADER_RID
+2.2.6.  PROP 83: PROP_THREAD_LEADER_RID
 
    o  Type: Read-Only
    o  Packed-Encoding: "C"
 
    The router-id of the current leader.
-
-2.2.5.  PROP 84: PROP_THREAD_LEADER_WEIGHT
-
-   o  Type: Read-Only
-   o  Packed-Encoding: "C"
-
-   The leader weight of the current leader.
-
-
-
 
 
 
@@ -226,38 +226,45 @@ Quattlebaum & woodyatt     Expires May 5, 2018                  [Page 4]
 Internet-Draft                Spinel Thread                November 2017
 
 
-2.2.6.  PROP 85: PROP_THREAD_LOCAL_LEADER_WEIGHT
+2.2.7.  PROP 84: PROP_THREAD_LEADER_WEIGHT
+
+   o  Type: Read-Only
+   o  Packed-Encoding: "C"
+
+   The leader weight of the current leader.
+
+2.2.8.  PROP 85: PROP_THREAD_LOCAL_LEADER_WEIGHT
 
    o  Type: Read-Write
    o  Packed-Encoding: "C"
 
    The leader weight for this node.
 
-2.2.7.  PROP 86: PROP_THREAD_NETWORK_DATA
+2.2.9.  PROP 86: PROP_THREAD_NETWORK_DATA
 
    o  Type: Read-Only
    o  Packed-Encoding: "D"
 
    The local network data.
 
-2.2.8.  PROP 87: PROP_THREAD_NETWORK_DATA_VERSION
+2.2.10.  PROP 87: PROP_THREAD_NETWORK_DATA_VERSION
 
    o  Type: Read-Only
    o  Packed-Encoding: "S"
 
-2.2.9.  PROP 88: PROP_THREAD_STABLE_NETWORK_DATA
+2.2.11.  PROP 88: PROP_THREAD_STABLE_NETWORK_DATA
 
    o  Type: Read-Only
    o  Packed-Encoding: "D"
 
    The local stable network data.
 
-2.2.10.  PROP 89: PROP_THREAD_STABLE_NETWORK_DATA_VERSION
+2.2.12.  PROP 89: PROP_THREAD_STABLE_NETWORK_DATA_VERSION
 
    o  Type: Read-Only
    o  Packed-Encoding: "S"
 
-2.2.11.  PROP 90: PROP_THREAD_ON_MESH_NETS
+2.2.13.  PROP 90: PROP_THREAD_ON_MESH_NETS
 
    o  Type: Read-Write
    o  Packed-Encoding: "A(t(6CbCbS))"
@@ -267,13 +274,6 @@ Internet-Draft                Spinel Thread                November 2017
    o  "6": IPv6 Prefix
    o  "C": Prefix length in bits
    o  "b": Stable flag
-   o  "C": TLV flags
-   o  "b": "Is defined locally" flag.  Set if this network was locally
-      defined.  Assumed to be true for set, insert and replace.  Clear
-      if the on mesh network was defined by another node.
-   o  "S": The RLOC16 of the device that registered this on-mesh prefix
-      entry.  This value is not used and ignored when adding an on-mesh
-      prefix.
 
 
 
@@ -282,7 +282,15 @@ Quattlebaum & woodyatt     Expires May 5, 2018                  [Page 5]
 Internet-Draft                Spinel Thread                November 2017
 
 
-2.2.12.  PROP 91: PROP_THREAD_OFF_MESH_ROUTES
+   o  "C": TLV flags
+   o  "b": "Is defined locally" flag.  Set if this network was locally
+      defined.  Assumed to be true for set, insert and replace.  Clear
+      if the on mesh network was defined by another node.
+   o  "S": The RLOC16 of the device that registered this on-mesh prefix
+      entry.  This value is not used and ignored when adding an on-mesh
+      prefix.
+
+2.2.14.  PROP 91: PROP_THREAD_OFF_MESH_ROUTES
 
    o  Type: Read-Write
    o  Packed-Encoding: "A(t(6CbCbbS))"
@@ -304,12 +312,12 @@ Internet-Draft                Spinel Thread                November 2017
    o  "S": The RLOC16 of the device that registered this route entry.
       This value is not used and ignored when adding a route.
 
-2.2.13.  PROP 92: PROP_THREAD_ASSISTING_PORTS
+2.2.15.  PROP 92: PROP_THREAD_ASSISTING_PORTS
 
    o  Type: Read-Write
    o  Packed-Encoding: "A(S)"
 
-2.2.14.  PROP 93: PROP_THREAD_ALLOW_LOCAL_NET_DATA_CHANGE
+2.2.16.  PROP 93: PROP_THREAD_ALLOW_LOCAL_NET_DATA_CHANGE
 
    o  Type: Read-Write
    o  Packed-Encoding: "b"
@@ -317,18 +325,10 @@ Internet-Draft                Spinel Thread                November 2017
    Set to true before changing local net data.  Set to false when
    finished.  This allows changes to be aggregated into single events.
 
-2.2.15.  PROP 94: PROP_THREAD_MODE
+2.2.17.  PROP 94: PROP_THREAD_MODE
 
    o  Type: Read-Write
    o  Packed-Encoding: "C"
-
-   This property contains the value of the mode TLV for this node.  The
-   meaning of the bits in this bitfield are defined by section 4.5.2 of
-   the Thread(R) specification.
-
-
-
-
 
 
 
@@ -338,29 +338,33 @@ Quattlebaum & woodyatt     Expires May 5, 2018                  [Page 6]
 Internet-Draft                Spinel Thread                November 2017
 
 
-2.2.16.  PROP 5376: PROP_THREAD_CHILD_TIMEOUT
+   This property contains the value of the mode TLV for this node.  The
+   meaning of the bits in this bitfield are defined by section 4.5.2 of
+   the Thread(R) specification.
+
+2.2.18.  PROP 5376: PROP_THREAD_CHILD_TIMEOUT
 
    o  Type: Read-Write
    o  Packed-Encoding: "L"
 
    Used when operating in the Child role.
 
-2.2.17.  PROP 5377: PROP_THREAD_RLOC16
+2.2.19.  PROP 5377: PROP_THREAD_RLOC16
 
    o  Type: Read-Write
    o  Packed-Encoding: "S"
 
-2.2.18.  PROP 5378: PROP_THREAD_ROUTER_UPGRADE_THRESHOLD
+2.2.20.  PROP 5378: PROP_THREAD_ROUTER_UPGRADE_THRESHOLD
 
    o  Type: Read-Write
    o  Packed-Encoding: "C"
 
-2.2.19.  PROP 5379: PROP_THREAD_CONTEXT_REUSE_DELAY
+2.2.21.  PROP 5379: PROP_THREAD_CONTEXT_REUSE_DELAY
 
    o  Type: Read-Write
    o  Packed-Encoding: "L"
 
-2.2.20.  PROP 5380: PROP_THREAD_NETWORK_ID_TIMEOUT
+2.2.22.  PROP 5380: PROP_THREAD_NETWORK_ID_TIMEOUT
 
    o  Type: Read-Write
    o  Packed-Encoding: "C"
@@ -368,7 +372,7 @@ Internet-Draft                Spinel Thread                November 2017
    Allows you to get or set the Thread(R) "NETWORK_ID_TIMEOUT" constant,
    as defined by the Thread(R) specification.
 
-2.2.21.  PROP 5381: PROP_THREAD_ACTIVE_ROUTER_IDS
+2.2.23.  PROP 5381: PROP_THREAD_ACTIVE_ROUTER_IDS
 
    o  Type: Read-Write/Write-Only
    o  Packed-Encoding: "A(C)" (List of active thread router ids)
@@ -376,15 +380,11 @@ Internet-Draft                Spinel Thread                November 2017
    Note that some implementations may not support "CMD_GET_VALUE" router
    ids, but may support "CMD_REMOVE_VALUE" when the node is a leader.
 
-2.2.22.  PROP 5382: PROP_THREAD_RLOC16_DEBUG_PASSTHRU
+2.2.24.  PROP 5382: PROP_THREAD_RLOC16_DEBUG_PASSTHRU
 
    o  Type: Read-Write
    o  Packed-Encoding: "b"
 
-   Allow the HOST to directly observe all IPv6 packets received by the
-   NCP, including ones sent to the RLOC16 address.
-
-   Default value is "false".
 
 
 
@@ -394,7 +394,12 @@ Quattlebaum & woodyatt     Expires May 5, 2018                  [Page 7]
 Internet-Draft                Spinel Thread                November 2017
 
 
-2.2.23.  PROP 5383: PROP_THREAD_ROUTER_ROLE_ENABLED
+   Allow the HOST to directly observe all IPv6 packets received by the
+   NCP, including ones sent to the RLOC16 address.
+
+   Default value is "false".
+
+2.2.25.  PROP 5383: PROP_THREAD_ROUTER_ROLE_ENABLED
 
    o  Type: Read-Write
    o  Packed-Encoding: "b"
@@ -403,12 +408,12 @@ Internet-Draft                Spinel Thread                November 2017
    If current role is a router, setting this property to "false" starts
    a re-attach process as an end-device.
 
-2.2.24.  PROP 5384: PROP_THREAD_ROUTER_DOWNGRADE_THRESHOLD
+2.2.26.  PROP 5384: PROP_THREAD_ROUTER_DOWNGRADE_THRESHOLD
 
    o  Type: Read-Write
    o  Packed-Encoding: "C"
 
-2.2.25.  PROP 5385: PROP_THREAD_ROUTER_SELECTION_JITTER
+2.2.27.  PROP 5385: PROP_THREAD_ROUTER_SELECTION_JITTER
 
    o  Type: Read-Write
    o  Packed-Encoding: "C"
@@ -416,7 +421,7 @@ Internet-Draft                Spinel Thread                November 2017
    Specifies the self imposed random delay in seconds a REED waits
    before registering to become an Active Router.
 
-2.2.26.  PROP 5386: PROP_THREAD_PREFERRED_ROUTER_ID
+2.2.28.  PROP 5386: PROP_THREAD_PREFERRED_ROUTER_ID
 
    o  Type: Write-Only
    o  Packed-Encoding: "C"
@@ -427,7 +432,7 @@ Internet-Draft                Spinel Thread                November 2017
    picked.  This property can be set only when the device role is either
    detached or disabled.
 
-2.2.27.  PROP 5387: PROP_THREAD_NEIGHBOR_TABLE
+2.2.29.  PROP 5387: PROP_THREAD_NEIGHBOR_TABLE
 
    o  Type: Read-Only
    o  Packed-Encoding: "A(t(ESLCcCbLL))"
@@ -437,11 +442,6 @@ Internet-Draft                Spinel Thread                November 2017
    o  "E": Extended/long address
    o  "S": RLOC16
    o  "L": Age
-   o  "C": Link Quality In
-   o  "c": Average RSS
-   o  "C": Mode (bit-flags)
-   o  "b": "true" if neighbor is a child, "false" otherwise.
-   o  "L": Link Frame Counter
 
 
 
@@ -450,9 +450,14 @@ Quattlebaum & woodyatt     Expires May 5, 2018                  [Page 8]
 Internet-Draft                Spinel Thread                November 2017
 
 
+   o  "C": Link Quality In
+   o  "c": Average RSS
+   o  "C": Mode (bit-flags)
+   o  "b": "true" if neighbor is a child, "false" otherwise.
+   o  "L": Link Frame Counter
    o  "L": MLE Frame Counter
 
-2.2.28.  PROP 5388: PROP_THREAD_CHILD_COUNT_MAX
+2.2.30.  PROP 5388: PROP_THREAD_CHILD_COUNT_MAX
 
    o  Type: Read-Write
    o  Packed-Encoding: "C"
@@ -461,21 +466,21 @@ Internet-Draft                Spinel Thread                November 2017
    parameter can only be set when Thread(R) protocol operation has been
    stopped.
 
-2.2.29.  PROP 5389: PROP_THREAD_LEADER_NETWORK_DATA
+2.2.31.  PROP 5389: PROP_THREAD_LEADER_NETWORK_DATA
 
    o  Type: Read-Only
    o  Packed-Encoding: "D"
 
    The leader network data.
 
-2.2.30.  PROP 5390: PROP_THREAD_STABLE_LEADER_NETWORK_DATA
+2.2.32.  PROP 5390: PROP_THREAD_STABLE_LEADER_NETWORK_DATA
 
    o  Type: Read-Only
    o  Packed-Encoding: "D"
 
    The stable leader network data.
 
-2.2.31.  PROP 5391: PROP_THREAD_JOINERS
+2.2.33.  PROP 5391: PROP_THREAD_JOINERS
 
    o  Type: Insert/Remove Only (optionally Read-Write)
    o  Packed-Encoding: "A(t(ULE))"
@@ -491,11 +496,6 @@ Internet-Draft                Spinel Thread                November 2017
    process.  When the Extended address is ommited all Devices which
    provided a valid PSKd are allowed to join the Thread(R) Network.
 
-2.2.32.  PROP 5392: PROP_THREAD_COMMISSIONER_ENABLED
-
-   o  Type: Write only (optionally Read-Write)
-   o  Packed-Encoding: "b"
-   o  Required capability: "CAP_THREAD_COMMISSIONER"
 
 
 
@@ -506,10 +506,16 @@ Quattlebaum & woodyatt     Expires May 5, 2018                  [Page 9]
 Internet-Draft                Spinel Thread                November 2017
 
 
+2.2.34.  PROP 5392: PROP_THREAD_COMMISSIONER_ENABLED
+
+   o  Type: Write only (optionally Read-Write)
+   o  Packed-Encoding: "b"
+   o  Required capability: "CAP_THREAD_COMMISSIONER"
+
    Set to true to enable the native commissioner.  It is mandatory
    before adding the joiner to the network.
 
-2.2.33.  PROP 5393: PROP_THREAD_TMF_PROXY_ENABLED
+2.2.35.  PROP 5393: PROP_THREAD_TMF_PROXY_ENABLED
 
    o  Type: Read-Write
    o  Packed-Encoding: "b"
@@ -517,7 +523,7 @@ Internet-Draft                Spinel Thread                November 2017
 
    Set to true to enable the TMF proxy.
 
-2.2.34.  PROP 5394: PROP_THREAD_TMF_PROXY_STREAM
+2.2.36.  PROP 5394: PROP_THREAD_TMF_PROXY_STREAM
 
    o  Type: Read-Write-Stream
    o  Packed-Encoding: "dSS"
@@ -539,7 +545,7 @@ Internet-Draft                Spinel Thread                November 2017
    the NCP's RLOC address and support Thread-specific border router
    functions.
 
-2.2.35.  PROP 5395: PROP_THREAD_DISOVERY_SCAN_JOINER_FLAG
+2.2.37.  PROP 5395: PROP_THREAD_DISOVERY_SCAN_JOINER_FLAG
 
    o  Type: Read-Write
    o  Packed-Encoding:: "b"
@@ -547,12 +553,6 @@ Internet-Draft                Spinel Thread                November 2017
    This property specifies the value used in Thread(R) MLE Discovery
    Request TLV during discovery scan operation.  Default value is
    "false".
-
-2.2.36.  PROP 5396: PROP_THREAD_DISCOVERY_SCAN_ENABLE_FILTERING
-
-   o  Type: Read-Write
-   o  Packed-Encoding:: "b"
-
 
 
 
@@ -562,10 +562,15 @@ Quattlebaum & woodyatt     Expires May 5, 2018                 [Page 10]
 Internet-Draft                Spinel Thread                November 2017
 
 
+2.2.38.  PROP 5396: PROP_THREAD_DISCOVERY_SCAN_ENABLE_FILTERING
+
+   o  Type: Read-Write
+   o  Packed-Encoding:: "b"
+
    This property is used to enable/disable EUI64 filtering during
    discovery scan operation.  Default value is "false".
 
-2.2.37.  PROP 5397: PROP_THREAD_DISCOVERY_SCAN_PANID
+2.2.39.  PROP 5397: PROP_THREAD_DISCOVERY_SCAN_PANID
 
    o  Type: Read-write
    o  Packed-Encoding:: "S"
@@ -574,7 +579,7 @@ Internet-Draft                Spinel Thread                November 2017
    scan operation.  Default value is "0xffff" (broadcast PANID) which
    disables PANID filtering.
 
-2.2.38.  PROP 5398: PROP_THREAD_STEERING_DATA
+2.2.40.  PROP 5398: PROP_THREAD_STEERING_DATA
 
    o  Type: Write-Only
    o  Packed-Encoding: "E"
@@ -602,11 +607,6 @@ Internet-Draft                Spinel Thread                November 2017
 
 5.1.  Normative References
 
-   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
-              Requirement Levels", BCP 14, RFC 2119,
-              DOI 10.17487/RFC2119, March 1997, <https://www.rfc-
-              editor.org/info/rfc2119>.
-
 
 
 
@@ -617,6 +617,11 @@ Quattlebaum & woodyatt     Expires May 5, 2018                 [Page 11]
 
 Internet-Draft                Spinel Thread                November 2017
 
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997, <https://www.rfc-
+              editor.org/info/rfc2119>.
 
 5.2.  Informative References
 
@@ -656,13 +661,8 @@ Appendix B.  Acknowledgments
 
 Authors' Addresses
 
-   Robert S. Quattlebaum
-   Nest Labs, Inc.
-   3400 Hillview Ave.
-   Palo Alto, California  94304
-   USA
 
-   Email: rquattle@nestlabs.com
+
 
 
 
@@ -674,6 +674,15 @@ Quattlebaum & woodyatt     Expires May 5, 2018                 [Page 12]
 Internet-Draft                Spinel Thread                November 2017
 
 
+   Robert S. Quattlebaum
+   Nest Labs, Inc.
+   3400 Hillview Ave.
+   Palo Alto, California  94304
+   USA
+
+   Email: rquattle@nestlabs.com
+
+
    james woodyatt (editor)
    Nest Labs, Inc.
    3400 Hillview Ave.
@@ -681,15 +690,6 @@ Internet-Draft                Spinel Thread                November 2017
    USA
 
    Email: jhw@nestlabs.com
-
-
-
-
-
-
-
-
-
 
 
 

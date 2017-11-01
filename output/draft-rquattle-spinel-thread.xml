@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rfc SYSTEM 'rfc2629.dtd' []>
-<rfc ipr="trust200902" category="std" docName="draft-rquattle-spinel-thread-4e3dbd4-dirty">
+<rfc ipr="trust200902" category="std" docName="draft-rquattle-spinel-thread-caf7411-dirty">
 <?rfc toc="yes"?>
 <?rfc symrefs="yes"?>
 <?rfc sortrefs="yes"?>
@@ -103,6 +103,24 @@ save feature (See draft-rquattle-spinel-network-save).
 <t>Properties for Thread(R) are allocated out of Spinel's <spanx style="verb">Tech</spanx> property
 section (see (draft-rquattle-spinel-core#property-sections)).
 </t>
+
+<section anchor="prop-net-key-swtich-guardtime" title="PROP 74: PROP_NET_KEY_SWITCH_GUARDTIME">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding: <spanx style="verb">L</spanx></t>
+</list>
+</t>
+</section>
+
+<section anchor="prop-net-pskc" title="PROP 75: PROP_NET_PSKC">
+<t>
+<list style="symbols">
+<t>Type: Read-Write</t>
+<t>Packed-Encoding: <spanx style="verb">D</spanx></t>
+</list>
+</t>
+</section>
 
 <section anchor="prop-80-propthreadleaderaddr" title="PROP 80: PROP_THREAD_LEADER_ADDR">
 <t>
