@@ -389,3 +389,26 @@ given in the associated initiating command. In cases where getting or
 setting a specific property resulted in an error, the associated slot
 in this command will describe `PROP_LAST_STATUS`.
 
+## CMD 24: (AP -> NCP) CMD_RESET_NLI {#cmd-reset-nli}
+
+     0                   1
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |1 0|NLI|  TID  |     CMD 24    |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+Figure: Structure of `CMD_RESET_NLI`
+
+Reset a specific NLI. Commands the NLI to return all properties and state to their defined
+"at reset" values. The intent of this command is to be analogous to `CMD_RESET`,
+except that it applies only to a single NLI.
+
+If the value of `PROP_INTERFACE_COUNT` is equal to one (1), then the NCP **MAY**
+treat this command as a synonym for `CMD_RESET` ((#cmd-reset)). Thus, the AP
+**MUST NOT** treat an NCP software reset as an unexpected reset unless
+`PROP_INTERFACE_COUNT` was previously detremined to be greater than one (1).
+
+Otherwise, upon success this command emits `STATUS_OK` from `PROP_LAST_STATUS`.
+The resetting of all of the NLI's state **MUST NOT** cause any asynchronous property
+updates to be emitted, with the exception of `PROP_STREAM_DEBUG`
+((#prop-stream-debug)).
+
