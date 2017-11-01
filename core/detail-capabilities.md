@@ -16,21 +16,20 @@ Capability Range        | Description
 
 The initial content of the registry is shown in the table below.
 
-Code    | Name                      | Description
+Code    | Name                      | Reference
 :-------|:--------------------------|:----------------------------------
-   1    | `CAP_LOCK`                | See (#prop-lock)
-   2    | `CAP_NET_SAVE`            | draft-rquattle-spinel-network-save
-   3    | `CAP_HBO`                 | draft-rquattle-spinel-hbo
-   4    | `CAP_POWER_SAVE`          | EDITOR: to be provided.
-   5    | `CAP_COUNTERS`            | EDITOR: to be provided.
-   7    | `CAP_PEEK_POKE`           | Peek/poke debugging commands.
-   8    | `CAP_WRITABLE_RAW_STREAM` | `PROP_STREAM_RAW` is writable.
-   9    | `CAP_GPIO`                | draft-rquattle-spinel-gpio
-  10    | `CAP_TRNG`                | draft-rquattle-spinel-trng
-  11    | `CAP_CMD_MULTI`           | See (#cmd-prop-value-multi-get), (#cmd-prop-value-multi-set), (#cmd-prop-values-are)
-  12    | `CAP_UNSOL_UPDATE_FILTER` | See (#prop-unsol-update-filter), (#prop-unsol-update-list)
-  48    | `CAP_ROLE_ROUTER`         | EDITOR: to be provided.
-  49    | `CAP_ROLE_SLEEPY`         | EDITOR: to be provided.
- 512    | `CAP_MAC_WHITELIST`       | EDITOR: to be provided.
+   1    | `CAP_LOCK`                | (#prop-lock)
+   2    | Reserved                  |
+   3    | Reserved                  |
+   4    | `CAP_POWER_SAVE`          | (#prop-power-state), (#prop-host-power-state)
+   5    | Reserved                  |
+   7    | `CAP_PEEK_POKE`           | (#cmd-peek)-(#cmd-poke)
+   8    | `CAP_WRITABLE_RAW_STREAM` | (#prop-stream-raw)
+   9    | Reserved                  |
+  10    | Reserved                  |
+  11    | `CAP_CMD_MULTI`           | (#cmd-prop-value-multi-get)
+  12    | `CAP_UNSOL_UPDATE_FILTER` | (#prop-unsol-update-filter)
+ 512    | `CAP_MAC_WHITELIST`       | (#prop-mac-whitelist)
  513    | `CAP_MAC_RAW`             | EDITOR: to be provided.
- 514    | `CAP_OOB_STEERING_DATA`   | EDITOR: to be provided.
+ TBD    | `CAP_MAC_802_15_4`        | TBD
+ TBD    | `CAP_NET_STANDARD`        | TBD

@@ -1,18 +1,19 @@
 Number, Name, Reference, Note
-1, CAP_LOCK, draft-rquattle-spinel-core
-2, CAP_NET_SAVE, draft-rquattle-spinel-network-save
-3, CAP_HBO, draft-rquattle-spinel-hbo
-4, CAP_POWER_SAVE, draft-rquattle-spinel-core
-5, CAP_COUNTERS, ?
-7, CAP_PEEK_POKE, draft-rquattle-spinel-core
-8, CAP_WRITABLE_RAW_STREAM, draft-rquattle-spinel-core
-9, CAP_GPIO, draft-rquattle-spinel-gpio
-10, CAP_TRNG, draft-rquattle-spinel-trng
-11, CAP_CMD_MULTI, draft-rquattle-spinel-core
-12, CAP_UNSOL_UPDATE_FILTER, draft-rquattle-spinel-core
+1, CAP_LOCK, draft-rquattle-spinel-core,
+2, CAP_NET_SAVE, draft-rquattle-spinel-network-save,
+3, CAP_HBO, draft-rquattle-spinel-hbo,
+4, CAP_POWER_SAVE, draft-rquattle-spinel-core,
+5, CAP_COUNTERS, ?,
+7, CAP_PEEK_POKE, draft-rquattle-spinel-core,
+8, CAP_WRITABLE_RAW_STREAM, draft-rquattle-spinel-core,
+9, CAP_GPIO, draft-rquattle-spinel-gpio,
+10, CAP_TRNG, draft-rquattle-spinel-trng,
+11, CAP_CMD_MULTI, draft-rquattle-spinel-core,
+12, CAP_UNSOL_UPDATE_FILTER, draft-rquattle-spinel-core,
 16, CAP_802_15_4_2003, ?, From spinel.h
 17, CAP_802_15_4_2006, ?, From spinel.h
 18, CAP_802_15_4_2011, ?, From spinel.h
+TBD, CAP_802_15_4, draft-rquattle-spinel-core,
 21, CAP_802_15_4_PIB, ?, From spinel.h
 24, CAP_802_15_4_2450MHZ_OQPSK, ?, From spinel.h
 25, CAP_802_15_4_915MHZ_OQPSK, ?, From spinel.h
@@ -21,9 +22,9 @@ Number, Name, Reference, Note
 28, CAP_802_15_4_868MHZ_BPSK, ?, From spinel.h
 29, CAP_802_15_4_915MHZ_ASK, ?, From spinel.h
 30, CAP_802_15_4_868MHZ_ASK, ?, From spinel.h
-48, CAP_ROLE_ROUTER, draft-rquattle-spinel-core
-49, CAP_ROLE_SLEEPY, draft-rquattle-spinel-core
-52, CAP_NET_THREAD_1_0, draft-rquattle-spinel-thread
+48, CAP_ROLE_ROUTER, draft-rquattle-spinel-core,
+49, CAP_ROLE_SLEEPY, draft-rquattle-spinel-core,
+52, CAP_NET_THREAD_1_0, draft-rquattle-spinel-thread,
 512, CAP_MAC_WHITELIST, ?, Needs doc
 513, CAP_MAC_RAW, ?, Needs doc
 514, CAP_OOB_STEERING_DATA, draft-rquattle-spinel-thread, Wrong group?

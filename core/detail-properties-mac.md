@@ -89,7 +89,8 @@ Scan beacons have two embedded structures which contain
 information about the MAC layer and the NET layer. Their
 format depends on the MAC and NET layer currently in use.
 
-For example, in an 802.15.4 PHY, `MAC_DATA` would be formatted as follows:
+For example, in an 802.15.4 PHY (identified by `CAP_MAC_802_15_4`),
+`MAC_DATA` would be formatted as follows:
 
 ~~~
   0                   1                   2                   3
@@ -105,7 +106,8 @@ For example, in an 802.15.4 PHY, `MAC_DATA` would be formatted as follows:
 +-+-+-+-+-+-+-+-+
 ~~~
 
-For the standard network layer, the `NET_DATA` formatted as follows:
+For the standard network layer (identified by `CAP_NET_STANDARD`),
+the `NET_DATA` formatted as follows:
 
 ~~~
   0                   1                   2                   3
@@ -136,8 +138,9 @@ antenna connector.
 
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: No
-* Required: **ONLY** if used with 802.15.4 MAC
+* Required: **REQUIRED** with `CAP_MAC_802_15_4`
 * Value Type: EUI64_BE
+* Required Capability: `CAP_MAC_802_15_4`
 * Post-Reset Value: Tehnology-dependent. **MAY**  be `PROP_HWADDR` or randomly generated.
 
 <!-- RQ -- Break PROP_MAC_15_4_LADDR out into an 802.15.4-specific section -- -->
@@ -151,8 +154,9 @@ This property is only present on NCPs which implement 802.15.4
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: No
 * Required:
-    * `CMD_PROP_VALUE_GET`: **REQUIRED** when used with 802.15.4 MAC
-    * `CMD_PROP_VALUE_SET`: **RECOMMENDED** when used with 802.15.4 MAC
+    * `CMD_PROP_VALUE_GET`: **REQUIRED**  with `CAP_MAC_802_15_4`
+    * `CMD_PROP_VALUE_SET`: **RECOMMENDED**  with `CAP_MAC_802_15_4`
+* Required Capability: `CAP_MAC_802_15_4`
 * Value Type: UINT16_LE
 * Post-Reset Value: 65535 (0xFFFF)
 
@@ -167,8 +171,9 @@ This property is only present on NCPs which implement 802.15.4
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: No
 * Required:
-    * `CMD_PROP_VALUE_GET`: **REQUIRED** when used with 802.15.4 MAC
-    * `CMD_PROP_VALUE_SET`: **RECOMMENDED** when used with 802.15.4 MAC
+    * `CMD_PROP_VALUE_GET`: **REQUIRED**  with `CAP_MAC_802_15_4`
+    * `CMD_PROP_VALUE_SET`: **RECOMMENDED**  with `CAP_MAC_802_15_4`
+* Required Capability: `CAP_MAC_802_15_4`
 * Value Type: UINT16_LE
 * Post-Reset Value: 65535 (0xFFFF)
 
@@ -188,6 +193,7 @@ This property is only present on NCPs which implement 802.15.4
 * See also: ((#prop-stream-raw))
 
 Set to true to enable raw MAC frames to be emitted from `PROP_STREAM_RAW`.
+This allows for raw packet sniffers to be implemented.
 
 ### PROP 56: PROP_MAC_PROMISCUOUS_MODE {#prop-mac-promiscuous-mode}
 
@@ -317,47 +323,6 @@ TODO(RQ): Consider moving this to the debug section.
 Setting this to true **SHALL** cause `PROP_MAC_BLACKLIST_ENABLED` to be automatically
 set to false.
 
-### PROP 4867: PROP_MAC_SRC_MATCH_ENABLED  {#prop-mac-src-match-enabled}
-
-* Type: Single-Value, Read-Write
-* Asynchronous Updates: No
-* Required: **OPTIONAL**
-* Required capability: `CAP_MAC_RAW`, TODO: 802.15.4 PHY CAP
-* Value Type: BOOL
-* Post-Reset Value: 0 (false)
-* See Also: (#prop-mac-src-match-short-addresses), (#prop-mac-src-match-extended-addresses)
-
-Set to true to enable radio source matching or false to disable it. The source match
-functionality is used by radios when generating ACKs. The short and extended address
-lists are used for settings the Frame Pending bit in the ACKs.
-
-### PROP 4868: PROP_MAC_SRC_MATCH_SHORT_ADDRESSES  {#prop-mac-src-match-short-addresses}
-
-* Type: Multi-Value, Read-Write
-* Asynchronous Updates: No
-* Per-Item Length: No
-* Required: **OPTIONAL**
-* Item Type: UINT16_LE
-* Post-Reset Value: empty
-* Required Capability: `CAP_MAC_RAW`, TODO: 802.15.4 PHY CAP
-* See Also: (#prop-mac-src-match-enabled)
-
-Configures the list of short addresses used for source matching. These
-short address are used for hardware generated ACKs.
-
-### PROP 4869: PROP_MAC_SRC_MATCH_EXTENDED_ADDRESSES  {#prop-mac-src-match-extended-addresses}
-* Type: Multi-Value, Read-Write
-* Asynchronous Updates: No
-* Per-Item Length: No
-* Required: **OPTIONAL**
-* Item Type: EUI64_BE
-* Post-Reset Value: empty
-* Required Capabilities: `CAP_MAC_RAW`, TODO: 802.15.4 PHY CAP
-* See Also: (#prop-mac-src-match-enabled)
-
-Configures the list of long addresses used for source matching. These
-long address are used for hardware generated ACKs.
-
 ### PROP 4870: PROP_MAC_BLACKLIST  {#prop-mac-blacklist}
 
 * Type: Multi-Value, Read-Write
@@ -388,4 +353,45 @@ TODO(RQ): Consider moving this to the debug section.
 
 Setting this to true **SHALL** cause `PROP_MAC_WHITELIST_ENABLED` to be automatically
 set to false.
+
+### PROP 4867: PROP_MAC_SRC_MATCH_ENABLED  {#prop-mac-src-match-enabled}
+
+* Type: Single-Value, Read-Write
+* Asynchronous Updates: No
+* Required: **OPTIONAL**
+* Required Capabilities: `CAP_MAC_RAW`, `CAP_MAC_802_15_4`
+* Value Type: BOOL
+* Post-Reset Value: 0 (false)
+* See Also: (#prop-mac-src-match-short-addresses), (#prop-mac-src-match-extended-addresses)
+
+Set to true to enable radio source matching or false to disable it. The source match
+functionality is used by radios when generating ACKs. The short and extended address
+lists are used for settings the Frame Pending bit in the ACKs.
+
+### PROP 4868: PROP_MAC_SRC_MATCH_SHORT_ADDRESSES  {#prop-mac-src-match-short-addresses}
+
+* Type: Multi-Value, Read-Write
+* Asynchronous Updates: No
+* Per-Item Length: No
+* Required: **OPTIONAL**
+* Item Type: UINT16_LE
+* Post-Reset Value: empty
+* Required Capabilities: `CAP_MAC_RAW`, `CAP_MAC_802_15_4`
+* See Also: (#prop-mac-src-match-enabled)
+
+Configures the list of short addresses used for source matching. These
+short address are used for hardware generated ACKs.
+
+### PROP 4869: PROP_MAC_SRC_MATCH_EXTENDED_ADDRESSES  {#prop-mac-src-match-extended-addresses}
+* Type: Multi-Value, Read-Write
+* Asynchronous Updates: No
+* Per-Item Length: No
+* Required: **OPTIONAL**
+* Item Type: EUI64_BE
+* Post-Reset Value: empty
+* Required Capabilities: `CAP_MAC_RAW`, `CAP_MAC_802_15_4`
+* See Also: (#prop-mac-src-match-enabled)
+
+Configures the list of long addresses used for source matching. These
+long address are used for hardware generated ACKs.
 

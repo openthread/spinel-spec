@@ -189,15 +189,12 @@ identical across all implemented NLIs.
 
 * Type: Single-Value, Read/Write
 * Asynchronous Updates: Yes
-* Required:
-	* `CMD_PROP_VALUE_GET`: **REQUIRED**
-	* `CMD_PROP_VALUE_SET`: **RECOMENDED**
+* Required: **RECOMENDED**
 * Scope: NLI
 * Item Type: UINT8
 * Units: Enumeration
 * Post-Reset Value: `POWER_STATE_ONLINE`
-* Related Capabilities:
-    * `CAP_POWER_STATE`: Required when writable
+* Required Capability: `CAP_POWER_SAVE`
 * See Also: (#prop-mac-data-poll-period)
 
 A single byte coded that indicates the current power state of the
@@ -274,9 +271,9 @@ of `STATUS_ALREADY`.
 
 * Type: Single-Value, Read-Write
 * Asynchronous Updates: No
-* Required: **OPTIONAL**
+* Required: **RECOMMENDED**
 * Scope: NCP
-* Required Capability: `???` (TODO: Assign a capability)
+* Required Capability: `CAP_POWER_SAVE`
 * Value Type: UINT8
 * Units: Enumeration
 * Post-Reset Value: `HOST_POWER_STATE_ONLINE`
