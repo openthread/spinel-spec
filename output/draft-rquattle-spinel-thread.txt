@@ -3,13 +3,13 @@
 
 
 Network Working Group                                     R. Quattlebaum
-Internet-Draft                                               j. woodyatt
+Internet-Draft                                          j. woodyatt, Ed.
 Intended status: Standards Track                         Nest Labs, Inc.
-Expires: April 29, 2018                                 October 26, 2017
+Expires: May 5, 2018                                    November 1, 2017
 
 
                          Spinel Thread Support
-                  draft-rquattle-spinel-thread-dd3c1a1
+               draft-rquattle-spinel-thread-4e3dbd4-dirty
 
 Abstract
 
@@ -31,7 +31,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on April 29, 2018.
+   This Internet-Draft will expire on May 5, 2018.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 1]
+Quattlebaum & woodyatt     Expires May 5, 2018                  [Page 1]
 
-Internet-Draft                Spinel Thread                 October 2017
+Internet-Draft                Spinel Thread                November 2017
 
 
 Table of Contents
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 2]
+Quattlebaum & woodyatt     Expires May 5, 2018                  [Page 2]
 
-Internet-Draft                Spinel Thread                 October 2017
+Internet-Draft                Spinel Thread                November 2017
 
 
    5.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  11
@@ -132,9 +132,9 @@ Internet-Draft                Spinel Thread                 October 2017
    document are to be interpreted as described in [RFC2119].
 
    The layout diagrams in this document that show encodings of data in
-   octet sequences use the convention described in Guide for Internet
+   byte sequences use the convention described in Guide for Internet
    Standards Writers [RFC2360] section 3.1, Packet Diagrams.
-   Specifically, bits in octets are indexed from most significant to
+   Specifically, bits in bytes are indexed from most significant to
    least significant, and the least significant bit in a field
    representing an integer value more than one bit in length is the
    least significant bit of a the signed or unsigned number, as the case
@@ -165,9 +165,9 @@ Internet-Draft                Spinel Thread                 October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 3]
+Quattlebaum & woodyatt     Expires May 5, 2018                  [Page 3]
 
-Internet-Draft                Spinel Thread                 October 2017
+Internet-Draft                Spinel Thread                November 2017
 
 
 2.2.  Properties
@@ -221,9 +221,9 @@ Internet-Draft                Spinel Thread                 October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 4]
+Quattlebaum & woodyatt     Expires May 5, 2018                  [Page 4]
 
-Internet-Draft                Spinel Thread                 October 2017
+Internet-Draft                Spinel Thread                November 2017
 
 
 2.2.6.  PROP 85: PROP_THREAD_LOCAL_LEADER_WEIGHT
@@ -277,9 +277,9 @@ Internet-Draft                Spinel Thread                 October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 5]
+Quattlebaum & woodyatt     Expires May 5, 2018                  [Page 5]
 
-Internet-Draft                Spinel Thread                 October 2017
+Internet-Draft                Spinel Thread                November 2017
 
 
 2.2.12.  PROP 91: PROP_THREAD_OFF_MESH_ROUTES
@@ -333,9 +333,9 @@ Internet-Draft                Spinel Thread                 October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 6]
+Quattlebaum & woodyatt     Expires May 5, 2018                  [Page 6]
 
-Internet-Draft                Spinel Thread                 October 2017
+Internet-Draft                Spinel Thread                November 2017
 
 
 2.2.16.  PROP 5376: PROP_THREAD_CHILD_TIMEOUT
@@ -389,9 +389,9 @@ Internet-Draft                Spinel Thread                 October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 7]
+Quattlebaum & woodyatt     Expires May 5, 2018                  [Page 7]
 
-Internet-Draft                Spinel Thread                 October 2017
+Internet-Draft                Spinel Thread                November 2017
 
 
 2.2.23.  PROP 5383: PROP_THREAD_ROUTER_ROLE_ENABLED
@@ -445,9 +445,9 @@ Internet-Draft                Spinel Thread                 October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 8]
+Quattlebaum & woodyatt     Expires May 5, 2018                  [Page 8]
 
-Internet-Draft                Spinel Thread                 October 2017
+Internet-Draft                Spinel Thread                November 2017
 
 
    o  "L": MLE Frame Counter
@@ -501,9 +501,9 @@ Internet-Draft                Spinel Thread                 October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                 [Page 9]
+Quattlebaum & woodyatt     Expires May 5, 2018                  [Page 9]
 
-Internet-Draft                Spinel Thread                 October 2017
+Internet-Draft                Spinel Thread                November 2017
 
 
    Set to true to enable the native commissioner.  It is mandatory
@@ -557,9 +557,9 @@ Internet-Draft                Spinel Thread                 October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 10]
+Quattlebaum & woodyatt     Expires May 5, 2018                 [Page 10]
 
-Internet-Draft                Spinel Thread                 October 2017
+Internet-Draft                Spinel Thread                November 2017
 
 
    This property is used to enable/disable EUI64 filtering during
@@ -613,9 +613,9 @@ Internet-Draft                Spinel Thread                 October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 11]
+Quattlebaum & woodyatt     Expires May 5, 2018                 [Page 11]
 
-Internet-Draft                Spinel Thread                 October 2017
+Internet-Draft                Spinel Thread                November 2017
 
 
 5.2.  Informative References
@@ -634,7 +634,7 @@ Appendix A.  Glossary
 
    NCP
       Network Control Processor.
-   OS
+   AP
       Operating System, i.e. the IPv6 node using Spinel to control and
       manage one or more of its IPv6 network interfaces.
    PHY
@@ -669,12 +669,12 @@ Authors' Addresses
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 12]
+Quattlebaum & woodyatt     Expires May 5, 2018                 [Page 12]
 
-Internet-Draft                Spinel Thread                 October 2017
+Internet-Draft                Spinel Thread                November 2017
 
 
-   james woodyatt
+   james woodyatt (editor)
    Nest Labs, Inc.
    3400 Hillview Ave.
    Palo Alto, California  94304
@@ -725,4 +725,4 @@ Internet-Draft                Spinel Thread                 October 2017
 
 
 
-Quattlebaum & woodyatt   Expires April 29, 2018                [Page 13]
+Quattlebaum & woodyatt     Expires May 5, 2018                 [Page 13]

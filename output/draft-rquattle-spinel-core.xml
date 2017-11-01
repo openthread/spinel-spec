@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rfc SYSTEM 'rfc2629.dtd' []>
-<rfc ipr="trust200902" category="std" docName="draft-rquattle-spinel-core-513efc0">
+<rfc ipr="trust200902" category="std" docName="draft-rquattle-spinel-core-c87731a-dirty">
 <?rfc toc="yes"?>
 <?rfc symrefs="yes"?>
 <?rfc sortrefs="yes"?>
@@ -42,7 +42,7 @@
 <uri></uri>
 </address>
 </author>
-<date year="2017" month="October" day="31"/>
+<date year="2017" month="November" day="1"/>
 
 <area>Internet</area>
 <workgroup></workgroup>
@@ -89,7 +89,7 @@ drawbacks (See <xref target="appendix-comparison"/>).
 <t>Spinel is a host-controller protocol designed to address the drawbacks
 of existing protocols and lower implementation and deployment burdens
 by providing a standardized mechanism for the management and control
-of IPv6-based NCPs by general purpose device operating systems (OS).
+of IPv6-based NCPs by general purpose Application Processors (AP).
 </t>
 
 <section anchor="objectives" title="Objectives">
@@ -126,41 +126,44 @@ specific IPv6 link types, e.g. Thread(R).
 document are to be interpreted as described in <xref target="RFC2119"/>.
 </t>
 <t>The layout diagrams in this document that show encodings of data in
-octet sequences use the convention described in Guide for Internet
+byte sequences use the convention described in Guide for Internet
 Standards Writers <xref target="RFC2360"/> section 3.1, Packet Diagrams.
-Specifically, bits in octets are indexed from most significant to
+Specifically, bits in bytes are indexed from most significant to
 least significant, and the least significant bit in a field
 representing an integer value more than one bit in length is the least
 significant bit of a the signed or unsigned number, as the case
 requires.
 </t>
 <t>The term &quot;byte&quot; is used in its now-customary sense as a synonym for
-&quot;octet&quot;.  All multi-byte values are encoded in network byte order
-(that is, most significant byte first, also known as &quot;big-endian&quot;).
+&quot;byte&quot;.
+</t>
+<t>Most multi-byte values are encoded in little-endian order
+(that is, most significant byte first). This is discussed in more detail in
+<xref target="data-representation"/>.
 </t>
 <t>This specification makes use of the following terminology:
 </t>
-<t><cref source="RQ">Alphabetize before finalization.</cref></t>
+<t><cref source="RQ">Alphabetize terminology before finalization.</cref></t>
 <t>
 <list style="hanging">
+<t hangText="AP">
+<vspace />
+Application Processor, the host processor to which the NCP is a peripheral.</t>
 <t hangText="FCS">
 <vspace />
-Final Checksum. Octets added to the end of a packet to help determine if the packet was received without corruption.</t>
+Final Checksum. Bytes added to the end of a packet to help determine if the packet was received without corruption.</t>
 <t hangText="NCP">
 <vspace />
 Network Control Processor.</t>
 <t hangText="NLI">
 <vspace />
 Network Link Identifier. May be a value between zero and three. See <xref target="nli-network-link-identifier"/> for more information.</t>
-<t hangText="OS">
-<vspace />
-Operating System, i.e. the IPv6 node using Spinel to control and manage one or more of its IPv6 network interfaces.</t>
 <t hangText="PHY">
 <vspace />
 Physical layer. Refers to characteristics and parameters related to the physical implementation and operation of a networking medium.</t>
 <t hangText="PUI">
 <vspace />
-Packed Unsigned Integer. A way to serialize an unsigned integer using one, two, or three octets. Used throughout the Spinel protocol. See <xref target="packed-unsigned-integer"/> for more information.</t>
+Packed Unsigned Integer. A way to serialize an unsigned integer using one, two, or three bytes. Used throughout the Spinel protocol. See <xref target="packed-unsigned-integer"/> for more information.</t>
 <t hangText="TID">
 <vspace />
 Transaction Identifier. May be a value between zero and fifteen. See <xref target="tid-transaction-identifier"/> for more information.</t>
@@ -187,11 +190,11 @@ Spinel uses Packed Unsigned Integers, or PUIs.
 </t>
 <t>The PUI format used in Spinel is based on the <eref target="https://www.w3.org/TR/exi/#encodingUnsignedInteger">unsigned integer format
 in EXI</eref>, except that we limit the maximum value to the largest
-value that can be encoded to three octets. The maximum value that
+value that can be encoded to three bytes. The maximum value that
 can be encoded is 2,097,151.
 </t>
 <t>For all values less than 127, the packed form of the number is simply
-a single octet which directly represents the number. For values larger
+a single byte which directly represents the number. For values larger
 than 127, the following process is used to encode the value:
 </t>
 <t>
@@ -217,7 +220,7 @@ represent the given value.
      =&gt; [B9 0A]
 </artwork></figure>
 <t>To decode the value, you collect the 7-bit chunks until you find an
-octet with the most significant bit clear.
+byte with the most significant bit clear.
 </t>
 </section>
 </section>
@@ -229,7 +232,7 @@ RECOMMENDED to be at least 1300 bytes). Spinel frames SHALL be
 delivered reliably and in-order. It is the responsibility of the lower layer
 to make those guarantees.
 </t>
-<t>The mechanism responsible for transporting frames between the OS and
+<t>The mechanism responsible for transporting frames between the AP and
 the NCP (while also ensuring both reliable and in-order delivery) is
 called the <spanx style="emph">framing mechanism</spanx>. While Spinel does not mandate any
 specific framing mechanism be used, the RECOMMENDED mechanisms are
@@ -242,8 +245,8 @@ great deal of implementation flexibility.
 </t>
 <t>
 <list style="symbols">
-<t>A header comprising a single octet (see <xref target="header-format"/> below).</t>
-<t>A command identifier (PUI, See <xref target="packed-unsigned-integer"/>. Typically one byte)</t>
+<t>A header comprising a single byte. (See <xref target="header-format"/>).</t>
+<t>A command identifier. (See <xref target="commands"/>)</t>
 <t>A command-defined payload, which may be empty.</t>
 </list>
 </t>
@@ -259,18 +262,10 @@ great deal of implementation flexibility.
 <t>Since the size of the frame is a part of the framing mechanism, it is
 omitted from the frame.
 </t>
-<t>For example, each of the property operations described in <xref target="property-operators"/>
-is defined as a specific command identifier with the property
-key as the first part of the payload. Additional commands are defined
-for special purposes (see <xref target="commands"/>), and the command identifier
-registry has values reserved for future standard expansion,
-application specialization, and experimental purposes.
-</t>
 </section>
 
 <section anchor="header-format" title="Header">
-<t>The header comprises the following information elements packed into a
-single octet:
+<t>The header byte is composed as follows:
 </t>
 
 <figure align="center" title="Header Format
@@ -283,14 +278,14 @@ single octet:
 
 <section anchor="flg-flag" title="FLG: Flag">
 <t>The Flag (FLG) field in the two most significant bits of the header
-octet (<spanx style="verb">FLG</spanx>) is always set to the value two (or <spanx style="verb">10</spanx> in binary). Any
+byte (<spanx style="verb">FLG</spanx>) is always set to the value two (or <spanx style="verb">10</spanx> in binary). Any
 frame received with these bits set to any other value SHALL NOT be
 considered a Spinel frame.
 </t>
 <t>This convention allows Spinel to be line compatible with BTLE HCI. By
 defining the first two bit in this way we can disambiguate between
 Spinel frames and HCI frames (which always start with either <spanx style="verb">0x01</spanx> or
-<spanx style="verb">0x04</spanx>) without any additional framing overhead.
+<spanx style="verb">0x04</spanx>) without any additional framing overhead. (TODO: Verify)
 </t>
 </section>
 
@@ -325,14 +320,14 @@ provide additional network interfaces via NLI values 1, 2, and 3.
 bits of the header is used for correlating responses to the commands
 which generated them.
 </t>
-<t>When a command is sent from the OS, any reply to that command sent by
-the NCP will use the same value for the TID. When the OS receives a
+<t>When a command is sent from the AP, any reply to that command sent by
+the NCP will use the same value for the TID. When the AP receives a
 frame that matches the TID of the command it sent, it can easily
 recognize that frame as the actual response to that command.
 </t>
 <t>The zero value of TID is used for commands to which a correlated
 response is not expected or needed, such as for unsolicited update
-commands sent to the OS from the NCP.
+commands sent to the AP from the NCP.
 </t>
 <t>Note that while the frame format is symmetric between the
 frames being sent to the NCP versus frames being sent from
@@ -347,10 +342,10 @@ use TID zero (0).
 
 <section anchor="command-id" title="Command ID">
 <t>The command identifier is a 21-bit unsigned integer encoded in up to
-three octets using the packed unsigned integer format described in
+three bytes using the packed unsigned integer format described in
 <xref target="packed-unsigned-integer"/>. This encoding allows for up to 2,097,152
 individual commands, with the first 127 commands represented as a
-single octet. Command identifiers larger than 2,097,151 are explicitly
+single byte. Command identifiers larger than 2,097,151 are explicitly
 forbidden.
 </t>
 <t>To date, no command id has been longer than one byte long, so all
@@ -404,7 +399,7 @@ available for profile specialization.
 </t>
 
 <section anchor="property-operators" title="Property Operators">
-<t>Conceptually, the following operations are used by the OS to query or change a property's value:
+<t>Conceptually, the following operations are used by the AP to query or change a property's value:
 </t>
 <t>
 <list style="symbols">
@@ -492,9 +487,9 @@ available for profile specialization.
 <t>Debug message stream (<xref target="prop-stream-debug"/>)</t>
 </list>
 </t>
-<t>All such properties emit changes asynchronously using the <spanx style="verb">IS</spanx> operator, sent from the NCP to the OS. For example, as IPv6 traffic is received by the NCP, the IPv6 packets are sent to the OS by way of asynchronous <spanx style="verb">IS</spanx> operations for the network packet stream property.
+<t>All such properties emit changes asynchronously using the <spanx style="verb">IS</spanx> operator, sent from the NCP to the AP. For example, as IPv6 traffic is received by the NCP, the IPv6 packets are sent to the AP by way of asynchronous <spanx style="verb">IS</spanx> operations for the network packet stream property.
 </t>
-<t>Some of these properties also support the OS sending data back to the NCP using the <spanx style="verb">SET</spanx> operation. For example, this is how the OS sends IPv6 traffic to the NCP.
+<t>Some of these properties also support the AP sending data back to the NCP using the <spanx style="verb">SET</spanx> operation. For example, this is how the AP sends IPv6 traffic to the NCP.
 </t>
 <t>The behavior and meaning of the <spanx style="verb">GET</spanx>, <spanx style="verb">INSERT</spanx>, <spanx style="verb">REMOVE</spanx>, <spanx style="verb">INSERTED</spanx>, and <spanx style="verb">REMOVED</spanx> operations for stream properties is undefined and SHOULD NOT be used.
 </t>
@@ -723,14 +718,14 @@ to the following table:
 </section>
 
 <section anchor="how-status-is-indicated" title="How Status is Indicated">
-<t>Status codes are sent from the NCP to the OS via <spanx style="verb">PROP_LAST_STATUS</spanx>
+<t>Status codes are sent from the NCP to the AP via <spanx style="verb">PROP_LAST_STATUS</spanx>
 using the <spanx style="verb">CMD_VALUE_IS</spanx> command to indicate the return status of a
 previous command. As with any response, the TID field of the FLAG byte
 is used to correlate the response with the request.
 </t>
 <t>Note that most successfully executed commands do not indicate a last
 status of <spanx style="verb">STATUS_OK</spanx>. The usual way the NCP indicates a successful
-command is to mirror the property change back to the OS. For example,
+command is to mirror the property change back to the AP. For example,
 if you do a <spanx style="verb">CMD_VALUE_SET</spanx> on <spanx style="verb">PROP_PHY_ENABLED</spanx>, the NCP would
 indicate success by responding with a <spanx style="verb">CMD_VALUE_IS</spanx> for
 <spanx style="verb">PROP_PHY_ENABLED</spanx>. If the command failed, <spanx style="verb">PROP_LAST_STATUS</spanx> would be
@@ -746,8 +741,8 @@ emitted instead.
 </t>
 <t>
 <list style="symbols">
-<t>OS -&gt; NCP: commands sent by the operating system (OS) to the network control processor (NCP).</t>
-<t>NCP -&gt; OS: commands sent by the network control processor (NCP) to the operating system (OS).</t>
+<t>AP -&gt; NCP: commands sent by the Application Processor (AP) to the Network Co-Processor (NCP).</t>
+<t>NCP -&gt; AP: commands sent by the Network Co-Processor (NCP) to the Application Processor (AP).</t>
 </list>
 </t>
 <t>A conforming implementation MAY transmit any command defined for its operating context, and MUST process any command received for its operating context, according to the operational semantics defined in this section.
@@ -765,7 +760,7 @@ emitted instead.
 <c>2,000,000 - 2,097,151</c><c>Experimental Use</c>
 </texttable>
 
-<section anchor="cmd-noop" title="CMD 0: (OS -&gt; NCP) CMD_NOOP">
+<section anchor="cmd-noop" title="CMD 0: (AP -&gt; NCP) CMD_NOOP">
 
 <figure align="center" title="Structure of CMD_NOOP
 "><artwork align="center">
@@ -784,7 +779,7 @@ emitted instead.
 </t>
 </section>
 
-<section anchor="cmd-reset" title="CMD 1: (OS -&gt; NCP) CMD_RESET">
+<section anchor="cmd-reset" title="CMD 1: (AP -&gt; NCP) CMD_RESET">
 
 <figure align="center" title="Structure of CMD_RESET
 "><artwork align="center">
@@ -794,7 +789,7 @@ emitted instead.
 |1 0|NLI|  TID  |   CMD_RESET   |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </artwork></figure>
-<t>Reset NCP. Commands the NCP to perform a software reset. Due to the nature of this command, the TID is ignored. The OS should instead wait for a <spanx style="verb">CMD_PROP_VALUE_IS</spanx> command from the NCP indicating <spanx style="verb">PROP_LAST_STATUS</spanx> has been set to <spanx style="verb">STATUS_RESET_SOFTWARE</spanx> (see <xref target="status-codes"/>).
+<t>Reset NCP. Commands the NCP to perform a software reset. Due to the nature of this command, the TID is ignored. The AP should instead wait for a <spanx style="verb">CMD_PROP_VALUE_IS</spanx> command from the NCP indicating <spanx style="verb">PROP_LAST_STATUS</spanx> has been set to <spanx style="verb">STATUS_RESET_SOFTWARE</spanx> (see <xref target="status-codes"/>).
 </t>
 <t>The command payload SHOULD be empty, and it SHOULD NOT be processed.
 </t>
@@ -802,7 +797,7 @@ emitted instead.
 </t>
 </section>
 
-<section anchor="cmd-prop-value-get" title="CMD 2: (OS -&gt; NCP) CMD_PROP_VALUE_GET">
+<section anchor="cmd-prop-value-get" title="CMD 2: (AP -&gt; NCP) CMD_PROP_VALUE_GET">
 
 <figure align="center" title="Structure of CMD_PROP_VALUE_GET
 "><artwork align="center">
@@ -820,7 +815,7 @@ emitted instead.
 </t>
 </section>
 
-<section anchor="cmd-prop-value-set" title="CMD 3: (OS -&gt; NCP) CMD_PROP_VALUE_SET">
+<section anchor="cmd-prop-value-set" title="CMD 3: (AP -&gt; NCP) CMD_PROP_VALUE_SET">
 
 <figure align="center" title="Structure of CMD_PROP_VALUE_SET
 "><artwork align="center">
@@ -840,7 +835,7 @@ emitted instead.
 </t>
 </section>
 
-<section anchor="cmd-prop-value-insert" title="CMD 4: (OS -&gt; NCP) CMD_PROP_VALUE_INSERT">
+<section anchor="cmd-prop-value-insert" title="CMD 4: (AP -&gt; NCP) CMD_PROP_VALUE_INSERT">
 
 <figure align="center" title="Structure of CMD_PROP_VALUE_INSERT
 "><artwork align="center">
@@ -862,7 +857,7 @@ emitted instead.
 </t>
 </section>
 
-<section anchor="cmd-prop-value-remove" title="CMD 5: (OS -&gt; NCP) CMD_PROP_VALUE_REMOVE">
+<section anchor="cmd-prop-value-remove" title="CMD 5: (AP -&gt; NCP) CMD_PROP_VALUE_REMOVE">
 
 <figure align="center" title="Structure of CMD_PROP_VALUE_REMOVE
 "><artwork align="center">
@@ -886,7 +881,7 @@ emitted instead.
 </t>
 </section>
 
-<section anchor="cmd-prop-value-is" title="CMD 6: (NCP -&gt; OS) CMD_PROP_VALUE_IS">
+<section anchor="cmd-prop-value-is" title="CMD 6: (NCP -&gt; AP) CMD_PROP_VALUE_IS">
 
 <figure align="center" title="Structure of CMD_PROP_VALUE_SET
 "><artwork align="center">
@@ -898,13 +893,13 @@ emitted instead.
 |  CURRENT PROPERTY VALUE ...
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </artwork></figure>
-<t>Property value notification. This command can be sent by the NCP in response to a previous command from the OS, or it can be sent by the NCP in an unsolicited fashion to notify the OS of various state changes asynchronously.
+<t>Property value notification. This command can be sent by the NCP in response to a previous command from the AP, or it can be sent by the NCP in an unsolicited fashion to notify the AP of various state changes asynchronously.
 </t>
 <t>The payload for this command is the property identifier encoded in the packed unsigned integer format described in <xref target="packed-unsigned-integer"/>, followed by the current value of the given property.
 </t>
 </section>
 
-<section anchor="cmd-prop-value-inserted" title="CMD 7: (NCP -&gt; OS) CMD_PROP_VALUE_INSERTED">
+<section anchor="cmd-prop-value-inserted" title="CMD 7: (NCP -&gt; AP) CMD_PROP_VALUE_INSERTED">
 
 <figure align="center" title="Structure of CMD_PROP_VALUE_INSERTED
 "><artwork align="center">
@@ -918,7 +913,7 @@ emitted instead.
 | ITEM TO BE INSERTED ...
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </artwork></figure>
-<t>Property value insertion notification. This command can be sent by the NCP in response to the <spanx style="verb">CMD_PROP_VALUE_INSERT</spanx> command, or it can be sent by the NCP in an unsolicited fashion to notify the OS of various state changes asynchronously.
+<t>Property value insertion notification. This command can be sent by the NCP in response to the <spanx style="verb">CMD_PROP_VALUE_INSERT</spanx> command, or it can be sent by the NCP in an unsolicited fashion to notify the AP of various state changes asynchronously.
 </t>
 <t>The payload for this command is the property identifier encoded in the packed unsigned integer format described in <xref target="packed-unsigned-integer"/>, followed by the value that was inserted into the given property.
 </t>
@@ -928,7 +923,7 @@ emitted instead.
 </t>
 </section>
 
-<section anchor="cmd-prop-value-removed" title="CMD 8: (NCP -&gt; OS) CMD_PROP_VALUE_REMOVED">
+<section anchor="cmd-prop-value-removed" title="CMD 8: (NCP -&gt; AP) CMD_PROP_VALUE_REMOVED">
 
 <figure align="center" title="Structure of CMD_PROP_VALUE_REMOVED
 "><artwork align="center">
@@ -942,7 +937,7 @@ emitted instead.
 | ITEM TO BE REMOVED ...
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </artwork></figure>
-<t>Property value removal notification command. This command can be sent by the NCP in response to the <spanx style="verb">CMD_PROP_VALUE_REMOVE</spanx> command, or it can be sent by the NCP in an unsolicited fashion to notify the OS of various state changes asynchronously.
+<t>Property value removal notification command. This command can be sent by the NCP in response to the <spanx style="verb">CMD_PROP_VALUE_REMOVE</spanx> command, or it can be sent by the NCP in an unsolicited fashion to notify the AP of various state changes asynchronously.
 </t>
 <t>Note that this command operates <spanx style="emph">by value</spanx>, not by index!
 </t>
@@ -954,7 +949,7 @@ emitted instead.
 </t>
 </section>
 
-<section anchor="cmd-peek" title="CMD 18: (OS -&gt; NCP) CMD_PEEK">
+<section anchor="cmd-peek" title="CMD 18: (AP -&gt; NCP) CMD_PEEK">
 
 <figure align="center" title="Structure of CMD_PEEK
 "><artwork align="center">
@@ -966,7 +961,7 @@ emitted instead.
    ... ADDRESS (LITTLE ENDIAN)  |     COUNT (LITTLE ENDIAN)     |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </artwork></figure>
-<t>This command allows the NCP to fetch values from the RAM of the NCP for debugging purposes. Upon success, <spanx style="verb">CMD_PEEK_RET</spanx> is sent from the NCP to the OS. Upon failure, <spanx style="verb">PROP_LAST_STATUS</spanx> is emitted with the appropriate error indication.
+<t>This command allows the NCP to fetch values from the RAM of the NCP for debugging purposes. Upon success, <spanx style="verb">CMD_PEEK_RET</spanx> is sent from the NCP to the AP. Upon failure, <spanx style="verb">PROP_LAST_STATUS</spanx> is emitted with the appropriate error indication.
 </t>
 <t>Due to the low-level nature of this command, certain error conditions may induce the NCP to reset.
 </t>
@@ -978,7 +973,7 @@ emitted instead.
 </t>
 </section>
 
-<section anchor="cmd-peek-ret" title="CMD 19: (NCP -&gt; OS) CMD_PEEK_RET">
+<section anchor="cmd-peek-ret" title="CMD 19: (NCP -&gt; AP) CMD_PEEK_RET">
 
 <figure align="center" title="Structure of CMD_PEEK_RET
 "><artwork align="center">
@@ -998,7 +993,7 @@ emitted instead.
 </t>
 </section>
 
-<section anchor="cmd-poke" title="CMD 20: (OS -&gt; NCP) CMD_POKE">
+<section anchor="cmd-poke" title="CMD 20: (AP -&gt; NCP) CMD_POKE">
 
 <figure align="center" title="Structure of CMD_POKE
 "><artwork align="center">
@@ -1022,7 +1017,7 @@ emitted instead.
 </t>
 </section>
 
-<section anchor="cmd-prop-value-multi-get" title="CMD 21: (OS -&gt; NCP) CMD_PROP_VALUE_MULTI_GET">
+<section anchor="cmd-prop-value-multi-get" title="CMD 21: (AP -&gt; NCP) CMD_PROP_VALUE_MULTI_GET">
 <t>
 <list style="symbols">
 <t>Required Capability: <spanx style="verb">CAP_CMD_MULTI</spanx></t>
@@ -1044,7 +1039,7 @@ emitted instead.
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 :            etc ...            :
 </artwork></figure>
-<t>Fetch the value of multiple properties in one command. Arguments are a list of property IDs. If all properties are fetched successfully, a <spanx style="verb">CMD_PROP_VALUES_ARE</spanx> command is sent back to the OS containing the property identifier and value of each fetched property. The order of the results in <spanx style="verb">CMD_PROP_VALUES_ARE</spanx> match the order of properties given in <spanx style="verb">CMD_PROP_VALUE_GET</spanx>.
+<t>Fetch the value of multiple properties in one command. Arguments are a list of property IDs. If all properties are fetched successfully, a <spanx style="verb">CMD_PROP_VALUES_ARE</spanx> command is sent back to the AP containing the property identifier and value of each fetched property. The order of the results in <spanx style="verb">CMD_PROP_VALUES_ARE</spanx> match the order of properties given in <spanx style="verb">CMD_PROP_VALUE_GET</spanx>.
 </t>
 <t>Errors fetching individual properties are reflected as indicating a change to <spanx style="verb">PROP_LAST_STATUS</spanx> for that property's place.
 </t>
@@ -1052,7 +1047,7 @@ emitted instead.
 </t>
 </section>
 
-<section anchor="cmd-prop-value-multi-set" title="CMD 22: (OS -&gt; NCP) CMD_PROP_VALUE_MULTI_SET">
+<section anchor="cmd-prop-value-multi-set" title="CMD 22: (AP -&gt; NCP) CMD_PROP_VALUE_MULTI_SET">
 <t>
 <list style="symbols">
 <t>Required Capability: <spanx style="verb">CAP_CMD_MULTI</spanx></t>
@@ -1108,7 +1103,7 @@ individual property with <spanx style="verb">STATUS_INVALID_COMMAND_FOR_PROP</sp
 </t>
 </section>
 
-<section anchor="cmd-prop-values-are" title="CMD 23: (NCP -&gt; OS) CMD_PROP_VALUES_ARE">
+<section anchor="cmd-prop-values-are" title="CMD 23: (NCP -&gt; AP) CMD_PROP_VALUES_ARE">
 <t>
 <list style="symbols">
 <t>Required Capability: <spanx style="verb">CAP_CMD_MULTI</spanx></t>
@@ -1183,24 +1178,23 @@ in this command will describe <spanx style="verb">PROP_LAST_STATUS</spanx>.
 <texttable>
 <ttcol align="left">Code</ttcol>
 <ttcol align="left">Name</ttcol>
-<ttcol align="left">Description</ttcol>
+<ttcol align="left">Reference</ttcol>
 
-<c>1</c><c><spanx style="verb">CAP_LOCK</spanx></c><c>See <xref target="prop-lock"/></c>
-<c>2</c><c><spanx style="verb">CAP_NET_SAVE</spanx></c><c>draft-rquattle-spinel-network-save</c>
-<c>3</c><c><spanx style="verb">CAP_HBO</spanx></c><c>draft-rquattle-spinel-hbo</c>
-<c>4</c><c><spanx style="verb">CAP_POWER_SAVE</spanx></c><c>EDITOR: to be provided.</c>
-<c>5</c><c><spanx style="verb">CAP_COUNTERS</spanx></c><c>EDITOR: to be provided.</c>
-<c>7</c><c><spanx style="verb">CAP_PEEK_POKE</spanx></c><c>Peek/poke debugging commands.</c>
-<c>8</c><c><spanx style="verb">CAP_WRITABLE_RAW_STREAM</spanx></c><c><spanx style="verb">PROP_STREAM_RAW</spanx> is writable.</c>
-<c>9</c><c><spanx style="verb">CAP_GPIO</spanx></c><c>draft-rquattle-spinel-gpio</c>
-<c>10</c><c><spanx style="verb">CAP_TRNG</spanx></c><c>draft-rquattle-spinel-trng</c>
-<c>11</c><c><spanx style="verb">CAP_CMD_MULTI</spanx></c><c>See <xref target="cmd-prop-value-multi-get"/>, <xref target="cmd-prop-value-multi-set"/>, <xref target="cmd-prop-values-are"/></c>
-<c>12</c><c><spanx style="verb">CAP_UNSOL_UPDATE_FILTER</spanx></c><c>See <xref target="prop-unsol-update-filter"/>, <xref target="prop-unsol-update-list"/></c>
-<c>48</c><c><spanx style="verb">CAP_ROLE_ROUTER</spanx></c><c>EDITOR: to be provided.</c>
-<c>49</c><c><spanx style="verb">CAP_ROLE_SLEEPY</spanx></c><c>EDITOR: to be provided.</c>
-<c>512</c><c><spanx style="verb">CAP_MAC_WHITELIST</spanx></c><c>EDITOR: to be provided.</c>
+<c>1</c><c><spanx style="verb">CAP_LOCK</spanx></c><c><xref target="prop-lock"/></c>
+<c>2</c><c>Reserved</c><c></c>
+<c>3</c><c>Reserved</c><c></c>
+<c>4</c><c><spanx style="verb">CAP_POWER_SAVE</spanx></c><c><xref target="prop-power-state"/>, <xref target="prop-host-power-state"/></c>
+<c>5</c><c>Reserved</c><c></c>
+<c>7</c><c><spanx style="verb">CAP_PEEK_POKE</spanx></c><c><xref target="cmd-peek"/>-<xref target="cmd-poke"/></c>
+<c>8</c><c><spanx style="verb">CAP_WRITABLE_RAW_STREAM</spanx></c><c><xref target="prop-stream-raw"/></c>
+<c>9</c><c>Reserved</c><c></c>
+<c>10</c><c>Reserved</c><c></c>
+<c>11</c><c><spanx style="verb">CAP_CMD_MULTI</spanx></c><c><xref target="cmd-prop-value-multi-get"/></c>
+<c>12</c><c><spanx style="verb">CAP_UNSOL_UPDATE_FILTER</spanx></c><c><xref target="prop-unsol-update-filter"/></c>
+<c>512</c><c><spanx style="verb">CAP_MAC_WHITELIST</spanx></c><c><xref target="prop-mac-whitelist"/></c>
 <c>513</c><c><spanx style="verb">CAP_MAC_RAW</spanx></c><c>EDITOR: to be provided.</c>
-<c>514</c><c><spanx style="verb">CAP_OOB_STEERING_DATA</spanx></c><c>EDITOR: to be provided.</c>
+<c>TBD</c><c><spanx style="verb">CAP_MAC_802_15_4</spanx></c><c>TBD</c>
+<c>TBD</c><c><spanx style="verb">CAP_NET_STANDARD</spanx></c><c>TBD</c>
 </texttable>
 </section>
 
@@ -1310,8 +1304,8 @@ according to their purpose, as shown in the table below:
 <c>Debug</c><c>no primary</c><c>16,384 - 17,407</c><c><xref target="prop-debug"/></c>
 </texttable>
 <t>Note: most of the property identifier sections have two reserved
-ranges: a &quot;primary&quot; range (which is encoded as a single octet) and an
-&quot;extended&quot; range (which is encoded as two octets). Properties used
+ranges: a &quot;primary&quot; range (which is encoded as a single byte) and an
+&quot;extended&quot; range (which is encoded as two bytes). Properties used
 very frequently are generally allocated from the &quot;primary&quot; range.
 </t>
 <t>EDITOR: the IANA registration template for Spinel standard properties identifiers requires the &quot;Section Name&quot; and &quot;Range Identifier&quot; parameters to facilitate the assignment of a suitable number from the appropriate range.
@@ -1379,7 +1373,7 @@ contains two fields:
 <t hangText="MAJOR_VERSION">
 <vspace />
 The major version number is used to identify backward incompatible
-differences between protocol versions. The OS MUST enter a
+differences between protocol versions. The AP MUST enter a
 FAULT(TODO: Define this) state if the given major version number is
 unsupportable.</t>
 <t hangText="MINOR_VERSION">
@@ -1387,8 +1381,8 @@ unsupportable.</t>
 The minor version number is used to identify backward-compatible
 differences between protocol versions. A mismatch between the
 advertised minor version number and the minor version that is
-supported by the OS SHOULD NOT be fatal to the operation of the
-OS.</t>
+supported by the AP SHOULD NOT be fatal to the operation of the
+AP.</t>
 </list>
 </t>
 <t>This document describes major version 4, minor version 3 of this
@@ -1484,7 +1478,7 @@ below:
 <c>2</c><c>ZigBee IP(TM)</c>
 <c>3</c><c>Thread(R)</c>
 </texttable>
-<t>The OS MUST enter a FAULT state if it does not recognize the
+<t>The AP MUST enter a FAULT state if it does not recognize the
 network protocol given by the NCP.
 </t>
 </section>
@@ -1549,23 +1543,16 @@ identical across all implemented NLIs.
 <list style="symbols">
 <t>Type: Single-Value, Read/Write</t>
 <t>Asynchronous Updates: Yes</t>
-<t>Required:
-<list style="symbols">
-<t><spanx style="verb">CMD_PROP_VALUE_GET</spanx>: REQUIRED</t>
-<t><spanx style="verb">CMD_PROP_VALUE_SET</spanx>: <spanx style="strong">RECOMENDED</spanx></t>
-</list></t>
+<t>Required: <spanx style="strong">RECOMENDED</spanx></t>
 <t>Scope: NLI</t>
 <t>Item Type: UINT8</t>
 <t>Units: Enumeration</t>
 <t>Post-Reset Value: <spanx style="verb">POWER_STATE_ONLINE</spanx></t>
-<t>Related Capabilities:
-<list style="symbols">
-<t><spanx style="verb">CAP_POWER_STATE</spanx>: Required when writable</t>
-</list></t>
+<t>Required Capability: <spanx style="verb">CAP_POWER_SAVE</spanx></t>
 <t>See Also: <xref target="prop-mac-data-poll-period"/></t>
 </list>
 </t>
-<t>A single octet coded that indicates the current power state of the
+<t>A single byte coded that indicates the current power state of the
 NCP. Setting this property allows controls of the current NCP power
 state. The following table enumerates the standard codes and their
 significance.
@@ -1654,19 +1641,19 @@ of <spanx style="verb">STATUS_ALREADY</spanx>.
 <list style="symbols">
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: No</t>
-<t>Required: OPTIONAL</t>
+<t>Required: RECOMMENDED</t>
 <t>Scope: NCP</t>
-<t>Required Capability: <spanx style="verb">???</spanx> (TODO: Assign a capability)</t>
+<t>Required Capability: <spanx style="verb">CAP_POWER_SAVE</spanx></t>
 <t>Value Type: UINT8</t>
 <t>Units: Enumeration</t>
 <t>Post-Reset Value: <spanx style="verb">HOST_POWER_STATE_ONLINE</spanx></t>
 </list>
 </t>
-<t>Describes the current power state of the <spanx style="emph">OS</spanx>. This property is used
-by the OS to inform the NCP when it has changed power states. The NCP
+<t>Describes the current power state of the <spanx style="emph">AP</spanx>. This property is used
+by the AP to inform the NCP when it has changed power states. The NCP
 can then use this state to determine which properties need
 asynchronous updates. Enumeration is encoded as a single unsigned
-octet.
+byte.
 </t>
 <t>The following table enumerates the standard codes and their significance.
 </t>
@@ -1689,23 +1676,23 @@ octet.
 <list style="hanging">
 <t hangText="HOST_POWER_STATE_OFFLINE">
 <vspace />
-OS is physically powered off and cannot be awakened by the NCP.</t>
+AP is physically powered off and cannot be awakened by the NCP.</t>
 <t hangText="HOST_POWER_STATE_DEEP_SLEEP">
 <vspace />
-OS is in a deep low power state and will require a long time to
+AP is in a deep low power state and will require a long time to
 wake. In this state, the NCP MUST NOT send any commands, including
 any commands that contain network packets, prior to signaling the host
 explicitly to awaken and receiving a signal to update the state to
 <spanx style="verb">HOST_POWER_STATE_ONLINE</spanx>.</t>
 <t hangText="HOST_POWER_STATE_LOW_POWER">
 <vspace />
-OS is in a low power state and can be awakened quickly.</t>
+AP is in a low power state and can be awakened quickly.</t>
 <t hangText="HOST_POWER_STATE_ONLINE">
 <vspace />
-OS is powered for full responsiveness.</t>
+AP is powered for full responsiveness.</t>
 </list>
 </t>
-<t>After the OS sends <spanx style="verb">CMD_PROP_VALUE_SET</spanx> for this property with a value
+<t>After the AP sends <spanx style="verb">CMD_PROP_VALUE_SET</spanx> for this property with a value
 other than <spanx style="verb">HOST_POWER_STATE_ONLINE</spanx>, it SHOULD wait for the NCP
 to acknowledge the property update (with a <spanx style="verb">CMD_VALUE_IS</spanx> command)
 before entering the specified power state.
@@ -1716,22 +1703,22 @@ the <spanx style="verb">HOST_POWER_STATE_ONLINE</spanx> value.
 </t>
 <t>When the state is not <spanx style="verb">HOST_POWER_STATE_ONLINE</spanx>, the NCP <spanx style="strong">SHOULD
 NOT</spanx> send any commands except important notifications that warrant
-awakening the OS host, and the NCP MUST NOT send any informative
+awakening the AP host, and the NCP MUST NOT send any informative
 messages on <spanx style="verb">PROP_DEBUG_STREAM</spanx>.
 </t>
-<t>The OS MUST NOT send a value of <spanx style="verb">HOST_POWER_STATE</spanx> other than one
+<t>The AP MUST NOT send a value of <spanx style="verb">HOST_POWER_STATE</spanx> other than one
 of the standard codes defined here. If the NCP receives a value other
 than a standard code, then it SHOULD set the state to
 <spanx style="verb">HOST_POWER_STATE_LOW_POWER</spanx>.
 </t>
 <t>If the NCP has the <spanx style="verb">CAP_UNSOL_UPDATE_FILTER</spanx> capability, any
 unsolicited property updates masked by <spanx style="verb">PROP_UNSOL_UPDATE_FILTER</spanx>
-should be honored while the OS indicates it is in a low-power state.
+should be honored while the AP indicates it is in a low-power state.
 After resuming to the <spanx style="verb">HOST_POWER_STATE_ONLINE</spanx> state, the value of
 <spanx style="verb">PROP_UNSOL_UPDATE_FILTER</spanx> MUST be unchanged from the value
-assigned prior to the OS indicating it was entering a low-power state.
+assigned prior to the AP indicating it was entering a low-power state.
 </t>
-<t>The OS MUST use NLI 0 with commands using this property. The NCP
+<t>The AP MUST use NLI 0 with commands using this property. The NCP
 SHOULD explicitly fail to process commands setting this property
 if NLI is not zero. The operational semantics of this property when
 NLI is not zero are not specified.
@@ -1756,10 +1743,10 @@ NLI is not zero are not specified.
 unsolicited value updates. This property MUST be empty after NCP
 reset.
 </t>
-<t>In other words, the OS may opt-out of unsolicited property updates for
+<t>In other words, the AP may opt-out of unsolicited property updates for
 a specific property by adding that property id to this list.
 </t>
-<t>The OS SHOULD NOT add properties to this list which are not
+<t>The AP SHOULD NOT add properties to this list which are not
 present in <spanx style="verb">PROP_UNSOL_UPDATE_LIST</spanx>. If such properties are added, the
 NCP MUST ignore the unsupported properties.
 </t>
@@ -1803,7 +1790,7 @@ updates.
 </t>
 <t>Note: not all properties that support unsolicited updates need to be
 listed here. Some properties, network media scan results for example,
-are only generated due to direct action on the part of the OS, so
+are only generated due to direct action on the part of the AP, so
 those properties SHOULD NOT not be included in this list.
 </t>
 </section>
@@ -1821,13 +1808,13 @@ those properties SHOULD NOT not be included in this list.
 </list>
 </t>
 <t>This stream provides human-readable debugging output which may be
-displayed in the OS logs. It is intended to be treated as a one-way
-virtual serial stream. The OS MUST NOT assume that each emission
-of this property is self-contained, instead the OS must use newline
+displayed in the AP logs. It is intended to be treated as a one-way
+virtual serial stream. The AP MUST NOT assume that each emission
+of this property is self-contained, instead the AP must use newline
 characters for that purpose.
 </t>
 <t>The location of newline characters MUST NOT not assumed by the
-OS: it is the NCP's responsibility to insert newline characters
+AP: it is the NCP's responsibility to insert newline characters
 where needed, just like with any other text stream.
 </t>
 <t>The emitted data is UTF8-encoded without any zero termination. Note
@@ -1871,7 +1858,7 @@ packets. Support for this feature is indicated by the presence of the
 <t>If the capability <spanx style="verb">CAP_WRITABLE_RAW_STREAM</spanx> is set, then packets
 written to this stream with <spanx style="verb">CMD_PROP_VALUE_SET</spanx> will be sent out over
 the radio. This allows the caller to use the network directly, with
-the full network layer stack being implemented on the OS instead of
+the full network layer stack being implemented on the AP instead of
 the NCP.
 </t>
 
@@ -2220,7 +2207,8 @@ beacons or for collecting energy samples.
 information about the MAC layer and the NET layer. Their
 format depends on the MAC and NET layer currently in use.
 </t>
-<t>For example, in an 802.15.4 PHY, <spanx style="verb">MAC_DATA</spanx> would be formatted as follows:
+<t>For example, in an 802.15.4 PHY (identified by <spanx style="verb">CAP_MAC_802_15_4</spanx>),
+<spanx style="verb">MAC_DATA</spanx> would be formatted as follows:
 </t>
 
 <figure align="center"><artwork align="center">
@@ -2236,7 +2224,8 @@ format depends on the MAC and NET layer currently in use.
 |      LQI      |
 +-+-+-+-+-+-+-+-+
 </artwork></figure>
-<t>For the standard network layer, the <spanx style="verb">NET_DATA</spanx> formatted as follows:
+<t>For the standard network layer (identified by <spanx style="verb">CAP_NET_STANDARD</spanx>),
+the <spanx style="verb">NET_DATA</spanx> formatted as follows:
 </t>
 
 <figure align="center"><artwork align="center">
@@ -2270,8 +2259,9 @@ antenna connector.
 <list style="symbols">
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: No</t>
-<t>Required: <spanx style="strong">ONLY</spanx> if used with 802.15.4 MAC</t>
+<t>Required: REQUIRED with <spanx style="verb">CAP_MAC_802_15_4</spanx></t>
 <t>Value Type: EUI64_BE</t>
+<t>Required Capability: <spanx style="verb">CAP_MAC_802_15_4</spanx></t>
 <t>Post-Reset Value: Tehnology-dependent. MAY  be <spanx style="verb">PROP_HWADDR</spanx> or randomly generated.</t>
 </list>
 </t>
@@ -2289,9 +2279,10 @@ antenna connector.
 <t>Asynchronous Updates: No</t>
 <t>Required:
 <list style="symbols">
-<t><spanx style="verb">CMD_PROP_VALUE_GET</spanx>: REQUIRED when used with 802.15.4 MAC</t>
-<t><spanx style="verb">CMD_PROP_VALUE_SET</spanx>: RECOMMENDED when used with 802.15.4 MAC</t>
+<t><spanx style="verb">CMD_PROP_VALUE_GET</spanx>: REQUIRED  with <spanx style="verb">CAP_MAC_802_15_4</spanx></t>
+<t><spanx style="verb">CMD_PROP_VALUE_SET</spanx>: RECOMMENDED  with <spanx style="verb">CAP_MAC_802_15_4</spanx></t>
 </list></t>
+<t>Required Capability: <spanx style="verb">CAP_MAC_802_15_4</spanx></t>
 <t>Value Type: UINT16_LE</t>
 <t>Post-Reset Value: 65535 (0xFFFF)</t>
 </list>
@@ -2310,9 +2301,10 @@ antenna connector.
 <t>Asynchronous Updates: No</t>
 <t>Required:
 <list style="symbols">
-<t><spanx style="verb">CMD_PROP_VALUE_GET</spanx>: REQUIRED when used with 802.15.4 MAC</t>
-<t><spanx style="verb">CMD_PROP_VALUE_SET</spanx>: RECOMMENDED when used with 802.15.4 MAC</t>
+<t><spanx style="verb">CMD_PROP_VALUE_GET</spanx>: REQUIRED  with <spanx style="verb">CAP_MAC_802_15_4</spanx></t>
+<t><spanx style="verb">CMD_PROP_VALUE_SET</spanx>: RECOMMENDED  with <spanx style="verb">CAP_MAC_802_15_4</spanx></t>
 </list></t>
+<t>Required Capability: <spanx style="verb">CAP_MAC_802_15_4</spanx></t>
 <t>Value Type: UINT16_LE</t>
 <t>Post-Reset Value: 65535 (0xFFFF)</t>
 </list>
@@ -2336,6 +2328,7 @@ antenna connector.
 </list>
 </t>
 <t>Set to true to enable raw MAC frames to be emitted from <spanx style="verb">PROP_STREAM_RAW</spanx>.
+This allows for raw packet sniffers to be implemented.
 </t>
 </section>
 
@@ -2493,60 +2486,6 @@ set to false.
 </t>
 </section>
 
-<section anchor="prop-mac-src-match-enabled" title="PROP 4867: PROP_MAC_SRC_MATCH_ENABLED">
-<t>
-<list style="symbols">
-<t>Type: Single-Value, Read-Write</t>
-<t>Asynchronous Updates: No</t>
-<t>Required: OPTIONAL</t>
-<t>Required capability: <spanx style="verb">CAP_MAC_RAW</spanx>, TODO: 802.15.4 PHY CAP</t>
-<t>Value Type: BOOL</t>
-<t>Post-Reset Value: 0 (false)</t>
-<t>See Also: <xref target="prop-mac-src-match-short-addresses"/>, <xref target="prop-mac-src-match-extended-addresses"/></t>
-</list>
-</t>
-<t>Set to true to enable radio source matching or false to disable it. The source match
-functionality is used by radios when generating ACKs. The short and extended address
-lists are used for settings the Frame Pending bit in the ACKs.
-</t>
-</section>
-
-<section anchor="prop-mac-src-match-short-addresses" title="PROP 4868: PROP_MAC_SRC_MATCH_SHORT_ADDRESSES">
-<t>
-<list style="symbols">
-<t>Type: Multi-Value, Read-Write</t>
-<t>Asynchronous Updates: No</t>
-<t>Per-Item Length: No</t>
-<t>Required: OPTIONAL</t>
-<t>Item Type: UINT16_LE</t>
-<t>Post-Reset Value: empty</t>
-<t>Required Capability: <spanx style="verb">CAP_MAC_RAW</spanx>, TODO: 802.15.4 PHY CAP</t>
-<t>See Also: <xref target="prop-mac-src-match-enabled"/></t>
-</list>
-</t>
-<t>Configures the list of short addresses used for source matching. These
-short address are used for hardware generated ACKs.
-</t>
-</section>
-
-<section anchor="prop-mac-src-match-extended-addresses" title="PROP 4869: PROP_MAC_SRC_MATCH_EXTENDED_ADDRESSES">
-<t>
-<list style="symbols">
-<t>Type: Multi-Value, Read-Write</t>
-<t>Asynchronous Updates: No</t>
-<t>Per-Item Length: No</t>
-<t>Required: OPTIONAL</t>
-<t>Item Type: EUI64_BE</t>
-<t>Post-Reset Value: empty</t>
-<t>Required Capabilities: <spanx style="verb">CAP_MAC_RAW</spanx>, TODO: 802.15.4 PHY CAP</t>
-<t>See Also: <xref target="prop-mac-src-match-enabled"/></t>
-</list>
-</t>
-<t>Configures the list of long addresses used for source matching. These
-long address are used for hardware generated ACKs.
-</t>
-</section>
-
 <section anchor="prop-mac-blacklist" title="PROP 4870: PROP_MAC_BLACKLIST">
 <t>
 <list style="symbols">
@@ -2583,6 +2522,60 @@ to communicate with devices which are in this list.
 </t>
 <t>Setting this to true SHALL cause <spanx style="verb">PROP_MAC_WHITELIST_ENABLED</spanx> to be automatically
 set to false.
+</t>
+</section>
+
+<section anchor="prop-mac-src-match-enabled" title="PROP 4867: PROP_MAC_SRC_MATCH_ENABLED">
+<t>
+<list style="symbols">
+<t>Type: Single-Value, Read-Write</t>
+<t>Asynchronous Updates: No</t>
+<t>Required: OPTIONAL</t>
+<t>Required Capabilities: <spanx style="verb">CAP_MAC_RAW</spanx>, <spanx style="verb">CAP_MAC_802_15_4</spanx></t>
+<t>Value Type: BOOL</t>
+<t>Post-Reset Value: 0 (false)</t>
+<t>See Also: <xref target="prop-mac-src-match-short-addresses"/>, <xref target="prop-mac-src-match-extended-addresses"/></t>
+</list>
+</t>
+<t>Set to true to enable radio source matching or false to disable it. The source match
+functionality is used by radios when generating ACKs. The short and extended address
+lists are used for settings the Frame Pending bit in the ACKs.
+</t>
+</section>
+
+<section anchor="prop-mac-src-match-short-addresses" title="PROP 4868: PROP_MAC_SRC_MATCH_SHORT_ADDRESSES">
+<t>
+<list style="symbols">
+<t>Type: Multi-Value, Read-Write</t>
+<t>Asynchronous Updates: No</t>
+<t>Per-Item Length: No</t>
+<t>Required: OPTIONAL</t>
+<t>Item Type: UINT16_LE</t>
+<t>Post-Reset Value: empty</t>
+<t>Required Capabilities: <spanx style="verb">CAP_MAC_RAW</spanx>, <spanx style="verb">CAP_MAC_802_15_4</spanx></t>
+<t>See Also: <xref target="prop-mac-src-match-enabled"/></t>
+</list>
+</t>
+<t>Configures the list of short addresses used for source matching. These
+short address are used for hardware generated ACKs.
+</t>
+</section>
+
+<section anchor="prop-mac-src-match-extended-addresses" title="PROP 4869: PROP_MAC_SRC_MATCH_EXTENDED_ADDRESSES">
+<t>
+<list style="symbols">
+<t>Type: Multi-Value, Read-Write</t>
+<t>Asynchronous Updates: No</t>
+<t>Per-Item Length: No</t>
+<t>Required: OPTIONAL</t>
+<t>Item Type: EUI64_BE</t>
+<t>Post-Reset Value: empty</t>
+<t>Required Capabilities: <spanx style="verb">CAP_MAC_RAW</spanx>, <spanx style="verb">CAP_MAC_802_15_4</spanx></t>
+<t>See Also: <xref target="prop-mac-src-match-enabled"/></t>
+</list>
+</t>
+<t>Configures the list of long addresses used for source matching. These
+long address are used for hardware generated ACKs.
 </t>
 </section>
 </section>
@@ -2871,36 +2864,50 @@ this property is hard-coded to always be zero.
 <t>Type: Single-Value, Read-Write</t>
 <t>Asynchronous Updates: Yes</t>
 <t>Required: REQUIRED</t>
+<t>Scope: NLI</t>
+<t>Value Type: IPv6 Address</t>
 <t>Post-Reset Value: Unspecified</t>
 </list>
 </t>
-<texttable>
-<ttcol align="right">Bytes:</ttcol>
-<ttcol align="center">16</ttcol>
-
-<c>Format:</c><c>IPV6_ADDR</c>
-<c>Fields:</c><c><spanx style="verb">IPV6_LL_ADDR</spanx></c>
-</texttable>
 </section>
 
-<section anchor="prop-ipv6-address-table" title="PROP 99: PROP_IPV6_ADDRESS_TABLE">
+<section anchor="prop-ipv6-address-table" title="PROP 99: PROP_IPV6_ADDR_TABLE">
 <t>
 <list style="symbols">
-<t>Type: Read-Write</t>
-<t>Packed-Encoding: <spanx style="verb">A(t(6CLLC))</spanx></t>
+<t>Type: Multiple-Value, Read-Write</t>
+<t>Has Item Length Prefix: Yes</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required: REQUIRED</t>
+<t>Scope: NLI</t>
+<t>Item Type: Structure</t>
+<t>Post-Reset Value: Empty</t>
 </list>
 </t>
-<t>This property provides all unicast addresses.
-Array of structures containing:
+
+<figure align="center" title="PROP_IPV6_ADDRESS_TABLE structure
+"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++-                                                             -+
+|                                                               |
++-                        IPv6 ADDRESS                         -+
+|                                                               |
++-                                                             -+
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PREFIX LENGTH |              VALID LIFETIME...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  ...           |            PREFERRED LIFETIME...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  ...           |     FLAGS     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
+<t>This property provides the table of all of the unicast IPv6 addresses associated
+with this NLI.
 </t>
-<t>
-<list style="symbols">
-<t><spanx style="verb">6</spanx>: IPv6 Address</t>
-<t><spanx style="verb">C</spanx>: Network Prefix Length</t>
-<t><spanx style="verb">L</spanx>: Valid Lifetime</t>
-<t><spanx style="verb">L</spanx>: Preferred Lifetime</t>
-<t><spanx style="verb">C</spanx>: Flags</t>
-</list>
+<t>TODO: This needs a lot of work.
 </t>
 <t>EDITOR: this conflates the IPv6 interface address list with the IPv6 on-link prefix used in IPv6 Neighbor Discovery and other address reservation and resolution protocols with similar function, e.g. Thread(R). It probably makes sense to create an additional set of properties that represent neighbor discovery and router discovery parameters.
 </t>
@@ -2911,28 +2918,379 @@ Array of structures containing:
 <section anchor="prop-101-propipv6icmppingoffload" title="PROP 101: PROP_IPv6_ICMP_PING_OFFLOAD">
 <t>
 <list style="symbols">
-<t>Type: Read-Write</t>
-<t>Packed-Encoding: <spanx style="verb">b</spanx></t>
+<t>Type: Single-Value, Read-Write</t>
+<t>Asynchronous Updates: No</t>
+<t>Required: OPTIONAL</t>
+<t>Scope: NLI</t>
+<t>Value Type: BOOL</t>
+<t>Post-Reset Value: 0 (false)</t>
 </list>
 </t>
-<t>Allow the NCP to directly respond to ICMP ping requests. If this is turned on, ICMP echo request packets will not be passed to the OS.
-</t>
-<t>Default value is <spanx style="verb">false</spanx>.
+<t>Allow the NCP to directly respond to ICMP ping requests. If this is turned on, ICMP echo request packets will not be passed to the AP.
 </t>
 </section>
 
-<section anchor="prop-ipv6-multicast-address-table" title="PROP 102: SPINEL_PROP_IPV6_MULTICAST_ADDRESS_TABLE">
+<section anchor="prop-ipv6-multicast-address-table" title="PROP 102: PROP_IPV6_MULTICAST_ADDR_TABLE">
 <t>
 <list style="symbols">
-<t>Type: Read-Write</t>
-<t>Packed-Encoding: <spanx style="verb">A(t(6))</spanx></t>
+<t>Type: Multiple-Value, Read-Write</t>
+<t>Has Item Length Prefix: Yes</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required: REQUIRED</t>
+<t>Scope: NLI</t>
+<t>Item Type: IPv6</t>
+<t>Post-Reset Value: Implemenation specific</t>
 </list>
 </t>
-<t>Array of structures containing:
+</section>
+</section>
+
+<section anchor="prop-ipv6-rethink" title="RETHINK IPv6 Properties">
+<t>This section is discussing a possible renumbering/reorganization of the IPv6
+section.
 </t>
+
+<section anchor="prop-ipv6-ucast-addrs" title="PROP XXXX: PROP_IPV6_UCAST_ADDRS">
 <t>
 <list style="symbols">
-<t><spanx style="verb">6</spanx>: Multicast IPv6 Address</t>
+<t>Type: Multiple-Value, Read-Only</t>
+<t>Has Item Length Prefix: Yes</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required: REQUIRED</t>
+<t>Scope: NLI</t>
+<t>Item Type: Structure</t>
+<t>Post-Reset Value: Empty</t>
+</list>
+</t>
+
+<figure align="center" title="Structure of PROP_IPV6_UCAST_ADDRS
+"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++-                                                             -+
+|                                                               |
++-                        IPv6 ADDRESS                         -+
+|                                                               |
++-                                                             -+
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     SCOPE     |             FLAGS             |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
+<t>This property contains all unicast IPv6 addresses currently assigned to this
+NLI. This includes both automatically assigned addresses and addresses manually
+added by the AP via <spanx style="verb">PROP_IPV6_HOST_UCAST_ADDRS</spanx>.
+</t>
+<t>The AP cannot directly manipulate this property. but it can add new unicast
+IPv6 addresses via the <spanx style="verb">PROP_IPV6_HOST_ON_LINK_PREFIXES</spanx> property.
+</t>
+<t>
+<list style="hanging">
+<t hangText="SCOPE">
+<vspace />
+An enumeration describing the scope of the address. Can be link-local,
+mesh-local, site-local, or global. (TODO: Enumeration TBD)</t>
+<t hangText="FLAGS">
+<vspace />
+Flags describing various properties of the address. Flags are dynamic/static,
+temporary, deprecated, secured <xref target="RFC7217"/>, etc. (TODO: Enumeration TBD)</t>
+</list>
+</t>
+</section>
+
+<section anchor="prop-ipv6-host-ucast-addrs" title="PROP XXXX: PROP_IPV6_HOST_UCAST_ADDRS">
+<t>
+<list style="symbols">
+<t>Type: Multiple-Value, Read-Write</t>
+<t>Has Item Length Prefix: Yes</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required: REQUIRED</t>
+<t>Scope: NLI</t>
+<t>Item Type: Structure</t>
+<t>Post-Reset Value: Empty</t>
+</list>
+</t>
+
+<figure align="center" title="Structure of PROP_IPV6_HOST_UCAST_ADDRS
+"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++-                                                             -+
+|                                                               |
++-                        IPv6 ADDRESS                         -+
+|                                                               |
++-                                                             -+
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
+<t>Addresses added to this list will be added to PROP_IPV6_UCAST_ADDRS as
+static addresses.
+</t>
+</section>
+
+<section anchor="prop-ipv6-on-link-prefixes" title="PROP XXXX: PROP_IPV6_ON_LINK_PREFIXES">
+<t>
+<list style="symbols">
+<t>Type: Multiple-Value, Read-Only</t>
+<t>Has Item Length Prefix: Yes</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required: REQUIRED</t>
+<t>Scope: NLI</t>
+<t>Item Type: Structure</t>
+<t>Post-Reset Value: Empty</t>
+</list>
+</t>
+
+<figure align="center" title="Structure of PROP_IPV6_ON_LINK_PREFIXES
+"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++-                                                             -+
+|                                                               |
++-                        IPv6 PREFIX                          -+
+|                                                               |
++-                                                             -+
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PREFIX LENGTH |     SCOPE     |     FLAGS (Little Endian)     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                        VALID LIFETIME (Little Endian)         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                      PREFERRED LIFETIME (Little Endian)       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
+<t>This property contains all on-link or on-mesh IPv6 prefixes that are being
+advertised by routers on this NLI's network, including all prefixes listed in
+<spanx style="verb">PROP_IPV6_HOST_ON_LINK_PREFIXES</spanx>.
+</t>
+<t>The AP cannot directly manipulate this property. but it can add new on-link or on-mesh
+prefixes via the <spanx style="verb">PROP_IPV6_HOST_ON_LINK_PREFIXES</spanx> property.
+</t>
+</section>
+
+<section anchor="prop-ipv6-host-on-link-prefixes" title="PROP XXXX: PROP_IPV6_HOST_ON_LINK_PREFIXES">
+<t>
+<list style="symbols">
+<t>Type: Multiple-Value, Read-Write</t>
+<t>Has Item Length Prefix: Yes</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required: REQUIRED</t>
+<t>Scope: NLI</t>
+<t>Item Type: Structure</t>
+<t>Post-Reset Value: Empty</t>
+</list>
+</t>
+
+<figure align="center" title="Structure of PROP_IPV6_HOST_ON_LINK_PREFIXES
+"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++-                                                             -+
+|                                                               |
++-                        IPv6 PREFIX                          -+
+|                                                               |
++-                                                             -+
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PREFIX LENGTH |     SCOPE     |     FLAGS (Little Endian)     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                        VALID LIFETIME (Little Endian)         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                      PREFERRED LIFETIME (Little Endian)       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
+<t>This property contains all on-link or on-mesh IPv6 prefixes that <spanx style="emph">this host</spanx> is
+advertising on this NLI's network.
+</t>
+<t>The AP cannot directly manipulate this property. but it can add new on-link or on-mesh
+prefixes via the <spanx style="verb">PROP_IPV6_HOST_ON_LINK_PREFIXES</spanx> property.
+</t>
+<t>When removing prefixes from the list, only the <spanx style="verb">IPv6 PREFIX</spanx> and <spanx style="verb">PREFIX LENGTH</spanx>
+are required.
+</t>
+<t>Some network technologies may limit which nodes have permission to add items
+to this list. In such a case, the following behaviors are acceptable (in order of
+behavior preference):
+</t>
+<t>
+<list style="numbers">
+<t>The command fails with <spanx style="verb">STATUS_SECURITY_ERROR</spanx>.</t>
+<t>The command initially appears to succeed, but a few moments later
+the prefix is asynchronously removed via either <spanx style="verb">CMD_PROP_VALUE_IS</spanx> or
+<spanx style="verb">CMD_PROP_VALUE_REMOVED</spanx>.</t>
+</list>
+</t>
+</section>
+
+<section anchor="prop-ipv6-mcast-addrs" title="PROP XXXX: PROP_IPV6_MCAST_ADDRS">
+<t>
+<list style="symbols">
+<t>Type: Multiple-Value, Read-Only</t>
+<t>Has Item Length Prefix: Yes</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required: REQUIRED</t>
+<t>Scope: NLI</t>
+<t>Item Type: IPv6</t>
+<t>Post-Reset Value: Implemenation specific</t>
+</list>
+</t>
+
+<figure align="center" title="Structure of PROP_IPV6_MCAST_ADDRS
+"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++-                                                             -+
+|                                                               |
++-                        IPv6 ADDRESS                         -+
+|                                                               |
++-                                                             -+
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
+<t>This property contains all IPv6 multicast groups that this NLI is currently a
+member of. The AP cannot directly manipulate this property, but it can add
+the NLI to new groups via the <spanx style="verb">PROP_IPV6_HOST_MCAST_ADDRS</spanx> property.
+</t>
+</section>
+
+<section anchor="prop-ipv6-mcast-addrs-1" title="PROP XXXX: PROP_IPV6_HOST_MCAST_ADDRS">
+<t>
+<list style="symbols">
+<t>Type: Multiple-Value, Read-Write</t>
+<t>Has Item Length Prefix: Yes</t>
+<t>Asynchronous Updates: No</t>
+<t>Required: REQUIRED</t>
+<t>Scope: NLI</t>
+<t>Item Type: IPv6</t>
+<t>Post-Reset Value: Empty</t>
+</list>
+</t>
+
+<figure align="center" title="Structure of PROP_IPV6_HOST_MCAST_ADDRS
+"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++-                                                             -+
+|                                                               |
++-                        IPv6 ADDRESS                         -+
+|                                                               |
++-                                                             -+
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
+<t>This property contains only IPv6 multicast addresses that have been added
+by the AP. The AP can manipulate this list by setting it outright, inserting addresses,
+or removing addresses. When attached to a network, the addresses in this list are a
+subset of the addresses in <spanx style="verb">PROP_IPV6_MCAST_ADDRS</spanx>.
+</t>
+<t>Note that it is up to the AP to perform any necessary reference counting on
+joined groups.
+</t>
+<t>Some network technologies may limit which nodes have permission to add items
+to this list. In such a case, the following behaviors are acceptable (in order of
+behavior preference):
+</t>
+<t>
+<list style="numbers">
+<t>The command fails with <spanx style="verb">STATUS_SECURITY_ERROR</spanx>.</t>
+<t>The command initially appears to succeed, but a few moments later
+the item is asynchronously removed via either <spanx style="verb">CMD_PROP_VALUE_IS</spanx> or
+<spanx style="verb">CMD_PROP_VALUE_REMOVED</spanx>.</t>
+</list>
+</t>
+</section>
+
+<section anchor="prop-ipv6-routes" title="PROP XXXX: PROP_IPV6_ROUTES">
+<t>
+<list style="symbols">
+<t>Type: Multiple-Value, Read-Only</t>
+<t>Has Item Length Prefix: Yes</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required: REQUIRED</t>
+<t>Scope: NLI</t>
+<t>Item Type: Structure</t>
+<t>Post-Reset Value: Empty</t>
+</list>
+</t>
+
+<figure align="center" title="Structure of PROP_IPV6_ROUTES
+"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++-                                                             -+
+|                                                               |
++-                        IPv6 PREFIX                          -+
+|                                                               |
++-                                                             -+
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PREFIX LENGTH |    (TODO: Likely needs more stuff here...)
++-+-+-+-+-+-+-+-+
+</artwork></figure>
+<t>This property contains <spanx style="emph">all</spanx> prefixes that can be reached via this NLI, <spanx style="strong">both off-link and
+on-link</spanx>. This list MUST NOT include any prefixes listed in <spanx style="verb">PROP_IPV6_HOST_ROUTES</spanx>
+<spanx style="strong">UNLESS</spanx> that route is being advertised by some other node.
+</t>
+</section>
+
+<section anchor="prop-ipv6-host-routes" title="PROP XXXX: PROP_IPV6_HOST_ROUTES">
+<t>
+<list style="symbols">
+<t>Type: Multiple-Value, Read-Write</t>
+<t>Has Item Length Prefix: Yes</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required: REQUIRED</t>
+<t>Scope: NLI</t>
+<t>Item Type: Structure</t>
+<t>Post-Reset Value: Empty</t>
+</list>
+</t>
+
+<figure align="center" title="Structure of PROP_IPV6_HOST_ROUTES
+"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++-                                                             -+
+|                                                               |
++-                        IPv6 PREFIX                          -+
+|                                                               |
++-                                                             -+
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PREFIX LENGTH |    (TODO: Likely needs more stuff here...)
++-+-+-+-+-+-+-+-+
+</artwork></figure>
+<t>This property contains all prefixes that the AP is willing to route traffic to on behalf
+of other nodes the current network. This property MUST NOT be populated
+automatically by the NCP. Routes added to this property will be advertised to
+other nodes on the network.
+</t>
+<t>Some network technologies may limit which nodes have permission to add items
+to this list. In such a case, the following behaviors are acceptable (in order of
+behavior preference):
+</t>
+<t>
+<list style="numbers">
+<t>The command fails with <spanx style="verb">STATUS_SECURITY_ERROR</spanx>.</t>
+<t>The command initially appears to succeed, but a few moments later
+the item is asynchronously removed via either <spanx style="verb">CMD_PROP_VALUE_IS</spanx> or
+<spanx style="verb">CMD_PROP_VALUE_REMOVED</spanx>.</t>
 </list>
 </t>
 </section>
@@ -2943,8 +3301,11 @@ Array of structures containing:
 <section anchor="prop-debug-test-assert" title="PROP 16384: PROP_DEBUG_TEST_ASSERT">
 <t>
 <list style="symbols">
-<t>Type: Read-Only</t>
-<t>Packed-Encoding: <spanx style="verb">b</spanx></t>
+<t>Type: Single-Value, Read-Only</t>
+<t>Asynchronous Updates: No</t>
+<t>Required: OPTIONAL</t>
+<t>Scope: NCP</t>
+<t>Post-Reset Value: Unspecified</t>
 </list>
 </t>
 <t>Reading this property will cause an assert on the NCP. This is intended for testing the assert functionality of underlying platform/NCP. Assert should ideally cause the NCP to reset, but if <spanx style="verb">assert</spanx> is not supported or disabled boolean value of <spanx style="verb">false</spanx> is returned in response.
@@ -2954,8 +3315,12 @@ Array of structures containing:
 <section anchor="prop-debug-ncp-log-level" title="PROP 16385: PROP_DEBUG_NCP_LOG_LEVEL">
 <t>
 <list style="symbols">
-<t>Type: Read-Write</t>
-<t>Packed-Encoding: <spanx style="verb">C</spanx></t>
+<t>Type: Single-Value, Read-Write</t>
+<t>Asynchronous Updates: No</t>
+<t>Required: OPTIONAL</t>
+<t>Scope: NCP</t>
+<t>Value Type: UINT8</t>
+<t>Post-Reset Value: Implementation Specific</t>
 </list>
 </t>
 <t>Provides access to the NCP log level. Standard log level codes, which are derived from <xref target="RFC5424"/>, are shown below:
@@ -3014,6 +3379,7 @@ Array of structures containing:
 <?rfc include="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2360.xml"?>
 <?rfc include="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.4944.xml"?>
 <?rfc include="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5424.xml"?>
+<?rfc include="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7217.xml"?>
 </references>
 
 <section anchor="example-sessions" title="Example Sessions">
@@ -3044,7 +3410,7 @@ Array of structures containing:
 <t>CMD_VALUE_IS:PROP_INTERFACE_TYPE</t>
 </list>
 </t>
-<t>If the OS supports using vendor-specific commands, the vendor should be verified before using them:
+<t>If the AP supports using vendor-specific commands, the vendor should be verified before using them:
 </t>
 <t>
 <list style="symbols">
@@ -3171,11 +3537,11 @@ Array of structures containing:
 </t>
 <t>These values may be adjusted depending on the individual needs of the application or product, but some sort of flow control MUST be used. Hardware flow control is preferred over software flow control. In the absence of hardware flow control, software flow control (XON/XOFF) MUST be used instead.
 </t>
-<t>We also <spanx style="strong">RECOMMEND</spanx> an Arduino-style hardware reset, where the DTR signal is coupled to the <spanx style="verb">RES</spanx> pin through a 0.01 micro-Farad capacitor. This causes the NCP to automatically reset whenever the serial port is opened. At the very least we <spanx style="strong">RECOMMEND</spanx> dedicating one of your OS host pins to controlling the <spanx style="verb">RES</spanx> pin on the NCP, so that you can easily perform a hardware reset if necessary.
+<t>We also <spanx style="strong">RECOMMEND</spanx> an Arduino-style hardware reset, where the DTR signal is coupled to the <spanx style="verb">RES</spanx> pin through a 0.01 micro-Farad capacitor. This causes the NCP to automatically reset whenever the serial port is opened. At the very least we <spanx style="strong">RECOMMEND</spanx> dedicating one of your AP host pins to controlling the <spanx style="verb">RES</spanx> pin on the NCP, so that you can easily perform a hardware reset if necessary.
 </t>
 
 <section anchor="uart-bit-rate-detection" title="UART Bit Rate Detection">
-<t>When using a UART, the issue of an appropriate bit rate must be considered. 115200 bits/s is the conventional baud rate for many serial peripherals. This rate, however, is slower than the theoretical maximum bitrate of many relevant network interfaces, e.g. the 802.15.4 2.4GHz PHY (250kbit). In most circumstances this mismatch is not significant because the overall bitrate will be much lower than either of these rates, but there are circumstances where a faster UART bitrate is desirable. Thus, this document proposes a simple bitrate detection scheme that can be employed by the OS to detect when the attached NCP is initially running at a higher bitrate.
+<t>When using a UART, the issue of an appropriate bit rate must be considered. 115200 bits/s is the conventional baud rate for many serial peripherals. This rate, however, is slower than the theoretical maximum bitrate of many relevant network interfaces, e.g. the 802.15.4 2.4GHz PHY (250kbit). In most circumstances this mismatch is not significant because the overall bitrate will be much lower than either of these rates, but there are circumstances where a faster UART bitrate is desirable. Thus, this document proposes a simple bitrate detection scheme that can be employed by the AP to detect when the attached NCP is initially running at a higher bitrate.
 </t>
 <t>The algorithm is to send successive NOOP commands to the NCP at increasing bitrates. When a valid <spanx style="verb">CMD_LAST_STATUS</spanx> response has been received, we have identified the correct bitrate.
 </t>
@@ -3197,12 +3563,12 @@ Array of structures containing:
 </t>
 <t>To transmit a frame with HDLC-lite, the 16-bit CRC must first be appended to the frame. The CRC function is defined to be CRC-16/CCITT, otherwise known as the <eref target="http://reveng.sourceforge.net/crc-catalogue/16.htm#crc.cat.kermit">KERMIT CRC</eref>.
 </t>
-<t>Individual frames are terminated with a frame delimiter octet called the 'flag' octet (<spanx style="verb">0x7E</spanx>).
+<t>Individual frames are terminated with a frame delimiter byte called the 'flag' byte (<spanx style="verb">0x7E</spanx>).
 </t>
-<t>The following octets values are considered <spanx style="emph">special</spanx> and should be escaped when present in data frames:
+<t>The following bytes values are considered <spanx style="emph">special</spanx> and should be escaped when present in data frames:
 </t>
 <texttable>
-<ttcol align="left">Octet Value</ttcol>
+<ttcol align="left">Byte Value</ttcol>
 <ttcol align="left">Description</ttcol>
 
 <c>0x7E</c><c>Frame Delimiter (Flag)</c>
@@ -3211,13 +3577,13 @@ Array of structures containing:
 <c>0x13</c><c>XOFF</c>
 <c>0xF8</c><c>Vendor-Specific</c>
 </texttable>
-<t>When present in a data frame, these octet values are escaped by prepending the escape octet (<spanx style="verb">0x7D</spanx>) and XORing the value with <spanx style="verb">0x20</spanx>.
+<t>When present in a data frame, these byte values are escaped by prepending the escape byte (<spanx style="verb">0x7D</spanx>) and XORing the value with <spanx style="verb">0x20</spanx>.
 </t>
 <t>When receiving a frame, the CRC must be verified after the frame is unescaped. If the CRC value does not match what is calculated for the frame data, the frame MUST be discarded. The implementation MAY indicate the failure to higher levels to handle as they see fit, but MUST NOT attempt to process the deceived frame.
 </t>
-<t>Consecutive flag octets are entirely legal and MUST NOT be treated as a framing error. Consecutive flag octets MAY be used as a way to wake up a sleeping NCP.
+<t>Consecutive flag bytes are entirely legal and MUST NOT be treated as a framing error. Consecutive flag bytes MAY be used as a way to wake up a sleeping NCP.
 </t>
-<t>When first establishing a connection to the NCP, it is customary to send one or more flag octets to ensure that any previously received data is discarded.
+<t>When first establishing a connection to the NCP, it is customary to send one or more flag bytes to ensure that any previously received data is discarded.
 </t>
 </section>
 </section>
@@ -3227,15 +3593,15 @@ Array of structures containing:
 </t>
 <t>
 <list style="symbols">
-<t><spanx style="verb">CS</spanx>:   (OS-to-NCP) Chip Select</t>
-<t><spanx style="verb">CLK</spanx>:  (OS-to-NCP) Clock</t>
+<t><spanx style="verb">CS</spanx>:   (AP-to-NCP) Chip Select</t>
+<t><spanx style="verb">CLK</spanx>:  (AP-to-NCP) Clock</t>
 <t><spanx style="verb">MOSI</spanx>: Master-Output/Slave-Input</t>
 <t><spanx style="verb">MISO</spanx>: Master-Input/Slave-Output</t>
-<t><spanx style="verb">INT</spanx>:  (NCP-to-OS) Host Interrupt</t>
-<t><spanx style="verb">RES</spanx>:  (OS-to-NCP) NCP Hardware Reset</t>
+<t><spanx style="verb">INT</spanx>:  (NCP-to-AP) Host Interrupt</t>
+<t><spanx style="verb">RES</spanx>:  (AP-to-NCP) NCP Hardware Reset</t>
 </list>
 </t>
-<t>The <spanx style="verb">INT</spanx> signal is used by the NCP to indicate to the OS that the NCP has frames pending to send to it. When asserted, the OS SHOULD initiate a SPI transaction in a timely manner.
+<t>The <spanx style="verb">INT</spanx> signal is used by the NCP to indicate to the AP that the NCP has frames pending to send to it. When asserted, the AP SHOULD initiate a SPI transaction in a timely manner.
 </t>
 <t>We RECOMMEND the following SPI properties:
 </t>
@@ -3245,8 +3611,8 @@ Array of structures containing:
 <t><spanx style="verb">CLK</spanx> is active high.</t>
 <t><spanx style="verb">CLK</spanx> speed is larger than 500 kHz.</t>
 <t>Data is valid on leading edge of <spanx style="verb">CLK</spanx>.</t>
-<t>Data is sent in multiples of 8-bits (octets).</t>
-<t>Octets are sent most-significant bit first.</t>
+<t>Data is sent in multiples of 8-bits (bytes).</t>
+<t>Bytes are sent most-significant bit first.</t>
 </list>
 </t>
 <t>This recommended configuration may be adjusted depending on the individual needs of the application or product.
@@ -3256,7 +3622,7 @@ Array of structures containing:
 <t>Each SPI frame starts with a 5-byte frame header:
 </t>
 <texttable>
-<ttcol align="center">Octets:</ttcol>
+<ttcol align="center">Bytes:</ttcol>
 <ttcol align="center">1</ttcol>
 <ttcol align="center">2</ttcol>
 <ttcol align="center">2</ttcol>
@@ -3288,7 +3654,7 @@ Array of structures containing:
 <t><spanx style="verb">PATTERN</spanx>: These bits are set to a fixed value to help distinguish valid SPI frames from garbage (by explicitly making <spanx style="verb">0xFF</spanx> and <spanx style="verb">0x00</spanx> invalid values). Bit 6 MUST be set to be one and bit 7 MUST be cleared (0). A frame received that has any other values for these bits MUST be dropped.</t>
 </list>
 </t>
-<t>Prior to a sending or receiving a frame, the master MAY send a 5-octet frame with zeros for both the max receive frame size and the the contained frame length. This will induce the slave device to indicate the length of the frame it wants to send (if any) and indicate the largest frame it is capable of receiving at the moment. This allows the master to calculate the size of the next transaction. Alternatively, if the master has a frame to send it can just go ahead and send a frame of that length and determine if the frame was accepted by checking that the <spanx style="verb">RECV_LEN</spanx> from the slave frame is larger than the frame the master just tried to send. If the <spanx style="verb">RECV_LEN</spanx> is smaller then the frame wasn't accepted and will need to be transmitted again.
+<t>Prior to a sending or receiving a frame, the master MAY send a 5-byte frame with zeros for both the max receive frame size and the the contained frame length. This will induce the slave device to indicate the length of the frame it wants to send (if any) and indicate the largest frame it is capable of receiving at the moment. This allows the master to calculate the size of the next transaction. Alternatively, if the master has a frame to send it can just go ahead and send a frame of that length and determine if the frame was accepted by checking that the <spanx style="verb">RECV_LEN</spanx> from the slave frame is larger than the frame the master just tried to send. If the <spanx style="verb">RECV_LEN</spanx> is smaller then the frame wasn't accepted and will need to be transmitted again.
 </t>
 <t>This protocol can be used either unidirectionally or bidirectionally, determined by the behavior of the master and the slave.
 </t>
@@ -3319,7 +3685,7 @@ Array of structures containing:
 <section anchor="test-vector-packed-unsigned-integer" title="Test Vector: Packed Unsigned Integer">
 <texttable>
 <ttcol align="right">Decimal Value</ttcol>
-<ttcol align="left">Packet Octet Encoding</ttcol>
+<ttcol align="left">Packet Byte Encoding</ttcol>
 
 <c>0</c><c><spanx style="verb">00</spanx></c>
 <c>1</c><c><spanx style="verb">01</spanx></c>
