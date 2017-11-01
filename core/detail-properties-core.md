@@ -50,7 +50,7 @@ Figure: PROP_PROTOCOL_VERSION Value Format
 
 `MAJOR_VERSION`
 : The major version number is used to identify backward incompatible
-  differences between protocol versions. The OS **MUST** enter a
+  differences between protocol versions. The AP **MUST** enter a
   FAULT(TODO: Define this) state if the given major version number is
   unsupportable.
 
@@ -58,8 +58,8 @@ Figure: PROP_PROTOCOL_VERSION Value Format
 : The minor version number is used to identify backward-compatible
   differences between protocol versions. A mismatch between the
   advertised minor version number and the minor version that is
-  supported by the OS **SHOULD NOT** be fatal to the operation of the
-  OS.
+  supported by the AP **SHOULD NOT** be fatal to the operation of the
+  AP.
 
 This document describes major version 4, minor version 3 of this
 protocol. (TODO: UPDATE THIS)
@@ -138,7 +138,7 @@ Code    | Network protocol
 2       | ZigBee IP(TM)
 3       | Thread(R)
 
-The OS **MUST** enter a FAULT state if it does not recognize the
+The AP **MUST** enter a FAULT state if it does not recognize the
 network protocol given by the NCP.
 
 ### PROP 4: PROP_INTERFACE_VENDOR_ID {#prop-interface-vendor-id}
@@ -200,7 +200,7 @@ identical across all implemented NLIs.
     * `CAP_POWER_STATE`: Required when writable
 * See Also: (#prop-mac-data-poll-period)
 
-A single octet coded that indicates the current power state of the
+A single byte coded that indicates the current power state of the
 NCP. Setting this property allows controls of the current NCP power
 state. The following table enumerates the standard codes and their
 significance.
@@ -281,11 +281,11 @@ of `STATUS_ALREADY`.
 * Units: Enumeration
 * Post-Reset Value: `HOST_POWER_STATE_ONLINE`
 
-Describes the current power state of the *OS*. This property is used
-by the OS to inform the NCP when it has changed power states. The NCP
+Describes the current power state of the *AP*. This property is used
+by the AP to inform the NCP when it has changed power states. The NCP
 can then use this state to determine which properties need
 asynchronous updates. Enumeration is encoded as a single unsigned
-octet.
+byte.
 
 The following table enumerates the standard codes and their significance.
 
@@ -305,22 +305,22 @@ Code| Name
   -- -->
 
 `HOST_POWER_STATE_OFFLINE`
-: OS is physically powered off and cannot be awakened by the NCP.
+: AP is physically powered off and cannot be awakened by the NCP.
 
 `HOST_POWER_STATE_DEEP_SLEEP`
-: OS is in a deep low power state and will require a long time to
+: AP is in a deep low power state and will require a long time to
   wake. In this state, the NCP **MUST NOT** send any commands, including
   any commands that contain network packets, prior to signaling the host
   explicitly to awaken and receiving a signal to update the state to
   `HOST_POWER_STATE_ONLINE`.
 
 `HOST_POWER_STATE_LOW_POWER`
-: OS is in a low power state and can be awakened quickly.
+: AP is in a low power state and can be awakened quickly.
 
 `HOST_POWER_STATE_ONLINE`
-: OS is powered for full responsiveness.
+: AP is powered for full responsiveness.
 
-After the OS sends `CMD_PROP_VALUE_SET` for this property with a value
+After the AP sends `CMD_PROP_VALUE_SET` for this property with a value
 other than `HOST_POWER_STATE_ONLINE`, it **SHOULD** wait for the NCP
 to acknowledge the property update (with a `CMD_VALUE_IS` command)
 before entering the specified power state.
@@ -331,22 +331,22 @@ the `HOST_POWER_STATE_ONLINE` value.
 
 When the state is not `HOST_POWER_STATE_ONLINE`, the NCP **SHOULD
 NOT** send any commands except important notifications that warrant
-awakening the OS host, and the NCP **MUST NOT** send any informative
+awakening the AP host, and the NCP **MUST NOT** send any informative
 messages on `PROP_DEBUG_STREAM`.
 
-The OS **MUST NOT** send a value of `HOST_POWER_STATE` other than one
+The AP **MUST NOT** send a value of `HOST_POWER_STATE` other than one
 of the standard codes defined here. If the NCP receives a value other
 than a standard code, then it **SHOULD** set the state to
 `HOST_POWER_STATE_LOW_POWER`.
 
 If the NCP has the `CAP_UNSOL_UPDATE_FILTER` capability, any
 unsolicited property updates masked by `PROP_UNSOL_UPDATE_FILTER`
-should be honored while the OS indicates it is in a low-power state.
+should be honored while the AP indicates it is in a low-power state.
 After resuming to the `HOST_POWER_STATE_ONLINE` state, the value of
 `PROP_UNSOL_UPDATE_FILTER` **MUST** be unchanged from the value
-assigned prior to the OS indicating it was entering a low-power state.
+assigned prior to the AP indicating it was entering a low-power state.
 
-The OS **MUST** use NLI 0 with commands using this property. The NCP
+The AP **MUST** use NLI 0 with commands using this property. The NCP
 **SHOULD** explicitly fail to process commands setting this property
 if NLI is not zero. The operational semantics of this property when
 NLI is not zero are not specified.
@@ -367,10 +367,10 @@ Contains a list of property IDs which are *excluded* from generating
 unsolicited value updates. This property **MUST** be empty after NCP
 reset.
 
-In other words, the OS may opt-out of unsolicited property updates for
+In other words, the AP may opt-out of unsolicited property updates for
 a specific property by adding that property id to this list.
 
-The OS **SHOULD NOT** add properties to this list which are not
+The AP **SHOULD NOT** add properties to this list which are not
 present in `PROP_UNSOL_UPDATE_LIST`. If such properties are added, the
 NCP **MUST** ignore the unsupported properties.
 
@@ -412,7 +412,7 @@ The NCP **MUST NOT** change the value of this property after sending a
 
 Note: not all properties that support unsolicited updates need to be
 listed here. Some properties, network media scan results for example,
-are only generated due to direct action on the part of the OS, so
+are only generated due to direct action on the part of the AP, so
 those properties **SHOULD NOT** not be included in this list.
 
 ## Stream Properties {#prop-stream}
@@ -425,13 +425,13 @@ those properties **SHOULD NOT** not be included in this list.
 * Value Type: UTF8 Fragment
 
 This stream provides human-readable debugging output which may be
-displayed in the OS logs. It is intended to be treated as a one-way
-virtual serial stream. The OS **MUST NOT** assume that each emission
-of this property is self-contained, instead the OS must use newline
+displayed in the AP logs. It is intended to be treated as a one-way
+virtual serial stream. The AP **MUST NOT** assume that each emission
+of this property is self-contained, instead the AP must use newline
 characters for that purpose.
 
 The location of newline characters **MUST NOT** not assumed by the
-OS: it is the NCP's responsibility to insert newline characters
+AP: it is the NCP's responsibility to insert newline characters
 where needed, just like with any other text stream.
 
 The emitted data is UTF8-encoded without any zero termination. Note
@@ -469,7 +469,7 @@ packets. Support for this feature is indicated by the presence of the
 If the capability `CAP_WRITABLE_RAW_STREAM` is set, then packets
 written to this stream with `CMD_PROP_VALUE_SET` will be sent out over
 the radio. This allows the caller to use the network directly, with
-the full network layer stack being implemented on the OS instead of
+the full network layer stack being implemented on the AP instead of
 the NCP.
 
 #### Frame Metadata Format {#frame-metadata-format}

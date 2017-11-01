@@ -2,7 +2,7 @@
 
 ## Test Vector: Packed Unsigned Integer
 
-Decimal Value | Packet Octet Encoding
+Decimal Value | Packet Byte Encoding
 -------------:|:----------------------
             0 | `00`
             1 | `01`

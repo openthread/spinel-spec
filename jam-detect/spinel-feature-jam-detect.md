@@ -16,7 +16,7 @@ presence of the `CAP_JAM_DETECT` (value 6) capability in `PROP_CAPS`.
 * Default Value: false
 * REQUIRED for `CAP_JAM_DETECT`
 
-Octets: |       1
+Bytes: |       1
 --------|-----------------
 Fields: | `PROP_JAM_DETECT_ENABLE`
 
@@ -32,7 +32,7 @@ capability is present in `PROP_CAPS`.
 * Packed-Encoding: `b`
 * REQUIRED for `CAP_JAM_DETECT`
 
-Octets: |       1
+Bytes: |       1
 --------|-----------------
 Fields: | `PROP_JAM_DETECTED`
 

@@ -26,8 +26,8 @@ NCP SHALL send one of the following commands (with the same property key that
 was used for the sending command) to indicate success:
 
 * `CMD_PROP_VALUE_IS` ((#cmd-prop-value-is))
-*  `CMD_PROP_VALUE_INSERTED` ((#cmd-prop-value-inserted))
-*  `CMD_PROP_VALUE_REMOVED` ((#cmd-prop-value-removed))
+* `CMD_PROP_VALUE_INSERTED` ((#cmd-prop-value-inserted))
+* `CMD_PROP_VALUE_REMOVED` ((#cmd-prop-value-removed))
 
 When an NCP has successfully handled a `CMD_PROP_VALUE_INSERT` or
 `CMD_PROP_VALUE_REMOVE` command on a multi-value property, the NCP
@@ -46,9 +46,9 @@ the software running on the host is in sync with the behavior of the NCP.
 Some properties support indicating changes in their state asynchronously
 by sending the following commands with a TID value of 0:
 
-*	`CMD_PROP_VALUE_IS` ((#cmd-prop-value-is))
-*   `CMD_PROP_VALUE_INSERTED` ((#cmd-prop-value-inserted))
-*   `CMD_PROP_VALUE_REMOVED` ((#cmd-prop-value-removed))
+* `CMD_PROP_VALUE_IS` ((#cmd-prop-value-is))
+* `CMD_PROP_VALUE_INSERTED` ((#cmd-prop-value-inserted))
+* `CMD_PROP_VALUE_REMOVED` ((#cmd-prop-value-removed))
 
 Asynchronous updates for specific properties can be enabled or disabled
 using `PROP_UNSOL_UPDATE_FILTER`, documented in (#prop-unsol-update-filter).
@@ -87,8 +87,8 @@ Stream | 112 - 127  | 5,888 - 6,143     | (#prop-core)
 Debug  | no primary | 16,384 - 17,407   | (#prop-debug)
 
 Note: most of the property identifier sections have two reserved
-ranges: a "primary" range (which is encoded as a single octet) and an
-"extended" range (which is encoded as two octets). Properties used
+ranges: a "primary" range (which is encoded as a single byte) and an
+"extended" range (which is encoded as two bytes). Properties used
 very frequently are generally allocated from the "primary" range.
 
 EDITOR: the IANA registration template for Spinel standard properties identifiers requires the "Section Name" and "Range Identifier" parameters to facilitate the assignment of a suitable number from the appropriate range.

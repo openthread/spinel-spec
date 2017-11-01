@@ -1,6 +1,6 @@
 # Feature: Host Buffer Offload
 
-The memory on an NCP may be much more limited than the memory on the host processor of the OS. In such situations, it is sometimes useful for the NCP to offload buffers to the OS temporarily so that it can perform other operations.
+The memory on an NCP may be much more limited than the memory on the host processor of the AP. In such situations, it is sometimes useful for the NCP to offload buffers to the AP temporarily so that it can perform other operations.
 
 Host buffer offload is an optional NCP capability that, when present, allows the NCP to store data buffers on the host processor that can be recalled at a later time.
 
@@ -52,11 +52,11 @@ The presence of this feature can be detected by the host by checking for the pre
 * Type: Read-Write
 * Packed-Encoding: `L`
 
-Octets: |       4
+Bytes: |       4
 :-------|:----------------
 Fields: | `PROP_HBO_MEM_MAX`
 
-Describes the number of bytes that may be offloaded from the NCP to the OS. Default value is zero, so this property must be set by the OS to a non-zero value before the NCP will begin offloading blocks.
+Describes the number of bytes that may be offloaded from the NCP to the AP. Default value is zero, so this property must be set by the AP to a non-zero value before the NCP will begin offloading blocks.
 
 This value is encoded as an unsigned 32-bit integer.
 
@@ -67,11 +67,11 @@ This property is only available if the `CAP_HBO` capability is present in `PROP_
 * Type: Read-Write
 * Packed-Encoding: `S`
 
-Octets: |       2
+Bytes: |       2
 :-------|:----------------
 Fields: | `PROP_HBO_BLOCK_MAX`
 
-Describes the number of blocks that may be offloaded from the NCP to the OS. Default value is 32. Setting this value to zero will cause OS block offload to be effectively disabled.
+Describes the number of blocks that may be offloaded from the NCP to the AP. Default value is 32. Setting this value to zero will cause AP block offload to be effectively disabled.
 
 This value is encoded as an unsigned 16-bit integer.
 

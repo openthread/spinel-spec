@@ -3,7 +3,7 @@
 NCP
 : Network Control Processor.
 
-OS
+AP
 : Operating System, i.e. the IPv6 node using Spinel to control and manage one or more of its IPv6 network interfaces.
 
 PHY

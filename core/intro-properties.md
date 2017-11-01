@@ -34,7 +34,7 @@ What follows is a overview of how properties work.
 
 ## Property Operators {#property-operators}
 
-Conceptually, the following operations are used by the OS to query or change a property's value:
+Conceptually, the following operations are used by the AP to query or change a property's value:
 
 *   `GET`
 *   `SET`
@@ -98,8 +98,8 @@ Stream properties represent dynamic streams of data rather than a specific value
 *   Raw packet stream ((#prop-stream-raw))
 *   Debug message stream ((#prop-stream-debug))
 
-All such properties emit changes asynchronously using the `IS` operator, sent from the NCP to the OS. For example, as IPv6 traffic is received by the NCP, the IPv6 packets are sent to the OS by way of asynchronous `IS` operations for the network packet stream property.
+All such properties emit changes asynchronously using the `IS` operator, sent from the NCP to the AP. For example, as IPv6 traffic is received by the NCP, the IPv6 packets are sent to the AP by way of asynchronous `IS` operations for the network packet stream property.
 
-Some of these properties also support the OS sending data back to the NCP using the `SET` operation. For example, this is how the OS sends IPv6 traffic to the NCP.
+Some of these properties also support the AP sending data back to the NCP using the `SET` operation. For example, this is how the AP sends IPv6 traffic to the NCP.
 
 The behavior and meaning of the `GET`, `INSERT`, `REMOVE`, `INSERTED`, and `REMOVED` operations for stream properties is undefined and SHOULD NOT be used.

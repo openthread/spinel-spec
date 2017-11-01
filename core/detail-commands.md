@@ -2,8 +2,8 @@
 
 This section defines the standard commands used in all Spinel protocol interactions. Each command is defined for one of the following two contexts:
 
-* OS -> NCP: commands sent by the operating system (OS) to the network control processor (NCP).
-* NCP -> OS: commands sent by the network control processor (NCP) to the operating system (OS).
+* AP -> NCP: commands sent by the Application Processor (AP) to the Network Co-Processor (NCP).
+* NCP -> AP: commands sent by the Network Co-Processor (NCP) to the Application Processor (AP).
 
 A conforming implementation MAY transmit any command defined for its operating context, and MUST process any command received for its operating context, according to the operational semantics defined in this section.
 
@@ -17,7 +17,7 @@ CMD Number            | Reservation policy
 16,384 - 1,999,999    | Unassigned
 2,000,000 - 2,097,151 | Experimental Use
 
-## CMD 0: (OS -> NCP) CMD_NOOP {#cmd-noop}
+## CMD 0: (AP -> NCP) CMD_NOOP {#cmd-noop}
 
 ~~~
  0                   1
@@ -35,7 +35,7 @@ The command payload for this command SHOULD be empty. The receiver MUST ignore a
 
 There is no error condition for this command.
 
-## CMD 1: (OS -> NCP) CMD_RESET {#cmd-reset}
+## CMD 1: (AP -> NCP) CMD_RESET {#cmd-reset}
 
      0                   1
      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
@@ -44,13 +44,13 @@ There is no error condition for this command.
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 Figure: Structure of CMD_RESET
 
-Reset NCP. Commands the NCP to perform a software reset. Due to the nature of this command, the TID is ignored. The OS should instead wait for a `CMD_PROP_VALUE_IS` command from the NCP indicating `PROP_LAST_STATUS` has been set to `STATUS_RESET_SOFTWARE` (see (#status-codes)).
+Reset NCP. Commands the NCP to perform a software reset. Due to the nature of this command, the TID is ignored. The AP should instead wait for a `CMD_PROP_VALUE_IS` command from the NCP indicating `PROP_LAST_STATUS` has been set to `STATUS_RESET_SOFTWARE` (see (#status-codes)).
 
 The command payload SHOULD be empty, and it SHOULD NOT be processed.
 
 If an error occurs, the value of the emitted `PROP_LAST_STATUS` will be set accordingly to the status code for the error.
 
-## CMD 2: (OS -> NCP) CMD_PROP_VALUE_GET {#cmd-prop-value-get}
+## CMD 2: (AP -> NCP) CMD_PROP_VALUE_GET {#cmd-prop-value-get}
 
 ~~~
   0                   1                   2                   3
@@ -67,7 +67,7 @@ The payload for this command is the property identifier encoded in the packed un
 
 If an error occurs, the value of the emitted `PROP_LAST_STATUS` will be set accordingly to the status code for the error.
 
-## CMD 3: (OS -> NCP) CMD_PROP_VALUE_SET {#cmd-prop-value-set}
+## CMD 3: (AP -> NCP) CMD_PROP_VALUE_SET {#cmd-prop-value-set}
 
 ~~~
   0                   1                   2                   3
@@ -86,7 +86,7 @@ The payload for this command is the property identifier encoded in the packed un
 
 If an error occurs, the value of the emitted `PROP_LAST_STATUS` will be set accordingly to the status code for the error.
 
-## CMD 4: (OS -> NCP) CMD_PROP_VALUE_INSERT {#cmd-prop-value-insert}
+## CMD 4: (AP -> NCP) CMD_PROP_VALUE_INSERT {#cmd-prop-value-insert}
 
 ~~~
   0                   1                   2                   3
@@ -107,7 +107,7 @@ If the type signature of the property specified by `PROP_ID` consists of a singl
 
 If an error occurs, the value of the emitted `PROP_LAST_STATUS` will be set accordingly to the status code for the error.
 
-## CMD 5: (OS -> NCP) CMD_PROP_VALUE_REMOVE {#cmd-prop-value-remove}
+## CMD 5: (AP -> NCP) CMD_PROP_VALUE_REMOVE {#cmd-prop-value-remove}
 
 ~~~
   0                   1                   2                   3
@@ -130,7 +130,7 @@ If the type signature of the property specified by `PROP_ID` consists of a singl
 
 If an error occurs, the value of the emitted `PROP_LAST_STATUS` will be set accordingly to the status code for the error.
 
-## CMD 6: (NCP -> OS) CMD_PROP_VALUE_IS {#cmd-prop-value-is}
+## CMD 6: (NCP -> AP) CMD_PROP_VALUE_IS {#cmd-prop-value-is}
 
 ~~~
   0                   1                   2                   3
@@ -143,11 +143,11 @@ If an error occurs, the value of the emitted `PROP_LAST_STATUS` will be set acco
 ~~~
 Figure: Structure of CMD_PROP_VALUE_SET
 
-Property value notification. This command can be sent by the NCP in response to a previous command from the OS, or it can be sent by the NCP in an unsolicited fashion to notify the OS of various state changes asynchronously.
+Property value notification. This command can be sent by the NCP in response to a previous command from the AP, or it can be sent by the NCP in an unsolicited fashion to notify the AP of various state changes asynchronously.
 
 The payload for this command is the property identifier encoded in the packed unsigned integer format described in (#packed-unsigned-integer), followed by the current value of the given property.
 
-## CMD 7: (NCP -> OS) CMD_PROP_VALUE_INSERTED {#cmd-prop-value-inserted}
+## CMD 7: (NCP -> AP) CMD_PROP_VALUE_INSERTED {#cmd-prop-value-inserted}
 
 ~~~
   0                   1
@@ -162,7 +162,7 @@ The payload for this command is the property identifier encoded in the packed un
 ~~~
 Figure: Structure of CMD_PROP_VALUE_INSERTED
 
-Property value insertion notification. This command can be sent by the NCP in response to the `CMD_PROP_VALUE_INSERT` command, or it can be sent by the NCP in an unsolicited fashion to notify the OS of various state changes asynchronously.
+Property value insertion notification. This command can be sent by the NCP in response to the `CMD_PROP_VALUE_INSERT` command, or it can be sent by the NCP in an unsolicited fashion to notify the AP of various state changes asynchronously.
 
 The payload for this command is the property identifier encoded in the packed unsigned integer format described in (#packed-unsigned-integer), followed by the value that was inserted into the given property.
 
@@ -170,7 +170,7 @@ If the type signature of the property specified by `PROP_ID` consists of a singl
 
 The resulting order of items in the list is defined by the given property.
 
-## CMD 8: (NCP -> OS) CMD_PROP_VALUE_REMOVED {#cmd-prop-value-removed}
+## CMD 8: (NCP -> AP) CMD_PROP_VALUE_REMOVED {#cmd-prop-value-removed}
 
 ~~~
   0                   1
@@ -185,7 +185,7 @@ The resulting order of items in the list is defined by the given property.
 ~~~
 Figure: Structure of CMD_PROP_VALUE_REMOVED
 
-Property value removal notification command. This command can be sent by the NCP in response to the `CMD_PROP_VALUE_REMOVE` command, or it can be sent by the NCP in an unsolicited fashion to notify the OS of various state changes asynchronously.
+Property value removal notification command. This command can be sent by the NCP in response to the `CMD_PROP_VALUE_REMOVE` command, or it can be sent by the NCP in an unsolicited fashion to notify the AP of various state changes asynchronously.
 
 Note that this command operates *by value*, not by index!
 
@@ -195,7 +195,7 @@ If the type signature of the property specified by `PROP_ID` consists of a singl
 
 The resulting order of items in the list is defined by the given property.
 
-## CMD 18: (OS -> NCP) CMD_PEEK {#cmd-peek}
+## CMD 18: (AP -> NCP) CMD_PEEK {#cmd-peek}
 
 ~~~
   0                   1                   2                   3
@@ -209,7 +209,7 @@ The resulting order of items in the list is defined by the given property.
 Figure: Structure of CMD_PEEK
 
 
-This command allows the NCP to fetch values from the RAM of the NCP for debugging purposes. Upon success, `CMD_PEEK_RET` is sent from the NCP to the OS. Upon failure, `PROP_LAST_STATUS` is emitted with the appropriate error indication.
+This command allows the NCP to fetch values from the RAM of the NCP for debugging purposes. Upon success, `CMD_PEEK_RET` is sent from the NCP to the AP. Upon failure, `PROP_LAST_STATUS` is emitted with the appropriate error indication.
 
 Due to the low-level nature of this command, certain error conditions may induce the NCP to reset.
 
@@ -219,7 +219,7 @@ The implementation of this command has security implications. See (#security-con
 
 This command requires the capability `CAP_PEEK_POKE` to be present.
 
-## CMD 19: (NCP -> OS) CMD_PEEK_RET {#cmd-peek-ret}
+## CMD 19: (NCP -> AP) CMD_PEEK_RET {#cmd-peek-ret}
 
 
 ~~~
@@ -240,7 +240,7 @@ This command contains the contents of memory that was requested by a previous ca
 
 This command requires the capability `CAP_PEEK_POKE` to be present.
 
-## CMD 20: (OS -> NCP) CMD_POKE {#cmd-poke}
+## CMD 20: (AP -> NCP) CMD_POKE {#cmd-poke}
 
 ~~~
   0                   1                   2                   3
@@ -263,7 +263,7 @@ The implementation of this command has security implications. See (#security-con
 
 This command requires the capability `CAP_PEEK_POKE` to be present.
 
-## CMD 21: (OS -> NCP) CMD_PROP_VALUE_MULTI_GET {#cmd-prop-value-multi-get}
+## CMD 21: (AP -> NCP) CMD_PROP_VALUE_MULTI_GET {#cmd-prop-value-multi-get}
 
 *   Required Capability: `CAP_CMD_MULTI`
 
@@ -283,13 +283,13 @@ This command requires the capability `CAP_PEEK_POKE` to be present.
 ~~~
 Figure: Structure of CMD_PROP_VALUE_MULTI_GET
 
-Fetch the value of multiple properties in one command. Arguments are a list of property IDs. If all properties are fetched successfully, a `CMD_PROP_VALUES_ARE` command is sent back to the OS containing the property identifier and value of each fetched property. The order of the results in `CMD_PROP_VALUES_ARE` match the order of properties given in `CMD_PROP_VALUE_GET`.
+Fetch the value of multiple properties in one command. Arguments are a list of property IDs. If all properties are fetched successfully, a `CMD_PROP_VALUES_ARE` command is sent back to the AP containing the property identifier and value of each fetched property. The order of the results in `CMD_PROP_VALUES_ARE` match the order of properties given in `CMD_PROP_VALUE_GET`.
 
 Errors fetching individual properties are reflected as indicating a change to `PROP_LAST_STATUS` for that property's place.
 
 Not all properties can be fetched using this method. As a general rule of thumb, any property that blocks when getting will fail for that individual property with `STATUS_INVALID_COMMAND_FOR_PROP`.
 
-## CMD 22: (OS -> NCP) CMD_PROP_VALUE_MULTI_SET {#cmd-prop-value-multi-set}
+## CMD 22: (AP -> NCP) CMD_PROP_VALUE_MULTI_SET {#cmd-prop-value-multi-set}
 
 *   Required Capability: `CAP_CMD_MULTI`
 
@@ -341,7 +341,7 @@ Not all properties can be set using this method. As a general rule of
 thumb, any property that blocks when setting will fail for that
 individual property with `STATUS_INVALID_COMMAND_FOR_PROP`.
 
-## CMD 23: (NCP -> OS) CMD_PROP_VALUES_ARE {#cmd-prop-values-are}
+## CMD 23: (NCP -> AP) CMD_PROP_VALUES_ARE {#cmd-prop-values-are}
 
 *   Required Capability: `CAP_CMD_MULTI`
 

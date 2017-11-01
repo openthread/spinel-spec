@@ -1,4 +1,4 @@
-# Data Representation
+# Data Representation {#data-representation}
 
 Spinel, being a low-level protocol between two devices which are
 likely to have a little-endian architecture, uses little-endian representations
@@ -17,13 +17,13 @@ Spinel uses Packed Unsigned Integers, or PUIs.
 
 The PUI format used in Spinel is based on the [unsigned integer format
 in EXI][EXI], except that we limit the maximum value to the largest
-value that can be encoded to three octets. The maximum value that
+value that can be encoded to three bytes. The maximum value that
 can be encoded is 2,097,151.
 
 [EXI]: https://www.w3.org/TR/exi/#encodingUnsignedInteger
 
 For all values less than 127, the packed form of the number is simply
-a single octet which directly represents the number. For values larger
+a single byte which directly represents the number. For values larger
 than 127, the following process is used to encode the value:
 
 1.  The unsigned integer is broken up into *n* 7-bit chunks and placed
@@ -44,5 +44,5 @@ Take the value 1337, for example:
          => [B9 0A]
 
 To decode the value, you collect the 7-bit chunks until you find an
-octet with the most significant bit clear.
+byte with the most significant bit clear.
 

@@ -204,14 +204,14 @@ Status Code Range     | Reservation Policy
 
 ## How Status is Indicated
 
-Status codes are sent from the NCP to the OS via `PROP_LAST_STATUS`
+Status codes are sent from the NCP to the AP via `PROP_LAST_STATUS`
 using the `CMD_VALUE_IS` command to indicate the return status of a
 previous command. As with any response, the TID field of the FLAG byte
 is used to correlate the response with the request.
 
 Note that most successfully executed commands do not indicate a last
 status of `STATUS_OK`. The usual way the NCP indicates a successful
-command is to mirror the property change back to the OS. For example,
+command is to mirror the property change back to the AP. For example,
 if you do a `CMD_VALUE_SET` on `PROP_PHY_ENABLED`, the NCP would
 indicate success by responding with a `CMD_VALUE_IS` for
 `PROP_PHY_ENABLED`. If the command failed, `PROP_LAST_STATUS` would be

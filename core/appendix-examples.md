@@ -19,7 +19,7 @@ Check interface type to make sure that it is what we expect:
 * CMD_VALUE_GET:PROP_INTERFACE_TYPE
 * CMD_VALUE_IS:PROP_INTERFACE_TYPE
 
-If the OS supports using vendor-specific commands, the vendor should be verified before using them:
+If the AP supports using vendor-specific commands, the vendor should be verified before using them:
 
 * CMD_VALUE_GET:PROP_VENDOR_ID
 * CMD_VALUE_IS:PROP_VENDOR_ID

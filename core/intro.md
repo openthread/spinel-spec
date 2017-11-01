@@ -18,7 +18,7 @@ drawbacks (See (#appendix-comparison)).
 Spinel is a host-controller protocol designed to address the drawbacks
 of existing protocols and lower implementation and deployment burdens
 by providing a standardized mechanism for the management and control
-of IPv6-based NCPs by general purpose device operating systems (OS).
+of IPv6-based NCPs by general purpose Application Processors (AP).
 
 ## Objectives ##
 

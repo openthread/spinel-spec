@@ -16,11 +16,11 @@ The recommended default UART settings are:
 
 These values may be adjusted depending on the individual needs of the application or product, but some sort of flow control **MUST** be used. Hardware flow control is preferred over software flow control. In the absence of hardware flow control, software flow control (XON/XOFF) **MUST** be used instead.
 
-We also **RECOMMEND** an Arduino-style hardware reset, where the DTR signal is coupled to the `RES` pin through a 0.01 micro-Farad capacitor. This causes the NCP to automatically reset whenever the serial port is opened. At the very least we **RECOMMEND** dedicating one of your OS host pins to controlling the `RES` pin on the NCP, so that you can easily perform a hardware reset if necessary.
+We also **RECOMMEND** an Arduino-style hardware reset, where the DTR signal is coupled to the `RES` pin through a 0.01 micro-Farad capacitor. This causes the NCP to automatically reset whenever the serial port is opened. At the very least we **RECOMMEND** dedicating one of your AP host pins to controlling the `RES` pin on the NCP, so that you can easily perform a hardware reset if necessary.
 
 ### UART Bit Rate Detection ###
 
-When using a UART, the issue of an appropriate bit rate must be considered. 115200 bits/s is the conventional baud rate for many serial peripherals. This rate, however, is slower than the theoretical maximum bitrate of many relevant network interfaces, e.g. the 802.15.4 2.4GHz PHY (250kbit). In most circumstances this mismatch is not significant because the overall bitrate will be much lower than either of these rates, but there are circumstances where a faster UART bitrate is desirable. Thus, this document proposes a simple bitrate detection scheme that can be employed by the OS to detect when the attached NCP is initially running at a higher bitrate.
+When using a UART, the issue of an appropriate bit rate must be considered. 115200 bits/s is the conventional baud rate for many serial peripherals. This rate, however, is slower than the theoretical maximum bitrate of many relevant network interfaces, e.g. the 802.15.4 2.4GHz PHY (250kbit). In most circumstances this mismatch is not significant because the overall bitrate will be much lower than either of these rates, but there are circumstances where a faster UART bitrate is desirable. Thus, this document proposes a simple bitrate detection scheme that can be employed by the AP to detect when the attached NCP is initially running at a higher bitrate.
 
 The algorithm is to send successive NOOP commands to the NCP at increasing bitrates. When a valid `CMD_LAST_STATUS` response has been received, we have identified the correct bitrate.
 
@@ -40,11 +40,11 @@ To transmit a frame with HDLC-lite, the 16-bit CRC must first be appended to the
 
 [KERMIT CRC]: http://reveng.sourceforge.net/crc-catalogue/16.htm#crc.cat.kermit
 
-Individual frames are terminated with a frame delimiter octet called the 'flag' octet (`0x7E`).
+Individual frames are terminated with a frame delimiter byte called the 'flag' byte (`0x7E`).
 
-The following octets values are considered *special* and should be escaped when present in data frames:
+The following bytes values are considered *special* and should be escaped when present in data frames:
 
-Octet Value | Description
+Byte Value | Description
 :-----------|:----------------------
        0x7E | Frame Delimiter (Flag)
        0x7D | Escape Byte
@@ -52,26 +52,26 @@ Octet Value | Description
        0x13 | XOFF
        0xF8 | Vendor-Specific
 
-When present in a data frame, these octet values are escaped by prepending the escape octet (`0x7D`) and XORing the value with `0x20`.
+When present in a data frame, these byte values are escaped by prepending the escape byte (`0x7D`) and XORing the value with `0x20`.
 
 When receiving a frame, the CRC must be verified after the frame is unescaped. If the CRC value does not match what is calculated for the frame data, the frame MUST be discarded. The implementation MAY indicate the failure to higher levels to handle as they see fit, but MUST NOT attempt to process the deceived frame.
 
-Consecutive flag octets are entirely legal and MUST NOT be treated as a framing error. Consecutive flag octets MAY be used as a way to wake up a sleeping NCP.
+Consecutive flag bytes are entirely legal and MUST NOT be treated as a framing error. Consecutive flag bytes MAY be used as a way to wake up a sleeping NCP.
 
-When first establishing a connection to the NCP, it is customary to send one or more flag octets to ensure that any previously received data is discarded.
+When first establishing a connection to the NCP, it is customary to send one or more flag bytes to ensure that any previously received data is discarded.
 
-## SPI Recommendations ###
+## SPI Recommendations ##
 
 We **RECOMMEND** the use of the following standard SPI signals:
 
-*   `CS`:   (OS-to-NCP) Chip Select
-*   `CLK`:  (OS-to-NCP) Clock
+*   `CS`:   (AP-to-NCP) Chip Select
+*   `CLK`:  (AP-to-NCP) Clock
 *   `MOSI`: Master-Output/Slave-Input
 *   `MISO`: Master-Input/Slave-Output
-*   `INT`:  (NCP-to-OS) Host Interrupt
-*   `RES`:  (OS-to-NCP) NCP Hardware Reset
+*   `INT`:  (NCP-to-AP) Host Interrupt
+*   `RES`:  (AP-to-NCP) NCP Hardware Reset
 
-The `INT` signal is used by the NCP to indicate to the OS that the NCP has frames pending to send to it. When asserted, the OS SHOULD initiate a SPI transaction in a timely manner.
+The `INT` signal is used by the NCP to indicate to the AP that the NCP has frames pending to send to it. When asserted, the AP SHOULD initiate a SPI transaction in a timely manner.
 
 We RECOMMEND the following SPI properties:
 
@@ -79,8 +79,8 @@ We RECOMMEND the following SPI properties:
 *   `CLK` is active high.
 *   `CLK` speed is larger than 500 kHz.
 *   Data is valid on leading edge of `CLK`.
-*   Data is sent in multiples of 8-bits (octets).
-*   Octets are sent most-significant bit first.
+*   Data is sent in multiples of 8-bits (bytes).
+*   Bytes are sent most-significant bit first.
 
 This recommended configuration may be adjusted depending on the individual needs of the application or product.
 
@@ -88,7 +88,7 @@ This recommended configuration may be adjusted depending on the individual needs
 
 Each SPI frame starts with a 5-byte frame header:
 
-Octets: |  1  |    2     |     2
+Bytes: |  1  |    2     |     2
 --------|-----|----------|----------
 Fields: | HDR | RECV_LEN | DATA_LEN
 
@@ -109,7 +109,7 @@ The `HDR` byte is defined as:
 *   `RESERVED`: These bits are all reserved for future used. They MUST be cleared to zero and MUST be ignored if set.
 *   `PATTERN`: These bits are set to a fixed value to help distinguish valid SPI frames from garbage (by explicitly making `0xFF` and `0x00` invalid values). Bit 6 MUST be set to be one and bit 7 MUST be cleared (0). A frame received that has any other values for these bits MUST be dropped.
 
-Prior to a sending or receiving a frame, the master MAY send a 5-octet frame with zeros for both the max receive frame size and the the contained frame length. This will induce the slave device to indicate the length of the frame it wants to send (if any) and indicate the largest frame it is capable of receiving at the moment. This allows the master to calculate the size of the next transaction. Alternatively, if the master has a frame to send it can just go ahead and send a frame of that length and determine if the frame was accepted by checking that the `RECV_LEN` from the slave frame is larger than the frame the master just tried to send. If the `RECV_LEN` is smaller then the frame wasn't accepted and will need to be transmitted again.
+Prior to a sending or receiving a frame, the master MAY send a 5-byte frame with zeros for both the max receive frame size and the the contained frame length. This will induce the slave device to indicate the length of the frame it wants to send (if any) and indicate the largest frame it is capable of receiving at the moment. This allows the master to calculate the size of the next transaction. Alternatively, if the master has a frame to send it can just go ahead and send a frame of that length and determine if the frame was accepted by checking that the `RECV_LEN` from the slave frame is larger than the frame the master just tried to send. If the `RECV_LEN` is smaller then the frame wasn't accepted and will need to be transmitted again.
 
 This protocol can be used either unidirectionally or bidirectionally, determined by the behavior of the master and the slave.
 

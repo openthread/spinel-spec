@@ -2,7 +2,7 @@
 
 ## CMD 9: (Host->NCP) CMD_NET_SAVE
 
-Octets: |     1    |      1
+Bytes: |     1    |      1
 :-------|:---------|:-------------
 Fields: | `HEADER` | `CMD_NET_SAVE`
 
@@ -16,7 +16,7 @@ This command is only available if the `CAP_NET_SAVE` capability is set.
 
 ## CMD 10: (Host->NCP) CMD_NET_CLEAR
 
-Octets: |     1    |        1
+Bytes: |     1    |        1
 :-------|:---------|:---------------
 Fields: | `HEADER` | `CMD_NET_CLEAR`
 
@@ -31,7 +31,7 @@ This command is always available independent of the value of `CAP_NET_SAVE` capa
 
 ## CMD 11: (Host->NCP) CMD_NET_RECALL
 
-Octets: |    1   |      1
+Bytes: |    1   |      1
 --------|--------|----------------
 Fields: | HEADER | CMD_NET_RECALL
 
