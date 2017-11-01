@@ -20,6 +20,10 @@ Most multi-byte values are encoded in little-endian order
 (that is, most significant byte first). This is discussed in more detail in
 (#data-representation).
 
+In this document, individual bits are numbered ascending order from
+the most significant bit to the least significant bit. For example, the
+byte value 0x80 has bit zero (0) set and all other bits clear.
+
 This specification makes use of the following terminology:
 
 <!-- RQ -- Alphabetize terminology before finalization. -->
