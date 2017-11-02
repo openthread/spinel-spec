@@ -9,7 +9,7 @@ Expires: May 5, 2018                                    November 1, 2017
 
 
  Spinel: A Protocol for Control and Management of Network Co-Processors
-                   draft-rquattle-spinel-core-cbd8d9e
+                   draft-rquattle-spinel-core-2f476c7
 
 Abstract
 
@@ -230,17 +230,17 @@ Internet-Draft                 Spinel Core                 November 2017
        B.1.2.  HDLC-Lite . . . . . . . . . . . . . . . . . . . . . .  84
      B.2.  SPI Recommendations . . . . . . . . . . . . . . . . . . .  85
        B.2.1.  SPI Framing Protocol  . . . . . . . . . . . . . . . .  86
-     B.3.  I2C Recommendations . . . . . . . . . . . . . . . . . . .  87
-     B.4.  Native USB Recommendations  . . . . . . . . . . . . . . .  87
+     B.3.  I2C Recommendations . . . . . . . . . . . . . . . . . . .  88
+     B.4.  Native USB Recommendations  . . . . . . . . . . . . . . .  88
    Appendix C.  Test Vectors . . . . . . . . . . . . . . . . . . . .  88
      C.1.  Test Vector: Packed Unsigned Integer  . . . . . . . . . .  88
-     C.2.  Test Vector: Reset Command  . . . . . . . . . . . . . . .  88
-     C.3.  Test Vector: Reset Notification . . . . . . . . . . . . .  88
-     C.4.  Test Vector: Inbound IPv6 Packet  . . . . . . . . . . . .  89
-     C.5.  Test Vector: Outbound IPv6 Packet . . . . . . . . . . . .  89
-   Appendix D.  Comparison with other protocols  . . . . . . . . . .  89
-   Appendix E.  Acknowledgments  . . . . . . . . . . . . . . . . . .  91
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  92
+     C.2.  Test Vector: Reset Command  . . . . . . . . . . . . . . .  89
+     C.3.  Test Vector: Reset Notification . . . . . . . . . . . . .  89
+     C.4.  Test Vector: Inbound IPv6 Packet  . . . . . . . . . . . .  90
+     C.5.  Test Vector: Outbound IPv6 Packet . . . . . . . . . . . .  90
+   Appendix D.  Comparison with other protocols  . . . . . . . . . .  90
+   Appendix E.  Acknowledgments  . . . . . . . . . . . . . . . . . .  92
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  93
 
 1.  Introduction
 
@@ -324,11 +324,11 @@ Internet-Draft                 Spinel Core                 November 2017
    most significant byte first).  This is discussed in more detail in
    Section 2.
 
+   In this document, individual bits are numbered ascending order from
+   the most significant bit to the least significant bit.  For example,
+   the byte value 0x80 has bit zero (0) set and all other bits clear.
+
    This specification makes use of the following terminology:
-
-   [CREF1]
-
-   AP
 
 
 
@@ -338,6 +338,9 @@ Quattlebaum & Woodyatt     Expires May 5, 2018                  [Page 6]
 Internet-Draft                 Spinel Core                 November 2017
 
 
+   [CREF1]
+
+   AP
       Application Processor, the host processor to which the NCP is a
       peripheral.
 
@@ -383,9 +386,6 @@ Internet-Draft                 Spinel Core                 November 2017
    Certain types of integers, such as command or property identifiers,
    usually have a value on the wire that is less than 127.  However, in
    order to not preclude the use of values larger than 255, we would
-   need to add an extra byte.  Doing this would add an extra byte to all
-   packets, which can add up in terms of bandwidth.  To address this,
-   Spinel uses Packed Unsigned Integers, or PUIs.
 
 
 
@@ -393,6 +393,10 @@ Quattlebaum & Woodyatt     Expires May 5, 2018                  [Page 7]
 
 Internet-Draft                 Spinel Core                 November 2017
 
+
+   need to add an extra byte.  Doing this would add an extra byte to all
+   packets, which can add up in terms of bandwidth.  To address this,
+   Spinel uses Packed Unsigned Integers, or PUIs.
 
    The PUI format used in Spinel is based on the unsigned integer format
    in EXI [1], except that we limit the maximum value to the largest
@@ -437,10 +441,6 @@ Internet-Draft                 Spinel Core                 November 2017
    the NCP (while also ensuring both reliable and in-order delivery) is
    called the _framing mechanism_. While Spinel does not mandate any
    specific framing mechanism be used, the RECOMMENDED mechanisms are
-   outlined in Appendix B.  This layered approach privides a great deal
-   of implementation flexibility.
-
-
 
 
 
@@ -449,6 +449,9 @@ Quattlebaum & Woodyatt     Expires May 5, 2018                  [Page 8]
 
 Internet-Draft                 Spinel Core                 November 2017
 
+
+   outlined in Appendix B.  This layered approach privides a great deal
+   of implementation flexibility.
 
 3.1.  Frame Format
 
@@ -493,9 +496,6 @@ Internet-Draft                 Spinel Core                 November 2017
    By defining the first two bit in this way we can disambiguate between
    Spinel frames and HCI frames (which always start with either "0x01"
    or "0x04") without any additional framing overhead.  (TODO: Verify)
-
-
-
 
 
 
@@ -4662,6 +4662,8 @@ Internet-Draft                 Spinel Core                 November 2017
    The bitrate MAY also be changed programmatically by adjusting
    "PROP_UART_BITRATE", if implemented.
 
+   (TODO: Define PROP_UART_BITRATE)
+
 B.1.2.  HDLC-Lite
 
    _HDLC-Lite_ is the recommended framing protocol for transmitting
@@ -4674,7 +4676,7 @@ B.1.2.  HDLC-Lite
    appended to the frame.  The CRC function is defined to be CRC-16/
    CCITT, otherwise known as the KERMIT CRC [2].
 
-   Individual frames are terminated with a frame delimiter byte called
+   Individual frames MUST terminated with a frame delimiter byte called
    the 'flag' byte ("0x7E").
 
    The following bytes values are considered _special_ and should be
@@ -4696,8 +4698,6 @@ B.1.2.  HDLC-Lite
    When receiving a frame, the CRC must be verified after the frame is
    unescaped.  If the CRC value does not match what is calculated for
    the frame data, the frame MUST be discarded.  The implementation MAY
-   indicate the failure to higher levels to handle as they see fit, but
-   MUST NOT attempt to process the deceived frame.
 
 
 
@@ -4706,6 +4706,9 @@ Quattlebaum & Woodyatt     Expires May 5, 2018                 [Page 84]
 Internet-Draft                 Spinel Core                 November 2017
 
 
+   indicate the failure to higher levels to handle as they see fit, but
+   MUST NOT attempt to process the deceived frame.
+
    Consecutive flag bytes are entirely legal and MUST NOT be treated as
    a framing error.  Consecutive flag bytes MAY be used as a way to wake
    up a sleeping NCP.
@@ -4713,6 +4716,27 @@ Internet-Draft                 Spinel Core                 November 2017
    When first establishing a connection to the NCP, it is customary to
    send one or more flag bytes to ensure that any previously received
    data is discarded.
+
+B.1.2.1.  Reliability Discussion
+
+   All Spinel framing layers must make guarantees for reliability and
+   in-order delivery.  In this case, we are assuming that the
+   reliability of HDLC-Lite is adequarely implied by both of the two
+   usage scenarios we considered most likely:
+
+   1.  That the NCP and AP are attached to the same physical circuit
+       board, connected via short traces routed over ground planes, with
+       the AP and NCP being an inch or two apart at most.
+
+   2.  That the NCP is connected to the AP as a USB dongle, presenting
+       to the AP as a virtual serial port.
+
+   In both of these cases, the high inherent reliability of the
+   underlying hardware implies that additional reliability guarantees
+   are unnecessary under most circumstances, so we have ommitted them
+   from this particular framing recommendation.  However, if the UART
+   connection reliability is suspect (due to noise or other factors),
+   then a more complex framing mechanism may be required.
 
 B.2.  SPI Recommendations
 
@@ -4729,6 +4753,14 @@ B.2.  SPI Recommendations
    o  "INT": (NCP-to-AP) Host Interrupt
 
    o  "RES": (AP-to-NCP) NCP Hardware Reset
+
+
+
+
+Quattlebaum & Woodyatt     Expires May 5, 2018                 [Page 85]
+
+Internet-Draft                 Spinel Core                 November 2017
+
 
    The "INT" signal is used by the NCP to indicate to the AP that the
    NCP has frames pending to send to it.  When asserted, the AP SHOULD
@@ -4751,38 +4783,40 @@ B.2.  SPI Recommendations
    This recommended configuration may be adjusted depending on the
    individual needs of the application or product.
 
-
-
-
-
-
-
-Quattlebaum & Woodyatt     Expires May 5, 2018                 [Page 85]
-
-Internet-Draft                 Spinel Core                 November 2017
-
-
 B.2.1.  SPI Framing Protocol
 
    Each SPI frame starts with a 5-byte frame header:
 
-                  +---------+-----+----------+----------+
-                  |  Bytes: |  1  |    2     |    2     |
-                  +---------+-----+----------+----------+
-                  | Fields: | HDR | RECV_LEN | DATA_LEN |
-                  +---------+-----+----------+----------+
+               0                   1                   2
+              0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3
+             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|
+             |      HDR      |   RECV_LEN (Little Endian)    |
+             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+             |   DATA_LEN (Little Endian)    |
+             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-   o  "HDR": The first byte is the header byte (defined below)
+                        Diagram of SPI frame header
 
-   o  "RECV_LEN": The second and third bytes indicate the largest frame
-      size that that device is ready to receive.  If zero, then the
-      other device must not send any data.  (Little endian)
+   "HDR" : The first byte is the header byte (defined below)
 
-   o  "DATA_LEN": The fourth and fifth bytes indicate the size of the
-      pending data frame to be sent to the other device.  If this value
-      is equal-to or less-than the number of bytes that the other device
-      is willing to receive, then the data of the frame is immediately
-      after the header.  (Little Endian)
+   RECV_LEN
+      The second and third bytes indicate the largest frame size that
+      that device is ready to receive.  If zero, then the other device
+      must not send any data.  (Little endian)
+
+   DATA_LEN
+      The fourth and fifth bytes indicate the size of the pending data
+      frame to be sent to the other device.  If this value is equal-to
+      or less-than the number of bytes that the other device is willing
+      to receive, then the data of the frame is immediately after the
+      header.  (Little Endian)
+
+
+
+Quattlebaum & Woodyatt     Expires May 5, 2018                 [Page 86]
+
+Internet-Draft                 Spinel Core                 November 2017
+
 
    The "HDR" byte is defined as:
 
@@ -4791,32 +4825,30 @@ B.2.1.  SPI Framing Protocol
                      |RST|CRC|CCF|  RESERVED |PATTERN|
                      +---+---+---+---+---+---+---+---+
 
-   o  "RST": This bit is set when that device has been reset since the
-      last time "CS" was asserted.
+   RST
+      This bit is set when that device has been reset since the last
+      time "CS" was asserted.
 
-   o  "CRC": This bit is set when that device supports writing a 16-bit
-      CRC at the end of the data.  The CRC length is NOT included in
+   CRC
+      This bit is set when that device supports writing a 16-bit CRC at
+      the end of the data.  The CRC length is MUST NOT included in
       DATA_LEN.
 
-   o  "CCF": "CRC Check Failure".  Set if the CRC check on the last
-      received frame failed, cleared to zero otherwise.  This bit is
-      only used if both sides support CRC.
+   CCF
+      "CRC Check Failure".  Set if the CRC check on the last received
+      frame failed, cleared to zero otherwise.  This bit is only used if
+      both sides support CRC.
 
-   o  "RESERVED": These bits are all reserved for future used.  They
-      MUST be cleared to zero and MUST be ignored if set.
+   RESERVED
+      These bits are all reserved for future use.  They MUST be cleared
+      to zero and MUST be ignored if set.
 
-   o  "PATTERN": These bits are set to a fixed value to help distinguish
-      valid SPI frames from garbage (by explicitly making "0xFF" and
-      "0x00" invalid values).  Bit 6 MUST be set to be one and bit 7
-      MUST be cleared (0).  A frame received that has any other values
-      for these bits MUST be dropped.
-
-
-
-Quattlebaum & Woodyatt     Expires May 5, 2018                 [Page 86]
-
-Internet-Draft                 Spinel Core                 November 2017
-
+   PATTERN
+      These bits are set to a fixed value to help distinguish valid SPI
+      frames from garbage (by explicitly making "0xFF" and "0x00"
+      invalid values).  Bit 6 MUST be set to be one and bit 7 MUST be
+      cleared (0).  A frame received that has any other values for these
+      bits MUST be dropped.
 
    Prior to a sending or receiving a frame, the master MAY send a 5-byte
    frame with zeros for both the max receive frame size and the the
@@ -4833,6 +4865,14 @@ Internet-Draft                 Spinel Core                 November 2017
 
    This protocol can be used either unidirectionally or bidirectionally,
    determined by the behavior of the master and the slave.
+
+
+
+
+Quattlebaum & Woodyatt     Expires May 5, 2018                 [Page 87]
+
+Internet-Draft                 Spinel Core                 November 2017
+
 
    If the the master notices "PATTERN" is not set correctly, the master
    should consider the transaction to have failed and try again after 10
@@ -4855,6 +4895,10 @@ Internet-Draft                 Spinel Core                 November 2017
    must be rejected and the "CRC_FAIL" bit on the next frame (and ONLY
    the next frame) MUST be set.
 
+B.2.1.1.  Reliability Discussion
+
+   TODO: Write me!
+
 B.3.  I2C Recommendations
 
    TBD
@@ -4867,16 +4911,24 @@ B.4.  Native USB Recommendations
 
    [CREF15]
 
-
-
-Quattlebaum & Woodyatt     Expires May 5, 2018                 [Page 87]
-
-Internet-Draft                 Spinel Core                 November 2017
-
-
 Appendix C.  Test Vectors
 
 C.1.  Test Vector: Packed Unsigned Integer
+
+
+
+
+
+
+
+
+
+
+
+Quattlebaum & Woodyatt     Expires May 5, 2018                 [Page 88]
+
+Internet-Draft                 Spinel Core                 November 2017
+
 
                  +---------------+----------------------+
                  | Decimal Value | Packet Byte Encoding |
@@ -4925,7 +4977,11 @@ C.3.  Test Vector: Reset Notification
 
 
 
-Quattlebaum & Woodyatt     Expires May 5, 2018                 [Page 88]
+
+
+
+
+Quattlebaum & Woodyatt     Expires May 5, 2018                 [Page 89]
 
 Internet-Draft                 Spinel Core                 November 2017
 
@@ -4981,7 +5037,7 @@ Appendix D.  Comparison with other protocols
 
 
 
-Quattlebaum & Woodyatt     Expires May 5, 2018                 [Page 89]
+Quattlebaum & Woodyatt     Expires May 5, 2018                 [Page 90]
 
 Internet-Draft                 Spinel Core                 November 2017
 
@@ -5037,7 +5093,7 @@ Internet-Draft                 Spinel Core                 November 2017
 
 
 
-Quattlebaum & Woodyatt     Expires May 5, 2018                 [Page 90]
+Quattlebaum & Woodyatt     Expires May 5, 2018                 [Page 91]
 
 Internet-Draft                 Spinel Core                 November 2017
 
@@ -5093,7 +5149,7 @@ Editorial Comments
 
 
 
-Quattlebaum & Woodyatt     Expires May 5, 2018                 [Page 91]
+Quattlebaum & Woodyatt     Expires May 5, 2018                 [Page 92]
 
 Internet-Draft                 Spinel Core                 November 2017
 
@@ -5149,4 +5205,4 @@ Authors' Addresses
 
 
 
-Quattlebaum & Woodyatt     Expires May 5, 2018                 [Page 92]
+Quattlebaum & Woodyatt     Expires May 5, 2018                 [Page 93]

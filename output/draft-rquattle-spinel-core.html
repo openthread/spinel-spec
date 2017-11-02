@@ -530,7 +530,7 @@
   <link rel="schema.dct" href="http://purl.org/dc/terms/" />
 
   <meta name="dct.creator" content="Quattlebaum, R. and J. Woodyatt, Ed." />
-  <meta name="dct.identifier" content="urn:ietf:id:draft-rquattle-spinel-core-cbd8d9e" />
+  <meta name="dct.identifier" content="urn:ietf:id:draft-rquattle-spinel-core-2f476c7" />
   <meta name="dct.issued" scheme="ISO8601" content="2017-11-1" />
   <meta name="dct.abstract" content="This document specifies the core of the Spinel host-controller protocol, which enables a general purpose application processor to manage, control, and offload IPv6 network functions to a Network Co-Processor (NCP) connected via a simple communication link(such as UART, SPI, or USB).  " />
   <meta name="description" content="This document specifies the core of the Spinel host-controller protocol, which enables a general purpose application processor to manage, control, and offload IPv6 network functions to a Network Co-Processor (NCP) connected via a simple communication link(such as UART, SPI, or USB).  " />
@@ -564,7 +564,7 @@
   </table>
 
   <p class="title">Spinel: A Protocol for Control and Management of Network Co-Processors<br />
-  <span class="filename">draft-rquattle-spinel-core-cbd8d9e</span></p>
+  <span class="filename">draft-rquattle-spinel-core-2f476c7</span></p>
   
   <h1 id="rfc.abstract"><a href="#rfc.abstract">Abstract</a></h1>
 <p>This document specifies the core of the Spinel host-controller protocol, which enables a general purpose application processor to manage, control, and offload IPv6 network functions to a Network Co-Processor (NCP) connected via a simple communication link(such as UART, SPI, or USB).  </p>
@@ -918,7 +918,8 @@
 <p id="rfc.section.1.2.p.2">The layout diagrams in this document that show encodings of data in byte sequences use the convention described in Guide for Internet Standards Writers <a href="#RFC2360" class="xref">[RFC2360]</a> section 3.1, Packet Diagrams.  Specifically, bits in bytes are indexed from most significant to least significant, and the least significant bit in a field representing an integer value more than one bit in length is the least significant bit of a the signed or unsigned number, as the case requires.  </p>
 <p id="rfc.section.1.2.p.3">The term "byte" is used in its now-customary sense as a synonym for "byte".  </p>
 <p id="rfc.section.1.2.p.4">Most multi-byte values are encoded in little-endian order (that is, most significant byte first). This is discussed in more detail in <a href="#data-representation" class="xref">Section 2</a>.  </p>
-<p id="rfc.section.1.2.p.5">This specification makes use of the following terminology: </p>
+<p id="rfc.section.1.2.p.5">In this document, individual bits are numbered ascending order from the most significant bit to the least significant bit. For example, the byte value 0x80 has bit zero (0) set and all other bits clear.  </p>
+<p id="rfc.section.1.2.p.6">This specification makes use of the following terminology: </p>
 <p><a id="CREF1" class="info">[CREF1]<span class="info">RQ: Alphabetize terminology before finalization.</span></a></p>
 <p></p>
 
@@ -4246,12 +4247,13 @@
 
 <p> </p>
 <p id="rfc.section.B.1.1.p.5">The bitrate MAY also be changed programmatically by adjusting <samp>PROP_UART_BITRATE</samp>, if implemented.  </p>
+<p id="rfc.section.B.1.1.p.6">(TODO: Define PROP_UART_BITRATE) </p>
 <h1 id="rfc.appendix.B.1.2">
 <a href="#rfc.appendix.B.1.2">B.1.2.</a> <a href="#hdlc-lite" id="hdlc-lite">HDLC-Lite</a>
 </h1>
 <p><em>HDLC-Lite</em> is the recommended framing protocol for transmitting Spinel frames over a UART. HDLC-Lite consists of only the framing, escaping, and CRC parts of the larger HDLC protocol---all other parts of HDLC are omitted. This protocol was chosen because it works well with software flow control and is widely implemented.  </p>
 <p id="rfc.section.B.1.2.p.2">To transmit a frame with HDLC-lite, the 16-bit CRC must first be appended to the frame. The CRC function is defined to be CRC-16/CCITT, otherwise known as the <a href="http://reveng.sourceforge.net/crc-catalogue/16.htm#crc.cat.kermit">KERMIT CRC</a>.  </p>
-<p id="rfc.section.B.1.2.p.3">Individual frames are terminated with a frame delimiter byte called the 'flag' byte (<samp>0x7E</samp>).  </p>
+<p id="rfc.section.B.1.2.p.3">Individual frames MUST terminated with a frame delimiter byte called the 'flag' byte (<samp>0x7E</samp>).  </p>
 <p id="rfc.section.B.1.2.p.4">The following bytes values are considered <em>special</em> and should be escaped when present in data frames: </p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
 <thead><tr>
@@ -4285,6 +4287,19 @@
 <p id="rfc.section.B.1.2.p.6">When receiving a frame, the CRC must be verified after the frame is unescaped. If the CRC value does not match what is calculated for the frame data, the frame MUST be discarded. The implementation MAY indicate the failure to higher levels to handle as they see fit, but MUST NOT attempt to process the deceived frame.  </p>
 <p id="rfc.section.B.1.2.p.7">Consecutive flag bytes are entirely legal and MUST NOT be treated as a framing error. Consecutive flag bytes MAY be used as a way to wake up a sleeping NCP.  </p>
 <p id="rfc.section.B.1.2.p.8">When first establishing a connection to the NCP, it is customary to send one or more flag bytes to ensure that any previously received data is discarded.  </p>
+<h1 id="rfc.appendix.B.1.2.1">
+<a href="#rfc.appendix.B.1.2.1">B.1.2.1.</a> <a href="#reliability-discussion" id="reliability-discussion">Reliability Discussion</a>
+</h1>
+<p id="rfc.section.B.1.2.1.p.1">All Spinel framing layers must make guarantees for reliability and in-order delivery. In this case, we are assuming that the reliability of HDLC-Lite is adequarely implied by both of the two usage scenarios we considered most likely: </p>
+<p></p>
+
+<ol>
+<li>That the NCP and AP are attached to the same physical circuit board, connected via short traces routed over ground planes, with the AP and NCP being an inch or two apart at most.</li>
+<li>That the NCP is connected to the AP as a USB dongle, presenting to the AP as a virtual serial port.</li>
+</ol>
+
+<p> </p>
+<p id="rfc.section.B.1.2.1.p.3">In both of these cases, the high inherent reliability of the underlying hardware implies that additional reliability guarantees are unnecessary under most circumstances, so we have ommitted them from this particular framing recommendation. However, if the UART connection reliability is suspect (due to noise or other factors), then a more complex framing mechanism may be required.  </p>
 <h1 id="rfc.appendix.B.2">
 <a href="#rfc.appendix.B.2">B.2.</a> <a href="#spi-recommendations" id="spi-recommendations">SPI Recommendations</a>
 </h1>
@@ -4329,33 +4344,30 @@
 <a href="#rfc.appendix.B.2.1">B.2.1.</a> <a href="#spi-framing-protocol" id="spi-framing-protocol">SPI Framing Protocol</a>
 </h1>
 <p id="rfc.section.B.2.1.p.1">Each SPI frame starts with a 5-byte frame header: </p>
-<table cellpadding="3" cellspacing="0" class="tt full center">
-<thead><tr>
-<th class="center">Bytes:</th>
-<th class="center">1</th>
-<th class="center">2</th>
-<th class="center">2</th>
-</tr></thead>
-<tbody><tr>
-<td class="center">Fields:</td>
-<td class="center">HDR</td>
-<td class="center">RECV_LEN</td>
-<td class="center">DATA_LEN</td>
-</tr></tbody>
-</table>
+<pre>
+  0                   1                   2
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|
+|      HDR      |   RECV_LEN (Little Endian)    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   DATA_LEN (Little Endian)    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</pre>
+<p class="figure">Diagram of SPI frame header </p>
+<p><samp>HDR</samp> : The first byte is the header byte (defined below) </p>
 <p></p>
 
-<ul>
-<li>
-<samp>HDR</samp>: The first byte is the header byte (defined below)</li>
-<li>
-<samp>RECV_LEN</samp>: The second and third bytes indicate the largest frame size that that device is ready to receive. If zero, then the other device must not send any data. (Little endian)</li>
-<li>
-<samp>DATA_LEN</samp>: The fourth and fifth bytes indicate the size of the pending data frame to be sent to the other device. If this value is equal-to or less-than the number of bytes that the other device is willing to receive, then the data of the frame is immediately after the header. (Little Endian)</li>
-</ul>
+<dl>
+<dt>RECV_LEN</dt>
+<dd style="margin-left: 8">
+<br> The second and third bytes indicate the largest frame size that that device is ready to receive. If zero, then the other device must not send any data. (Little endian)</dd>
+<dt>DATA_LEN</dt>
+<dd style="margin-left: 8">
+<br> The fourth and fifth bytes indicate the size of the pending data frame to be sent to the other device. If this value is equal-to or less-than the number of bytes that the other device is willing to receive, then the data of the frame is immediately after the header. (Little Endian)</dd>
+</dl>
 
 <p> </p>
-<p id="rfc.section.B.2.1.p.3">The <samp>HDR</samp> byte is defined as: </p>
+<p id="rfc.section.B.2.1.p.4">The <samp>HDR</samp> byte is defined as: </p>
 <pre>
   0   1   2   3   4   5   6   7
 +---+---+---+---+---+---+---+---+
@@ -4364,24 +4376,33 @@
 </pre>
 <p></p>
 
-<ul>
-<li>
-<samp>RST</samp>: This bit is set when that device has been reset since the last time <samp>CS</samp> was asserted.</li>
-<li>
-<samp>CRC</samp>: This bit is set when that device supports writing a 16-bit CRC at the end of the data. The CRC length is NOT included in DATA_LEN.</li>
-<li>
-<samp>CCF</samp>: "CRC Check Failure". Set if the CRC check on the last received frame failed, cleared to zero otherwise. This bit is only used if both sides support CRC.</li>
-<li>
-<samp>RESERVED</samp>: These bits are all reserved for future used. They MUST be cleared to zero and MUST be ignored if set.</li>
-<li>
-<samp>PATTERN</samp>: These bits are set to a fixed value to help distinguish valid SPI frames from garbage (by explicitly making <samp>0xFF</samp> and <samp>0x00</samp> invalid values). Bit 6 MUST be set to be one and bit 7 MUST be cleared (0). A frame received that has any other values for these bits MUST be dropped.</li>
-</ul>
+<dl>
+<dt>RST</dt>
+<dd style="margin-left: 8">
+<br> This bit is set when that device has been reset since the last time <samp>CS</samp> was asserted.</dd>
+<dt>CRC</dt>
+<dd style="margin-left: 8">
+<br> This bit is set when that device supports writing a 16-bit CRC at the end of the data. The CRC length is MUST NOT included in DATA_LEN.</dd>
+<dt>CCF</dt>
+<dd style="margin-left: 8">
+<br> "CRC Check Failure". Set if the CRC check on the last received frame failed, cleared to zero otherwise. This bit is only used if both sides support CRC.</dd>
+<dt>RESERVED</dt>
+<dd style="margin-left: 8">
+<br> These bits are all reserved for future use. They MUST be cleared to zero and MUST be ignored if set.</dd>
+<dt>PATTERN</dt>
+<dd style="margin-left: 8">
+<br> These bits are set to a fixed value to help distinguish valid SPI frames from garbage (by explicitly making <samp>0xFF</samp> and <samp>0x00</samp> invalid values). Bit 6 MUST be set to be one and bit 7 MUST be cleared (0). A frame received that has any other values for these bits MUST be dropped.</dd>
+</dl>
 
 <p> </p>
-<p id="rfc.section.B.2.1.p.5">Prior to a sending or receiving a frame, the master MAY send a 5-byte frame with zeros for both the max receive frame size and the the contained frame length. This will induce the slave device to indicate the length of the frame it wants to send (if any) and indicate the largest frame it is capable of receiving at the moment. This allows the master to calculate the size of the next transaction. Alternatively, if the master has a frame to send it can just go ahead and send a frame of that length and determine if the frame was accepted by checking that the <samp>RECV_LEN</samp> from the slave frame is larger than the frame the master just tried to send. If the <samp>RECV_LEN</samp> is smaller then the frame wasn't accepted and will need to be transmitted again.  </p>
-<p id="rfc.section.B.2.1.p.6">This protocol can be used either unidirectionally or bidirectionally, determined by the behavior of the master and the slave.  </p>
-<p id="rfc.section.B.2.1.p.7">If the the master notices <samp>PATTERN</samp> is not set correctly, the master should consider the transaction to have failed and try again after 10 milliseconds, retrying up to 200 times. After unsuccessfully trying 200 times in a row, the master MAY take appropriate remedial action (like a NCP hardware reset, or indicating a communication failure to a user interface).  </p>
-<p id="rfc.section.B.2.1.p.8">At the end of the data of a frame is an optional 16-bit CRC, support for which is indicated by the <samp>CRC</samp> bit of the <samp>HDR</samp> byte being set. If these bits are set for both the master and slave frames, then CRC checking is enabled on both sides, effectively requiring that frame sizes be two bytes longer than would be otherwise required. The CRC is calculated using the same mechanism used for the CRC calculation in HDLC-Lite (See <a href="#hdlc-lite" class="xref">Appendix B.1.2</a>). When both of the <samp>CRC</samp> bits are set, both sides must verify that the <samp>CRC</samp> is valid before accepting the frame. If not enough bytes were clocked out for the CRC to be read, then the frame must be ignored. If enough bytes were clocked out to perform a CRC check, but the CRC check fails, then the frame must be rejected and the <samp>CRC_FAIL</samp> bit on the next frame (and ONLY the next frame) MUST be set.  </p>
+<p id="rfc.section.B.2.1.p.6">Prior to a sending or receiving a frame, the master MAY send a 5-byte frame with zeros for both the max receive frame size and the the contained frame length. This will induce the slave device to indicate the length of the frame it wants to send (if any) and indicate the largest frame it is capable of receiving at the moment. This allows the master to calculate the size of the next transaction. Alternatively, if the master has a frame to send it can just go ahead and send a frame of that length and determine if the frame was accepted by checking that the <samp>RECV_LEN</samp> from the slave frame is larger than the frame the master just tried to send. If the <samp>RECV_LEN</samp> is smaller then the frame wasn't accepted and will need to be transmitted again.  </p>
+<p id="rfc.section.B.2.1.p.7">This protocol can be used either unidirectionally or bidirectionally, determined by the behavior of the master and the slave.  </p>
+<p id="rfc.section.B.2.1.p.8">If the the master notices <samp>PATTERN</samp> is not set correctly, the master should consider the transaction to have failed and try again after 10 milliseconds, retrying up to 200 times. After unsuccessfully trying 200 times in a row, the master MAY take appropriate remedial action (like a NCP hardware reset, or indicating a communication failure to a user interface).  </p>
+<p id="rfc.section.B.2.1.p.9">At the end of the data of a frame is an optional 16-bit CRC, support for which is indicated by the <samp>CRC</samp> bit of the <samp>HDR</samp> byte being set. If these bits are set for both the master and slave frames, then CRC checking is enabled on both sides, effectively requiring that frame sizes be two bytes longer than would be otherwise required. The CRC is calculated using the same mechanism used for the CRC calculation in HDLC-Lite (See <a href="#hdlc-lite" class="xref">Appendix B.1.2</a>). When both of the <samp>CRC</samp> bits are set, both sides must verify that the <samp>CRC</samp> is valid before accepting the frame. If not enough bytes were clocked out for the CRC to be read, then the frame must be ignored. If enough bytes were clocked out to perform a CRC check, but the CRC check fails, then the frame must be rejected and the <samp>CRC_FAIL</samp> bit on the next frame (and ONLY the next frame) MUST be set.  </p>
+<h1 id="rfc.appendix.B.2.1.1">
+<a href="#rfc.appendix.B.2.1.1">B.2.1.1.</a> <a href="#reliability-discussion-1" id="reliability-discussion-1">Reliability Discussion</a>
+</h1>
+<p id="rfc.section.B.2.1.1.p.1">TODO: Write me! </p>
 <h1 id="rfc.appendix.B.3">
 <a href="#rfc.appendix.B.3">B.3.</a> <a href="#i2c-recommendations" id="i2c-recommendations">I2C Recommendations</a>
 </h1>
