@@ -24,3 +24,4 @@ Number, Name, Direction, Reference
 22, CMD_PROP_VALUE_MULTI_SET, AP -> NCP, draft-rquattle-spinel-core
 23, CMD_PROP_VALUES_ARE, NCP -> AP, draft-rquattle-spinel-core
 24, CMD_RESET_NLI, AP -> NCP, draft-rquattle-spinel-core
+25, CMD_ECHO, AP <-> NCP, draft-rquattle-spinel-core

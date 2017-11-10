@@ -412,3 +412,28 @@ The resetting of all of the NLI's state **MUST NOT** cause any asynchronous prop
 updates to be emitted, with the exception of `PROP_STREAM_DEBUG`
 ((#prop-stream-debug)).
 
+## CMD 25: (AP -> NCP) CMD_ECHO {#cmd-echo}
+
+~~~
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|1 0|NLI|  TID  |     CMD 25    |   DATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+~~~
+Figure: Structure of `CMD_ECHO`
+
+Command for the NCP to echo data back to the AP. This can be useful for
+determining if there is some sort of escaping problem with the framing mechanism,
+or for determining round-trip latency.
+
+When the NCP receives this command on a supported NLI, it **MUST** send that
+frame back to the AP exactly as it was received unless the length of `DATA` is
+too large for the given NCP implementation. NCP implementations of this protocol
+**MUST** support  `DATA` lengths of up to 16 bytes, **SHOULD** support `DATA`
+lengths up to 64 bytes, and **MAY** support data lengths up to the framer MTU
+length.
+
+If the echo request from the AP is larger than what the NCP can echo back, the
+NCP **MUST** indicate failure by emitting `STATUS_CMD_TOO_BIG`.
+
