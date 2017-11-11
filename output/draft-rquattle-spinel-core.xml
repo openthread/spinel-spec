@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rfc SYSTEM 'rfc2629.dtd' []>
-<rfc ipr="trust200902" category="std" docName="draft-rquattle-spinel-core-2f476c7">
+<rfc ipr="trust200902" category="std" docName="draft-rquattle-spinel-core-21827d8">
 <?rfc toc="yes"?>
 <?rfc symrefs="yes"?>
 <?rfc sortrefs="yes"?>
@@ -42,7 +42,7 @@
 <uri></uri>
 </address>
 </author>
-<date year="2017" month="November" day="1"/>
+<date year="2017" month="November" day="11"/>
 
 <area>Internet</area>
 <workgroup></workgroup>
@@ -1202,6 +1202,32 @@ MUST NOT treat an NCP software reset as an unexpected reset unless
 The resetting of all of the NLI's state MUST NOT cause any asynchronous property
 updates to be emitted, with the exception of <spanx style="verb">PROP_STREAM_DEBUG</spanx>
 (<xref target="prop-stream-debug"/>).
+</t>
+</section>
+
+<section anchor="cmd-echo" title="CMD 25: (AP -&gt; NCP) CMD_ECHO">
+
+<figure align="center" title="Structure of CMD_ECHO
+"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|1 0|NLI|  TID  |     CMD 25    |   DATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
+<t>Command for the NCP to echo data back to the AP. This can be useful for
+determining if there is some sort of escaping problem with the framing mechanism,
+or for determining round-trip latency.
+</t>
+<t>When the NCP receives this command on a supported NLI, it MUST send that
+frame back to the AP exactly as it was received unless the length of <spanx style="verb">DATA</spanx> is
+too large for the given NCP implementation. NCP implementations of this protocol
+MUST support  <spanx style="verb">DATA</spanx> lengths of up to 16 bytes, SHOULD support <spanx style="verb">DATA</spanx>
+lengths up to 64 bytes, and MAY support data lengths up to the framer MTU
+length.
+</t>
+<t>If the echo request from the AP is larger than what the NCP can echo back, the
+NCP MUST indicate failure by emitting <spanx style="verb">STATUS_CMD_TOO_BIG</spanx>.
 </t>
 </section>
 </section>
@@ -2999,7 +3025,7 @@ section.
 <section anchor="prop-ipv6-ucast-addrs" title="PROP XXXX: PROP_IPV6_UCAST_ADDRS">
 <t>
 <list style="symbols">
-<t>Type: Multiple-Value, Read-Only</t>
+<t>Type: Multiple-Value, Read-Write</t>
 <t>Has Item Length Prefix: Yes</t>
 <t>Asynchronous Updates: Yes</t>
 <t>Required: REQUIRED</t>
@@ -3007,6 +3033,10 @@ section.
 <t>Item Type: Structure</t>
 <t>Post-Reset Value: Empty</t>
 </list>
+</t>
+<t>This property contains all unicast IPv6 addresses currently assigned to this
+NLI. Addresses can be added automatically by the NCP or added manually
+by the AP.
 </t>
 
 <figure align="center" title="Structure of PROP_IPV6_UCAST_ADDRS
@@ -3022,158 +3052,76 @@ section.
 +-                                                             -+
 |                                                               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|     SCOPE     |             FLAGS             |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PREFIX LENGTH | Rsrvd | SCOPE |V|S|N|F|O|D|T|    Reserved     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </artwork></figure>
-<t>This property contains all unicast IPv6 addresses currently assigned to this
-NLI. This includes both automatically assigned addresses and addresses manually
-added by the AP via <spanx style="verb">PROP_IPV6_HOST_UCAST_ADDRS</spanx>.
-</t>
-<t>The AP cannot directly manipulate this property. but it can add new unicast
-IPv6 addresses via the <spanx style="verb">PROP_IPV6_HOST_ON_LINK_PREFIXES</spanx> property.
-</t>
 <t>
 <list style="hanging">
+<t hangText="ADDRESS">
+<vspace />
+IPv6 Address.</t>
+<t hangText="PREFIX LENGTH">
+<vspace />
+The prefix length, in bits. See <xref target="RFC4191"/>.</t>
+<t hangText="Rsv/Reserved">
+<vspace />
+Reserved bits. All bits in reserved fields SHOULD be set to zero by the AP and NCP and
+MUST be ignored by the AP and NCP.</t>
 <t hangText="SCOPE">
 <vspace />
-An enumeration describing the scope of the address. Can be link-local,
-mesh-local, site-local, or global. (TODO: Enumeration TBD)</t>
-<t hangText="FLAGS">
+4-bit integer representing scope of prefix address. See <xref target="ipv6-scope"/>.</t>
+<t hangText="V">
 <vspace />
-Flags describing various properties of the address. Flags are dynamic/static,
-temporary, deprecated, secured <xref target="RFC7217"/>, etc. (TODO: Enumeration TBD)</t>
+1-bit &quot;Address Valid&quot; flag. Support for this flag is REQUIRED.</t>
+<t hangText="S">
+<vspace />
+1-bit &quot;Static Address&quot; flag. Indicates that this address was manually added and will not
+be automatically removed or invalidated.  Support for this flag is REQUIRED.</t>
+<t hangText="N">
+<vspace />
+1-bit &quot;No-DAD&quot; flag. Indicates that duplicate address detection should not be attempted
+on this address. Support for this flag is OPTIONAL.</t>
+<t hangText="F">
+<vspace />
+1-bit &quot;DAD Failed&quot; flag. Indicates that another node on the mesh network is using this
+address.  The AP MUST support this flag.</t>
+<t hangText="O">
+<vspace />
+1-bit &quot;Optimistic&quot; flag.  Support for this flag is OPTIONAL.</t>
+<t hangText="D">
+<vspace />
+1-bit &quot;Deprecated&quot; flag.  Support for this flag is OPTIONAL.</t>
+<t hangText="T">
+<vspace />
+1-bit &quot;Tentative&quot; flag.  Support for this flag is OPTIONAL.</t>
 </list>
+</t>
+<t>The AP and NCP SHOULD ignore any set flags it does not support, and MUST
+clear flags it does not support.
+</t>
+<t>TODO: Consider adding a property that is a bitmask of supported flags?
+</t>
+
+<section anchor="ipv6-scope" title="IPv6 Scope">
+<t>An enumeration describing the scope of the address, value between 0 and 15.
+</t>
+<texttable>
+<ttcol align="center">Value</ttcol>
+<ttcol align="center">Names</ttcol>
+
+<c>1</c><c>IPV6_SCOPE_IFACE</c>
+<c>2</c><c>IPV6_SCOPE_LINK</c>
+<c>3</c><c>IPV6_SCOPE_REALM</c>
+<c>4</c><c>IPV6_SCOPE_ADMIN</c>
+<c>5</c><c>IPV6_SCOPE_SITE</c>
+<c>8</c><c>IPV6_SCOPE_ORG</c>
+<c>14</c><c>IPV6_SCOPE_GLOBAL</c>
+</texttable>
+<t>Figure: Interpretation of SCOPE field
+</t>
+<t>All unspecified values are RESERVED.
 </t>
 </section>
-
-<section anchor="prop-ipv6-host-ucast-addrs" title="PROP XXXX: PROP_IPV6_HOST_UCAST_ADDRS">
-<t>
-<list style="symbols">
-<t>Type: Multiple-Value, Read-Write</t>
-<t>Has Item Length Prefix: Yes</t>
-<t>Asynchronous Updates: Yes</t>
-<t>Required: REQUIRED</t>
-<t>Scope: NLI</t>
-<t>Item Type: Structure</t>
-<t>Post-Reset Value: Empty</t>
-</list>
-</t>
-
-<figure align="center" title="Structure of PROP_IPV6_HOST_UCAST_ADDRS
-"><artwork align="center">
-  0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                                                               |
-+-                                                             -+
-|                                                               |
-+-                        IPv6 ADDRESS                         -+
-|                                                               |
-+-                                                             -+
-|                                                               |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-</artwork></figure>
-<t>Addresses added to this list will be added to PROP_IPV6_UCAST_ADDRS as
-static addresses.
-</t>
-</section>
-
-<section anchor="prop-ipv6-on-link-prefixes" title="PROP XXXX: PROP_IPV6_ON_LINK_PREFIXES">
-<t>
-<list style="symbols">
-<t>Type: Multiple-Value, Read-Only</t>
-<t>Has Item Length Prefix: Yes</t>
-<t>Asynchronous Updates: Yes</t>
-<t>Required: REQUIRED</t>
-<t>Scope: NLI</t>
-<t>Item Type: Structure</t>
-<t>Post-Reset Value: Empty</t>
-</list>
-</t>
-
-<figure align="center" title="Structure of PROP_IPV6_ON_LINK_PREFIXES
-"><artwork align="center">
-  0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                                                               |
-+-                                                             -+
-|                                                               |
-+-                        IPv6 PREFIX                          -+
-|                                                               |
-+-                                                             -+
-|                                                               |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-| PREFIX LENGTH |     SCOPE     |     FLAGS (Little Endian)     |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                        VALID LIFETIME (Little Endian)         |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                      PREFERRED LIFETIME (Little Endian)       |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-</artwork></figure>
-<t>This property contains all on-link or on-mesh IPv6 prefixes that are being
-advertised by routers on this NLI's network, including all prefixes listed in
-<spanx style="verb">PROP_IPV6_HOST_ON_LINK_PREFIXES</spanx>.
-</t>
-<t>The AP cannot directly manipulate this property. but it can add new on-link or on-mesh
-prefixes via the <spanx style="verb">PROP_IPV6_HOST_ON_LINK_PREFIXES</spanx> property.
-</t>
-</section>
-
-<section anchor="prop-ipv6-host-on-link-prefixes" title="PROP XXXX: PROP_IPV6_HOST_ON_LINK_PREFIXES">
-<t>
-<list style="symbols">
-<t>Type: Multiple-Value, Read-Write</t>
-<t>Has Item Length Prefix: Yes</t>
-<t>Asynchronous Updates: Yes</t>
-<t>Required: REQUIRED</t>
-<t>Scope: NLI</t>
-<t>Item Type: Structure</t>
-<t>Post-Reset Value: Empty</t>
-</list>
-</t>
-
-<figure align="center" title="Structure of PROP_IPV6_HOST_ON_LINK_PREFIXES
-"><artwork align="center">
-  0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                                                               |
-+-                                                             -+
-|                                                               |
-+-                        IPv6 PREFIX                          -+
-|                                                               |
-+-                                                             -+
-|                                                               |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-| PREFIX LENGTH |     SCOPE     |     FLAGS (Little Endian)     |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                        VALID LIFETIME (Little Endian)         |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                      PREFERRED LIFETIME (Little Endian)       |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-</artwork></figure>
-<t>This property contains all on-link or on-mesh IPv6 prefixes that <spanx style="emph">this host</spanx> is
-advertising on this NLI's network.
-</t>
-<t>The AP cannot directly manipulate this property. but it can add new on-link or on-mesh
-prefixes via the <spanx style="verb">PROP_IPV6_HOST_ON_LINK_PREFIXES</spanx> property.
-</t>
-<t>When removing prefixes from the list, only the <spanx style="verb">IPv6 PREFIX</spanx> and <spanx style="verb">PREFIX LENGTH</spanx>
-are required.
-</t>
-<t>Some network technologies may limit which nodes have permission to add items
-to this list. In such a case, the following behaviors are acceptable (in order of
-behavior preference):
-</t>
-<t>
-<list style="numbers">
-<t>The command fails with <spanx style="verb">STATUS_SECURITY_ERROR</spanx>.</t>
-<t>The command initially appears to succeed, but a few moments later
-the prefix is asynchronously removed via either <spanx style="verb">CMD_PROP_VALUE_IS</spanx> or
-<spanx style="verb">CMD_PROP_VALUE_REMOVED</spanx>.</t>
-</list>
-</t>
 </section>
 
 <section anchor="prop-ipv6-mcast-addrs" title="PROP XXXX: PROP_IPV6_MCAST_ADDRS">
@@ -3215,7 +3163,7 @@ the NLI to new groups via the <spanx style="verb">PROP_IPV6_HOST_MCAST_ADDRS</sp
 <t>Type: Multiple-Value, Read-Write</t>
 <t>Has Item Length Prefix: Yes</t>
 <t>Asynchronous Updates: No</t>
-<t>Required: REQUIRED</t>
+<t>Required: OPTIONAL</t>
 <t>Scope: NLI</t>
 <t>Item Type: IPv6</t>
 <t>Post-Reset Value: Empty</t>
@@ -3258,7 +3206,7 @@ the item is asynchronously removed via either <spanx style="verb">CMD_PROP_VALUE
 </t>
 </section>
 
-<section anchor="prop-ipv6-routes" title="PROP XXXX: PROP_IPV6_ROUTES">
+<section anchor="prop-ipv6-prefixes" title="PROP XXXX: PROP_IPV6_PREFIXES">
 <t>
 <list style="symbols">
 <t>Type: Multiple-Value, Read-Only</t>
@@ -3271,7 +3219,7 @@ the item is asynchronously removed via either <spanx style="verb">CMD_PROP_VALUE
 </list>
 </t>
 
-<figure align="center" title="Structure of PROP_IPV6_ROUTES
+<figure align="center" title="Structure of PROP_IPV6_PREFIXES
 "><artwork align="center">
   0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -3284,19 +3232,153 @@ the item is asynchronously removed via either <spanx style="verb">CMD_PROP_VALUE
 +-                                                             -+
 |                                                               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-| PREFIX LENGTH |    (TODO: Likely needs more stuff here...)
-+-+-+-+-+-+-+-+-+
+| PREFIX LENGTH |Rsv|PRF| SCOPE |H|M|O|L|A|D|     Reserved      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                        VALID LIFETIME (Little Endian)         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                      PREFERRED LIFETIME (Little Endian)       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++-                                                             -+
+|                                                               |
++-                      ROUTER ADDRESS                         -+
+|                                                               |
++-                                                             -+
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </artwork></figure>
-<t>This property contains <spanx style="emph">all</spanx> prefixes that can be reached via this NLI, <spanx style="strong">both off-link and
-on-link</spanx>. This list MUST NOT include any prefixes listed in <spanx style="verb">PROP_IPV6_HOST_ROUTES</spanx>
-<spanx style="strong">UNLESS</spanx> that route is being advertised by some other node.
+<t>This property contains all IPv6 prefixes that are being
+advertised by routers on this NLI's network, with the exception of prefixes listed
+in <spanx style="verb">PROP_IPV6_HOST_PREFIXES</spanx> with the
+</t>
+<t>The AP cannot directly manipulate this property. but it can add new on-link or on-mesh
+prefixes via the <spanx style="verb">PROP_IPV6_HOST_PREFIXES</spanx> property, which uses the
+same structure.
+</t>
+<t>
+<list style="hanging">
+<t hangText="PREFIX">
+<vspace />
+IPv6 Address Prefix.</t>
+<t hangText="PREFIX LENGTH">
+<vspace />
+The prefix length, in bits. See <xref target="RFC4191"/>. If this is zero, then the entry represents a default
+route. Some network technologies (such as Thread(R)) only support values of 0 and 64.</t>
+<t hangText="Rsv/Reserved">
+<vspace />
+Reserved bits. All bits in reserved fields SHOULD be set to zero by the AP and NCP and
+MUST be ignored by the AP and NCP.</t>
+<t hangText="PRF">
+<vspace />
+Route preference. <xref target="RFC4191"/></t>
+<t hangText="SCOPE">
+<vspace />
+4-bit integer representing scope of prefix address. See <xref target="ipv6-scope"/>.</t>
+<t hangText="H">
+<vspace />
+Host-added flag. If set, this prefix was added via <spanx style="verb">PROP_IPV6_HOST_PREFIXES</spanx> and is
+currently being advertised to other nodes.</t>
+<t hangText="M">
+<vspace />
+1-bit &quot;Managed Address&quot; flag.  When set indicates that ROUTER ADDRESS runs
+a DHCPv6 server for assigning and configuring addresses for this prefix.</t>
+<t hangText="O">
+<vspace />
+1-bit &quot;Other Configuration&quot; flag. When set, it indicates that other configuration information is
+available via DHCPv6.  Examples of such information are DNS-related information or
+information on other  servers within the network.</t>
+<t hangText="L">
+<vspace />
+1-bit On-Link flag. If set, this prefix is considered to be on-link/on-mesh. If clear, this
+router is advertising that they can</t>
+<t hangText="A">
+<vspace />
+1-bit autonomous address-configuration flag.  When set indicates that nodes
+SHOULD automatically configure addresses for this prefix using SLAAC. [TODO:Cite]</t>
+<t hangText="D">
+<vspace />
+1-bit &quot;default route&quot; flag. When set, it indicates that this NLI is a default route for packets
+with a source address in PREFIX.</t>
+<t hangText="VALID LIFETIME">
+<vspace />
+32-bit unsigned integer.  The remaining amount of time (in seconds) that the prefix is
+entry is considered valid. A value of all one bits (0xffffffff) represents infinity.</t>
+<t hangText="PREFERRED LIFETIME">
+<vspace />
+32-bit unsigned integer.  The remaining amount of time (in seconds) that that addresses
+generated from the prefix via stateless address autoconfiguration remain preferred.
+A value of all one bits (0xffffffff) represents infinity. This is ignored unless the <spanx style="verb">A</spanx> flag is set.</t>
+<t hangText="ROUTER ADDRESS">
+<vspace />
+This is the IPv6 address of the router advertising this prefix.</t>
+</list>
 </t>
 </section>
 
-<section anchor="prop-ipv6-host-routes" title="PROP XXXX: PROP_IPV6_HOST_ROUTES">
+<section anchor="prop-ipv6-host-prefixes" title="PROP XXXX: PROP_IPV6_HOST_PREFIXES">
 <t>
 <list style="symbols">
 <t>Type: Multiple-Value, Read-Write</t>
+<t>Has Item Length Prefix: Yes</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required: OPTIONAL</t>
+<t>Scope: NLI</t>
+<t>Item Type: Structure</t>
+<t>Post-Reset Value: Empty</t>
+</list>
+</t>
+
+<figure align="center" title="Structure of PROP_IPV6_HOST_PREFIXES
+"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++-                                                             -+
+|                                                               |
++-                        IPv6 PREFIX                          -+
+|                                                               |
++-                                                             -+
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PREFIX LENGTH |Rsv|PRF| SCOPE |H|M|O|L|A|D|     Reserved      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                        VALID LIFETIME (Little Endian)         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                      PREFERRED LIFETIME (Little Endian)       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
+<t>This property contains all prefixes that <spanx style="emph">this host</spanx> is
+advertising on this NLI's network. The structure is identical to that of
+<spanx style="verb">PROP_IPV6_PREFIXES</spanx>, witht he following exceptions:
+</t>
+<t>
+<list style="symbols">
+<t>The <spanx style="verb">H</spanx> flag is always set when read, and ignored when written.</t>
+<t>There is no <spanx style="verb">ROUTER ADDRESS</spanx> field, since it is implied.</t>
+</list>
+</t>
+<t>When removing prefixes from the list, only the <spanx style="verb">IPv6 PREFIX</spanx> and <spanx style="verb">PREFIX LENGTH</spanx>
+are required to be specified.
+</t>
+<t>Some network technologies MAY limit which nodes have permission to add items
+to this list. In such a case, the following behaviors are acceptable (in order of
+behavior preference):
+</t>
+<t>
+<list style="numbers">
+<t>The command fails with <spanx style="verb">STATUS_SECURITY_ERROR</spanx>.</t>
+<t>The command initially appears to succeed, but a few moments later
+the prefix is asynchronously removed via either <spanx style="verb">CMD_PROP_VALUE_IS</spanx> or
+<spanx style="verb">CMD_PROP_VALUE_REMOVED</spanx>.</t>
+</list>
+</t>
+</section>
+
+<section anchor="prop-ipv6-ext-routes" title="PROP XXXX: PROP_IPV6_EXT_ROUTES">
+<t>
+<list style="symbols">
+<t>Type: Multiple-Value, Read-Only</t>
 <t>Has Item Length Prefix: Yes</t>
 <t>Asynchronous Updates: Yes</t>
 <t>Required: REQUIRED</t>
@@ -3306,7 +3388,7 @@ on-link</spanx>. This list MUST NOT include any prefixes listed in <spanx style=
 </list>
 </t>
 
-<figure align="center" title="Structure of PROP_IPV6_HOST_ROUTES
+<figure align="center" title="Structure of PROP_IPV6_EXT_ROUTES
 "><artwork align="center">
   0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -3319,15 +3401,106 @@ on-link</spanx>. This list MUST NOT include any prefixes listed in <spanx style=
 +-                                                             -+
 |                                                               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-| PREFIX LENGTH |    (TODO: Likely needs more stuff here...)
-+-+-+-+-+-+-+-+-+
+| PREFIX LENGTH |Rsv|PRF| SCOPE |H|           Reserved          |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                        ROUTE LIFETIME (Little Endian)         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++-                                                             -+
+|                                                               |
++-                      ROUTER ADDRESS                         -+
+|                                                               |
++-                                                             -+
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </artwork></figure>
-<t>This property contains all prefixes that the AP is willing to route traffic to on behalf
-of other nodes the current network. This property MUST NOT be populated
-automatically by the NCP. Routes added to this property will be advertised to
-other nodes on the network.
+<t>This property contains all external routes that are being
+advertised by routers on this NLI's network, with the exception of routes listed
+in <spanx style="verb">PROP_IPV6_HOST_EXT_ROUTES</spanx>.
 </t>
-<t>Some network technologies may limit which nodes have permission to add items
+<t>The AP cannot directly manipulate this property. but it can add new on-link or on-mesh
+prefixes via the <spanx style="verb">PROP_IPV6_HOST_EXT_ROUTES</spanx> property, which uses the
+same structure.
+</t>
+<t>
+<list style="hanging">
+<t hangText="PREFIX">
+<vspace />
+TODO: Write me</t>
+<t hangText="PREFIX LENGTH">
+<vspace />
+The prefix length, in bits. See <xref target="RFC4191"/>. If this is zero, then the entry represents a default
+route. Some network technologies (such as Thread(R)) only support values of 0 and 64.</t>
+<t hangText="Rsv/Reserved">
+<vspace />
+Reserved bits. All bits in reserved fields SHOULD be set to zero by the AP and NCP and
+MUST be ignored by the AP and NCP.</t>
+<t hangText="PRF">
+<vspace />
+Route preference. <xref target="RFC4191"/></t>
+<t hangText="SCOPE">
+<vspace />
+4-bit integer representing scope of prefix address. See <xref target="ipv6-scope"/>.</t>
+<t hangText="H">
+<vspace />
+Host-added flag. If set, this prefix was added via <spanx style="verb">PROP_IPV6_HOST_EXT_ROUTES</spanx> and is
+currently being advertised to other nodes.</t>
+<t hangText="ROUTE LIFETIME">
+<vspace />
+32-bit unsigned integer.  The remaining amount of time (in seconds) that this external
+route is considered valid. A value of all one bits (0xffffffff) represents infinity.</t>
+<t hangText="ROUTER ADDRESS">
+<vspace />
+This is the IPv6 address of the router advertising this external route.</t>
+</list>
+</t>
+</section>
+
+<section anchor="prop-ipv6-host-ext-routes" title="PROP XXXX: PROP_IPV6_HOST_EXT_ROUTES">
+<t>
+<list style="symbols">
+<t>Type: Multiple-Value, Read-Write</t>
+<t>Has Item Length Prefix: Yes</t>
+<t>Asynchronous Updates: Yes</t>
+<t>Required: OPTIONAL</t>
+<t>Scope: NLI</t>
+<t>Item Type: Structure</t>
+<t>Post-Reset Value: Empty</t>
+</list>
+</t>
+
+<figure align="center" title="Structure of PROP_IPV6_HOST_EXT_ROUTES
+"><artwork align="center">
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++-                                                             -+
+|                                                               |
++-                        IPv6 PREFIX                          -+
+|                                                               |
++-                                                             -+
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PREFIX LENGTH |Rsv|PRF| SCOPE |H|           Reserved          |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                        ROUTE LIFETIME (Little Endian)         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</artwork></figure>
+<t>This property contains all external routes that <spanx style="emph">this host</spanx> is
+advertising on this NLI's network. The structure is identical to that of
+<spanx style="verb">PROP_IPV6_EXT_ROUTES</spanx>, witht he following exceptions:
+</t>
+<t>
+<list style="symbols">
+<t>The <spanx style="verb">H</spanx> flag is always set when read, and ignored when written.</t>
+<t>There is no <spanx style="verb">ROUTER ADDRESS</spanx> field, since it is implied.</t>
+</list>
+</t>
+<t>When removing prefixes from the list, only the <spanx style="verb">IPv6 PREFIX</spanx> and <spanx style="verb">PREFIX LENGTH</spanx>
+are required to be specified.
+</t>
+<t>Some network technologies MAY limit which nodes have permission to add items
 to this list. In such a case, the following behaviors are acceptable (in order of
 behavior preference):
 </t>
@@ -3335,7 +3508,7 @@ behavior preference):
 <list style="numbers">
 <t>The command fails with <spanx style="verb">STATUS_SECURITY_ERROR</spanx>.</t>
 <t>The command initially appears to succeed, but a few moments later
-the item is asynchronously removed via either <spanx style="verb">CMD_PROP_VALUE_IS</spanx> or
+the prefix is asynchronously removed via either <spanx style="verb">CMD_PROP_VALUE_IS</spanx> or
 <spanx style="verb">CMD_PROP_VALUE_REMOVED</spanx>.</t>
 </list>
 </t>
@@ -3423,9 +3596,9 @@ the item is asynchronously removed via either <spanx style="verb">CMD_PROP_VALUE
 <?rfc include="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.draft-bormann-t2trg-slipmux-01.xml"?>
 <?rfc include="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.1055.xml"?>
 <?rfc include="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2360.xml"?>
+<?rfc include="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.4191.xml"?>
 <?rfc include="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.4944.xml"?>
 <?rfc include="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5424.xml"?>
-<?rfc include="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7217.xml"?>
 </references>
 
 <section anchor="example-sessions" title="Example Sessions">

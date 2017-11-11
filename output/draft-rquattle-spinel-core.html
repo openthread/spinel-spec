@@ -414,6 +414,7 @@
 <link href="#rfc.section.6.14" rel="Chapter" title="6.14 CMD 22: (AP -&gt; NCP) CMD_PROP_VALUE_MULTI_SET">
 <link href="#rfc.section.6.15" rel="Chapter" title="6.15 CMD 23: (NCP -&gt; AP) CMD_PROP_VALUES_ARE">
 <link href="#rfc.section.6.16" rel="Chapter" title="6.16 CMD 24: (AP -&gt; NCP) CMD_RESET_NLI">
+<link href="#rfc.section.6.17" rel="Chapter" title="6.17 CMD 25: (AP -&gt; NCP) CMD_ECHO">
 <link href="#rfc.section.7" rel="Chapter" title="7 Capabilities">
 <link href="#rfc.section.8" rel="Chapter" title="8 Properties">
 <link href="#rfc.section.8.1" rel="Chapter" title="8.1 Command Semantics">
@@ -484,13 +485,12 @@
 <link href="#rfc.section.8.10.4" rel="Chapter" title="8.10.4 PROP 102: PROP_IPV6_MULTICAST_ADDR_TABLE">
 <link href="#rfc.section.8.11" rel="Chapter" title="8.11 RETHINK IPv6 Properties">
 <link href="#rfc.section.8.11.1" rel="Chapter" title="8.11.1 PROP XXXX: PROP_IPV6_UCAST_ADDRS">
-<link href="#rfc.section.8.11.2" rel="Chapter" title="8.11.2 PROP XXXX: PROP_IPV6_HOST_UCAST_ADDRS">
-<link href="#rfc.section.8.11.3" rel="Chapter" title="8.11.3 PROP XXXX: PROP_IPV6_ON_LINK_PREFIXES">
-<link href="#rfc.section.8.11.4" rel="Chapter" title="8.11.4 PROP XXXX: PROP_IPV6_HOST_ON_LINK_PREFIXES">
-<link href="#rfc.section.8.11.5" rel="Chapter" title="8.11.5 PROP XXXX: PROP_IPV6_MCAST_ADDRS">
-<link href="#rfc.section.8.11.6" rel="Chapter" title="8.11.6 PROP XXXX: PROP_IPV6_HOST_MCAST_ADDRS">
-<link href="#rfc.section.8.11.7" rel="Chapter" title="8.11.7 PROP XXXX: PROP_IPV6_ROUTES">
-<link href="#rfc.section.8.11.8" rel="Chapter" title="8.11.8 PROP XXXX: PROP_IPV6_HOST_ROUTES">
+<link href="#rfc.section.8.11.2" rel="Chapter" title="8.11.2 PROP XXXX: PROP_IPV6_MCAST_ADDRS">
+<link href="#rfc.section.8.11.3" rel="Chapter" title="8.11.3 PROP XXXX: PROP_IPV6_HOST_MCAST_ADDRS">
+<link href="#rfc.section.8.11.4" rel="Chapter" title="8.11.4 PROP XXXX: PROP_IPV6_PREFIXES">
+<link href="#rfc.section.8.11.5" rel="Chapter" title="8.11.5 PROP XXXX: PROP_IPV6_HOST_PREFIXES">
+<link href="#rfc.section.8.11.6" rel="Chapter" title="8.11.6 PROP XXXX: PROP_IPV6_EXT_ROUTES">
+<link href="#rfc.section.8.11.7" rel="Chapter" title="8.11.7 PROP XXXX: PROP_IPV6_HOST_EXT_ROUTES">
 <link href="#rfc.section.8.12" rel="Chapter" title="8.12 Debug Properties">
 <link href="#rfc.section.8.12.1" rel="Chapter" title="8.12.1 PROP 16384: PROP_DEBUG_TEST_ASSERT">
 <link href="#rfc.section.8.12.2" rel="Chapter" title="8.12.2 PROP 16385: PROP_DEBUG_NCP_LOG_LEVEL">
@@ -530,8 +530,8 @@
   <link rel="schema.dct" href="http://purl.org/dc/terms/" />
 
   <meta name="dct.creator" content="Quattlebaum, R. and J. Woodyatt, Ed." />
-  <meta name="dct.identifier" content="urn:ietf:id:draft-rquattle-spinel-core-2f476c7" />
-  <meta name="dct.issued" scheme="ISO8601" content="2017-11-1" />
+  <meta name="dct.identifier" content="urn:ietf:id:draft-rquattle-spinel-core-21827d8" />
+  <meta name="dct.issued" scheme="ISO8601" content="2017-11-11" />
   <meta name="dct.abstract" content="This document specifies the core of the Spinel host-controller protocol, which enables a general purpose application processor to manage, control, and offload IPv6 network functions to a Network Co-Processor (NCP) connected via a simple communication link(such as UART, SPI, or USB).  " />
   <meta name="description" content="This document specifies the core of the Spinel host-controller protocol, which enables a general purpose application processor to manage, control, and offload IPv6 network functions to a Network Co-Processor (NCP) connected via a simple communication link(such as UART, SPI, or USB).  " />
 
@@ -555,8 +555,8 @@
 <td class="right">Nest Labs, Inc.</td>
 </tr>
 <tr>
-<td class="left">Expires: May 5, 2018</td>
-<td class="right">November 1, 2017</td>
+<td class="left">Expires: May 15, 2018</td>
+<td class="right">November 11, 2017</td>
 </tr>
 
     	
@@ -564,7 +564,7 @@
   </table>
 
   <p class="title">Spinel: A Protocol for Control and Management of Network Co-Processors<br />
-  <span class="filename">draft-rquattle-spinel-core-2f476c7</span></p>
+  <span class="filename">draft-rquattle-spinel-core-21827d8</span></p>
   
   <h1 id="rfc.abstract"><a href="#rfc.abstract">Abstract</a></h1>
 <p>This document specifies the core of the Spinel host-controller protocol, which enables a general purpose application processor to manage, control, and offload IPv6 network functions to a Network Co-Processor (NCP) connected via a simple communication link(such as UART, SPI, or USB).  </p>
@@ -573,7 +573,7 @@
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at http://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on May 5, 2018.</p>
+<p>This Internet-Draft will expire on May 15, 2018.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2017 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (http://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -662,6 +662,8 @@
 <li>6.15.   <a href="#rfc.section.6.15">CMD 23: (NCP -&gt; AP) CMD_PROP_VALUES_ARE</a>
 </li>
 <li>6.16.   <a href="#rfc.section.6.16">CMD 24: (AP -&gt; NCP) CMD_RESET_NLI</a>
+</li>
+<li>6.17.   <a href="#rfc.section.6.17">CMD 25: (AP -&gt; NCP) CMD_ECHO</a>
 </li>
 </ul><li>7.   <a href="#rfc.section.7">Capabilities</a>
 </li>
@@ -803,19 +805,17 @@
 </li>
 <ul><li>8.11.1.   <a href="#rfc.section.8.11.1">PROP XXXX: PROP_IPV6_UCAST_ADDRS</a>
 </li>
-<li>8.11.2.   <a href="#rfc.section.8.11.2">PROP XXXX: PROP_IPV6_HOST_UCAST_ADDRS</a>
+<li>8.11.2.   <a href="#rfc.section.8.11.2">PROP XXXX: PROP_IPV6_MCAST_ADDRS</a>
 </li>
-<li>8.11.3.   <a href="#rfc.section.8.11.3">PROP XXXX: PROP_IPV6_ON_LINK_PREFIXES</a>
+<li>8.11.3.   <a href="#rfc.section.8.11.3">PROP XXXX: PROP_IPV6_HOST_MCAST_ADDRS</a>
 </li>
-<li>8.11.4.   <a href="#rfc.section.8.11.4">PROP XXXX: PROP_IPV6_HOST_ON_LINK_PREFIXES</a>
+<li>8.11.4.   <a href="#rfc.section.8.11.4">PROP XXXX: PROP_IPV6_PREFIXES</a>
 </li>
-<li>8.11.5.   <a href="#rfc.section.8.11.5">PROP XXXX: PROP_IPV6_MCAST_ADDRS</a>
+<li>8.11.5.   <a href="#rfc.section.8.11.5">PROP XXXX: PROP_IPV6_HOST_PREFIXES</a>
 </li>
-<li>8.11.6.   <a href="#rfc.section.8.11.6">PROP XXXX: PROP_IPV6_HOST_MCAST_ADDRS</a>
+<li>8.11.6.   <a href="#rfc.section.8.11.6">PROP XXXX: PROP_IPV6_EXT_ROUTES</a>
 </li>
-<li>8.11.7.   <a href="#rfc.section.8.11.7">PROP XXXX: PROP_IPV6_ROUTES</a>
-</li>
-<li>8.11.8.   <a href="#rfc.section.8.11.8">PROP XXXX: PROP_IPV6_HOST_ROUTES</a>
+<li>8.11.7.   <a href="#rfc.section.8.11.7">PROP XXXX: PROP_IPV6_HOST_EXT_ROUTES</a>
 </li>
 </ul><li>8.12.   <a href="#rfc.section.8.12">Debug Properties</a>
 </li>
@@ -1844,6 +1844,20 @@
 <p id="rfc.section.6.16.p.1">Reset a specific NLI. Commands the NLI to return all properties and state to their defined "at reset" values. The intent of this command is to be analogous to <samp>CMD_RESET</samp>, except that it applies only to a single NLI.  </p>
 <p id="rfc.section.6.16.p.2">If the value of <samp>PROP_INTERFACE_COUNT</samp> is equal to one (1), then the NCP MAY treat this command as a synonym for <samp>CMD_RESET</samp> (<a href="#cmd-reset" class="xref">Section 6.2</a>). Thus, the AP MUST NOT treat an NCP software reset as an unexpected reset unless <samp>PROP_INTERFACE_COUNT</samp> was previously detremined to be greater than one (1).  </p>
 <p id="rfc.section.6.16.p.3">Otherwise, upon success this command emits <samp>STATUS_OK</samp> from <samp>PROP_LAST_STATUS</samp>.  The resetting of all of the NLI's state MUST NOT cause any asynchronous property updates to be emitted, with the exception of <samp>PROP_STREAM_DEBUG</samp> (<a href="#prop-stream-debug" class="xref">Section 8.6.1</a>).  </p>
+<h1 id="rfc.section.6.17">
+<a href="#rfc.section.6.17">6.17.</a> <a href="#cmd-echo" id="cmd-echo">CMD 25: (AP -&gt; NCP) CMD_ECHO</a>
+</h1>
+<pre>
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|1 0|NLI|  TID  |     CMD 25    |   DATA ...
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</pre>
+<p class="figure">Structure of CMD_ECHO </p>
+<p id="rfc.section.6.17.p.1">Command for the NCP to echo data back to the AP. This can be useful for determining if there is some sort of escaping problem with the framing mechanism, or for determining round-trip latency.  </p>
+<p id="rfc.section.6.17.p.2">When the NCP receives this command on a supported NLI, it MUST send that frame back to the AP exactly as it was received unless the length of <samp>DATA</samp> is too large for the given NCP implementation. NCP implementations of this protocol MUST support  <samp>DATA</samp> lengths of up to 16 bytes, SHOULD support <samp>DATA</samp> lengths up to 64 bytes, and MAY support data lengths up to the framer MTU length.  </p>
+<p id="rfc.section.6.17.p.3">If the echo request from the AP is larger than what the NCP can echo back, the NCP MUST indicate failure by emitting <samp>STATUS_CMD_TOO_BIG</samp>.  </p>
 <h1 id="rfc.section.7">
 <a href="#rfc.section.7">7.</a> <a href="#capabilities" id="capabilities">Capabilities</a>
 </h1>
@@ -3645,7 +3659,7 @@
 <p></p>
 
 <ul>
-<li>Type: Multiple-Value, Read-Only</li>
+<li>Type: Multiple-Value, Read-Write</li>
 <li>Has Item Length Prefix: Yes</li>
 <li>Asynchronous Updates: Yes</li>
 <li>Required: REQUIRED</li>
@@ -3655,6 +3669,7 @@
 </ul>
 
 <p> </p>
+<p id="rfc.section.8.11.1.p.2">This property contains all unicast IPv6 addresses currently assigned to this NLI. Addresses can be added automatically by the NCP or added manually by the AP.  </p>
 <pre>
   0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -3667,143 +3682,95 @@
 +-                                                             -+
 |                                                               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|     SCOPE     |             FLAGS             |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PREFIX LENGTH | Rsrvd | SCOPE |V|S|N|F|O|D|T|    Reserved     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </pre>
 <p class="figure">Structure of PROP_IPV6_UCAST_ADDRS </p>
-<p id="rfc.section.8.11.1.p.2">This property contains all unicast IPv6 addresses currently assigned to this NLI. This includes both automatically assigned addresses and addresses manually added by the AP via <samp>PROP_IPV6_HOST_UCAST_ADDRS</samp>.  </p>
-<p id="rfc.section.8.11.1.p.3">The AP cannot directly manipulate this property. but it can add new unicast IPv6 addresses via the <samp>PROP_IPV6_HOST_ON_LINK_PREFIXES</samp> property.  </p>
 <p></p>
 
 <dl>
+<dt>ADDRESS</dt>
+<dd style="margin-left: 8">
+<br> IPv6 Address.</dd>
+<dt>PREFIX LENGTH</dt>
+<dd style="margin-left: 8">
+<br> The prefix length, in bits. See <a href="#RFC4191" class="xref">[RFC4191]</a>.</dd>
+<dt>Rsv/Reserved</dt>
+<dd style="margin-left: 8">
+<br> Reserved bits. All bits in reserved fields SHOULD be set to zero by the AP and NCP and MUST be ignored by the AP and NCP.</dd>
 <dt>SCOPE</dt>
 <dd style="margin-left: 8">
-<br> An enumeration describing the scope of the address. Can be link-local, mesh-local, site-local, or global. (TODO: Enumeration TBD)</dd>
-<dt>FLAGS</dt>
+<br> 4-bit integer representing scope of prefix address. See <a href="#ipv6-scope" class="xref">Section 8.11.1.1</a>.</dd>
+<dt>V</dt>
 <dd style="margin-left: 8">
-<br> Flags describing various properties of the address. Flags are dynamic/static, temporary, deprecated, secured <a href="#RFC7217" class="xref">[RFC7217]</a>, etc. (TODO: Enumeration TBD)</dd>
+<br> 1-bit "Address Valid" flag. Support for this flag is REQUIRED.</dd>
+<dt>S</dt>
+<dd style="margin-left: 8">
+<br> 1-bit "Static Address" flag. Indicates that this address was manually added and will not be automatically removed or invalidated.  Support for this flag is REQUIRED.</dd>
+<dt>N</dt>
+<dd style="margin-left: 8">
+<br> 1-bit "No-DAD" flag. Indicates that duplicate address detection should not be attempted on this address. Support for this flag is OPTIONAL.</dd>
+<dt>F</dt>
+<dd style="margin-left: 8">
+<br> 1-bit "DAD Failed" flag. Indicates that another node on the mesh network is using this address.  The AP MUST support this flag.</dd>
+<dt>O</dt>
+<dd style="margin-left: 8">
+<br> 1-bit "Optimistic" flag.  Support for this flag is OPTIONAL.</dd>
+<dt>D</dt>
+<dd style="margin-left: 8">
+<br> 1-bit "Deprecated" flag.  Support for this flag is OPTIONAL.</dd>
+<dt>T</dt>
+<dd style="margin-left: 8">
+<br> 1-bit "Tentative" flag.  Support for this flag is OPTIONAL.</dd>
 </dl>
 
 <p> </p>
+<p id="rfc.section.8.11.1.p.4">The AP and NCP SHOULD ignore any set flags it does not support, and MUST clear flags it does not support.  </p>
+<p id="rfc.section.8.11.1.p.5">TODO: Consider adding a property that is a bitmask of supported flags? </p>
+<h1 id="rfc.section.8.11.1.1">
+<a href="#rfc.section.8.11.1.1">8.11.1.1.</a> <a href="#ipv6-scope" id="ipv6-scope">IPv6 Scope</a>
+</h1>
+<p id="rfc.section.8.11.1.1.p.1">An enumeration describing the scope of the address, value between 0 and 15.  </p>
+<table cellpadding="3" cellspacing="0" class="tt full center">
+<thead><tr>
+<th class="center">Value</th>
+<th class="center">Names</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="center">1</td>
+<td class="center">IPV6_SCOPE_IFACE</td>
+</tr>
+<tr>
+<td class="center">2</td>
+<td class="center">IPV6_SCOPE_LINK</td>
+</tr>
+<tr>
+<td class="center">3</td>
+<td class="center">IPV6_SCOPE_REALM</td>
+</tr>
+<tr>
+<td class="center">4</td>
+<td class="center">IPV6_SCOPE_ADMIN</td>
+</tr>
+<tr>
+<td class="center">5</td>
+<td class="center">IPV6_SCOPE_SITE</td>
+</tr>
+<tr>
+<td class="center">8</td>
+<td class="center">IPV6_SCOPE_ORG</td>
+</tr>
+<tr>
+<td class="center">14</td>
+<td class="center">IPV6_SCOPE_GLOBAL</td>
+</tr>
+</tbody>
+</table>
+<p id="rfc.section.8.11.1.1.p.2">Figure: Interpretation of SCOPE field </p>
+<p id="rfc.section.8.11.1.1.p.3">All unspecified values are RESERVED.  </p>
 <h1 id="rfc.section.8.11.2">
-<a href="#rfc.section.8.11.2">8.11.2.</a> <a href="#prop-ipv6-host-ucast-addrs" id="prop-ipv6-host-ucast-addrs">PROP XXXX: PROP_IPV6_HOST_UCAST_ADDRS</a>
-</h1>
-<p></p>
-
-<ul>
-<li>Type: Multiple-Value, Read-Write</li>
-<li>Has Item Length Prefix: Yes</li>
-<li>Asynchronous Updates: Yes</li>
-<li>Required: REQUIRED</li>
-<li>Scope: NLI</li>
-<li>Item Type: Structure</li>
-<li>Post-Reset Value: Empty</li>
-</ul>
-
-<p> </p>
-<pre>
-  0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                                                               |
-+-                                                             -+
-|                                                               |
-+-                        IPv6 ADDRESS                         -+
-|                                                               |
-+-                                                             -+
-|                                                               |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-</pre>
-<p class="figure">Structure of PROP_IPV6_HOST_UCAST_ADDRS </p>
-<p id="rfc.section.8.11.2.p.2">Addresses added to this list will be added to PROP_IPV6_UCAST_ADDRS as static addresses.  </p>
-<h1 id="rfc.section.8.11.3">
-<a href="#rfc.section.8.11.3">8.11.3.</a> <a href="#prop-ipv6-on-link-prefixes" id="prop-ipv6-on-link-prefixes">PROP XXXX: PROP_IPV6_ON_LINK_PREFIXES</a>
-</h1>
-<p></p>
-
-<ul>
-<li>Type: Multiple-Value, Read-Only</li>
-<li>Has Item Length Prefix: Yes</li>
-<li>Asynchronous Updates: Yes</li>
-<li>Required: REQUIRED</li>
-<li>Scope: NLI</li>
-<li>Item Type: Structure</li>
-<li>Post-Reset Value: Empty</li>
-</ul>
-
-<p> </p>
-<pre>
-  0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                                                               |
-+-                                                             -+
-|                                                               |
-+-                        IPv6 PREFIX                          -+
-|                                                               |
-+-                                                             -+
-|                                                               |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-| PREFIX LENGTH |     SCOPE     |     FLAGS (Little Endian)     |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                        VALID LIFETIME (Little Endian)         |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                      PREFERRED LIFETIME (Little Endian)       |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-</pre>
-<p class="figure">Structure of PROP_IPV6_ON_LINK_PREFIXES </p>
-<p id="rfc.section.8.11.3.p.2">This property contains all on-link or on-mesh IPv6 prefixes that are being advertised by routers on this NLI's network, including all prefixes listed in <samp>PROP_IPV6_HOST_ON_LINK_PREFIXES</samp>.  </p>
-<p id="rfc.section.8.11.3.p.3">The AP cannot directly manipulate this property. but it can add new on-link or on-mesh prefixes via the <samp>PROP_IPV6_HOST_ON_LINK_PREFIXES</samp> property.  </p>
-<h1 id="rfc.section.8.11.4">
-<a href="#rfc.section.8.11.4">8.11.4.</a> <a href="#prop-ipv6-host-on-link-prefixes" id="prop-ipv6-host-on-link-prefixes">PROP XXXX: PROP_IPV6_HOST_ON_LINK_PREFIXES</a>
-</h1>
-<p></p>
-
-<ul>
-<li>Type: Multiple-Value, Read-Write</li>
-<li>Has Item Length Prefix: Yes</li>
-<li>Asynchronous Updates: Yes</li>
-<li>Required: REQUIRED</li>
-<li>Scope: NLI</li>
-<li>Item Type: Structure</li>
-<li>Post-Reset Value: Empty</li>
-</ul>
-
-<p> </p>
-<pre>
-  0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                                                               |
-+-                                                             -+
-|                                                               |
-+-                        IPv6 PREFIX                          -+
-|                                                               |
-+-                                                             -+
-|                                                               |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-| PREFIX LENGTH |     SCOPE     |     FLAGS (Little Endian)     |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                        VALID LIFETIME (Little Endian)         |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                      PREFERRED LIFETIME (Little Endian)       |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-</pre>
-<p class="figure">Structure of PROP_IPV6_HOST_ON_LINK_PREFIXES </p>
-<p id="rfc.section.8.11.4.p.2">This property contains all on-link or on-mesh IPv6 prefixes that <em>this host</em> is advertising on this NLI's network.  </p>
-<p id="rfc.section.8.11.4.p.3">The AP cannot directly manipulate this property. but it can add new on-link or on-mesh prefixes via the <samp>PROP_IPV6_HOST_ON_LINK_PREFIXES</samp> property.  </p>
-<p id="rfc.section.8.11.4.p.4">When removing prefixes from the list, only the <samp>IPv6 PREFIX</samp> and <samp>PREFIX LENGTH</samp> are required.  </p>
-<p id="rfc.section.8.11.4.p.5">Some network technologies may limit which nodes have permission to add items to this list. In such a case, the following behaviors are acceptable (in order of behavior preference): </p>
-<p></p>
-
-<ol>
-<li>The command fails with <samp>STATUS_SECURITY_ERROR</samp>.</li>
-<li>The command initially appears to succeed, but a few moments later the prefix is asynchronously removed via either <samp>CMD_PROP_VALUE_IS</samp> or <samp>CMD_PROP_VALUE_REMOVED</samp>.</li>
-</ol>
-
-<p> </p>
-<h1 id="rfc.section.8.11.5">
-<a href="#rfc.section.8.11.5">8.11.5.</a> <a href="#prop-ipv6-mcast-addrs" id="prop-ipv6-mcast-addrs">PROP XXXX: PROP_IPV6_MCAST_ADDRS</a>
+<a href="#rfc.section.8.11.2">8.11.2.</a> <a href="#prop-ipv6-mcast-addrs" id="prop-ipv6-mcast-addrs">PROP XXXX: PROP_IPV6_MCAST_ADDRS</a>
 </h1>
 <p></p>
 
@@ -3832,9 +3799,9 @@
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </pre>
 <p class="figure">Structure of PROP_IPV6_MCAST_ADDRS </p>
-<p id="rfc.section.8.11.5.p.2">This property contains all IPv6 multicast groups that this NLI is currently a member of. The AP cannot directly manipulate this property, but it can add the NLI to new groups via the <samp>PROP_IPV6_HOST_MCAST_ADDRS</samp> property.  </p>
-<h1 id="rfc.section.8.11.6">
-<a href="#rfc.section.8.11.6">8.11.6.</a> <a href="#prop-ipv6-mcast-addrs-1" id="prop-ipv6-mcast-addrs-1">PROP XXXX: PROP_IPV6_HOST_MCAST_ADDRS</a>
+<p id="rfc.section.8.11.2.p.2">This property contains all IPv6 multicast groups that this NLI is currently a member of. The AP cannot directly manipulate this property, but it can add the NLI to new groups via the <samp>PROP_IPV6_HOST_MCAST_ADDRS</samp> property.  </p>
+<h1 id="rfc.section.8.11.3">
+<a href="#rfc.section.8.11.3">8.11.3.</a> <a href="#prop-ipv6-mcast-addrs-1" id="prop-ipv6-mcast-addrs-1">PROP XXXX: PROP_IPV6_HOST_MCAST_ADDRS</a>
 </h1>
 <p></p>
 
@@ -3842,7 +3809,7 @@
 <li>Type: Multiple-Value, Read-Write</li>
 <li>Has Item Length Prefix: Yes</li>
 <li>Asynchronous Updates: No</li>
-<li>Required: REQUIRED</li>
+<li>Required: OPTIONAL</li>
 <li>Scope: NLI</li>
 <li>Item Type: IPv6</li>
 <li>Post-Reset Value: Empty</li>
@@ -3863,9 +3830,9 @@
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </pre>
 <p class="figure">Structure of PROP_IPV6_HOST_MCAST_ADDRS </p>
-<p id="rfc.section.8.11.6.p.2">This property contains only IPv6 multicast addresses that have been added by the AP. The AP can manipulate this list by setting it outright, inserting addresses, or removing addresses. When attached to a network, the addresses in this list are a subset of the addresses in <samp>PROP_IPV6_MCAST_ADDRS</samp>.  </p>
-<p id="rfc.section.8.11.6.p.3">Note that it is up to the AP to perform any necessary reference counting on joined groups.  </p>
-<p id="rfc.section.8.11.6.p.4">Some network technologies may limit which nodes have permission to add items to this list. In such a case, the following behaviors are acceptable (in order of behavior preference): </p>
+<p id="rfc.section.8.11.3.p.2">This property contains only IPv6 multicast addresses that have been added by the AP. The AP can manipulate this list by setting it outright, inserting addresses, or removing addresses. When attached to a network, the addresses in this list are a subset of the addresses in <samp>PROP_IPV6_MCAST_ADDRS</samp>.  </p>
+<p id="rfc.section.8.11.3.p.3">Note that it is up to the AP to perform any necessary reference counting on joined groups.  </p>
+<p id="rfc.section.8.11.3.p.4">Some network technologies may limit which nodes have permission to add items to this list. In such a case, the following behaviors are acceptable (in order of behavior preference): </p>
 <p></p>
 
 <ol>
@@ -3874,8 +3841,8 @@
 </ol>
 
 <p> </p>
-<h1 id="rfc.section.8.11.7">
-<a href="#rfc.section.8.11.7">8.11.7.</a> <a href="#prop-ipv6-routes" id="prop-ipv6-routes">PROP XXXX: PROP_IPV6_ROUTES</a>
+<h1 id="rfc.section.8.11.4">
+<a href="#rfc.section.8.11.4">8.11.4.</a> <a href="#prop-ipv6-prefixes" id="prop-ipv6-prefixes">PROP XXXX: PROP_IPV6_PREFIXES</a>
 </h1>
 <p></p>
 
@@ -3902,18 +3869,135 @@
 +-                                                             -+
 |                                                               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-| PREFIX LENGTH |    (TODO: Likely needs more stuff here...)
-+-+-+-+-+-+-+-+-+
+| PREFIX LENGTH |Rsv|PRF| SCOPE |H|M|O|L|A|D|     Reserved      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                        VALID LIFETIME (Little Endian)         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                      PREFERRED LIFETIME (Little Endian)       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++-                                                             -+
+|                                                               |
++-                      ROUTER ADDRESS                         -+
+|                                                               |
++-                                                             -+
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </pre>
-<p class="figure">Structure of PROP_IPV6_ROUTES </p>
-<p id="rfc.section.8.11.7.p.2">This property contains <em>all</em> prefixes that can be reached via this NLI, <strong>both off-link and on-link</strong>. This list MUST NOT include any prefixes listed in <samp>PROP_IPV6_HOST_ROUTES</samp> <strong>UNLESS</strong> that route is being advertised by some other node.  </p>
-<h1 id="rfc.section.8.11.8">
-<a href="#rfc.section.8.11.8">8.11.8.</a> <a href="#prop-ipv6-host-routes" id="prop-ipv6-host-routes">PROP XXXX: PROP_IPV6_HOST_ROUTES</a>
+<p class="figure">Structure of PROP_IPV6_PREFIXES </p>
+<p id="rfc.section.8.11.4.p.2">This property contains all IPv6 prefixes that are being advertised by routers on this NLI's network, with the exception of prefixes listed in <samp>PROP_IPV6_HOST_PREFIXES</samp> with the </p>
+<p id="rfc.section.8.11.4.p.3">The AP cannot directly manipulate this property. but it can add new on-link or on-mesh prefixes via the <samp>PROP_IPV6_HOST_PREFIXES</samp> property, which uses the same structure.  </p>
+<p></p>
+
+<dl>
+<dt>PREFIX</dt>
+<dd style="margin-left: 8">
+<br> IPv6 Address Prefix.</dd>
+<dt>PREFIX LENGTH</dt>
+<dd style="margin-left: 8">
+<br> The prefix length, in bits. See <a href="#RFC4191" class="xref">[RFC4191]</a>. If this is zero, then the entry represents a default route. Some network technologies (such as Thread(R)) only support values of 0 and 64.</dd>
+<dt>Rsv/Reserved</dt>
+<dd style="margin-left: 8">
+<br> Reserved bits. All bits in reserved fields SHOULD be set to zero by the AP and NCP and MUST be ignored by the AP and NCP.</dd>
+<dt>PRF</dt>
+<dd style="margin-left: 8">
+<br> Route preference. <a href="#RFC4191" class="xref">[RFC4191]</a>
+</dd>
+<dt>SCOPE</dt>
+<dd style="margin-left: 8">
+<br> 4-bit integer representing scope of prefix address. See <a href="#ipv6-scope" class="xref">Section 8.11.1.1</a>.</dd>
+<dt>H</dt>
+<dd style="margin-left: 8">
+<br> Host-added flag. If set, this prefix was added via <samp>PROP_IPV6_HOST_PREFIXES</samp> and is currently being advertised to other nodes.</dd>
+<dt>M</dt>
+<dd style="margin-left: 8">
+<br> 1-bit "Managed Address" flag.  When set indicates that ROUTER ADDRESS runs a DHCPv6 server for assigning and configuring addresses for this prefix.</dd>
+<dt>O</dt>
+<dd style="margin-left: 8">
+<br> 1-bit "Other Configuration" flag. When set, it indicates that other configuration information is available via DHCPv6.  Examples of such information are DNS-related information or information on other  servers within the network.</dd>
+<dt>L</dt>
+<dd style="margin-left: 8">
+<br> 1-bit On-Link flag. If set, this prefix is considered to be on-link/on-mesh. If clear, this router is advertising that they can</dd>
+<dt>A</dt>
+<dd style="margin-left: 8">
+<br> 1-bit autonomous address-configuration flag.  When set indicates that nodes SHOULD automatically configure addresses for this prefix using SLAAC. [TODO:Cite]</dd>
+<dt>D</dt>
+<dd style="margin-left: 8">
+<br> 1-bit "default route" flag. When set, it indicates that this NLI is a default route for packets with a source address in PREFIX.</dd>
+<dt>VALID LIFETIME</dt>
+<dd style="margin-left: 8">
+<br> 32-bit unsigned integer.  The remaining amount of time (in seconds) that the prefix is entry is considered valid. A value of all one bits (0xffffffff) represents infinity.</dd>
+<dt>PREFERRED LIFETIME</dt>
+<dd style="margin-left: 8">
+<br> 32-bit unsigned integer.  The remaining amount of time (in seconds) that that addresses generated from the prefix via stateless address autoconfiguration remain preferred.  A value of all one bits (0xffffffff) represents infinity. This is ignored unless the <samp>A</samp> flag is set.</dd>
+<dt>ROUTER ADDRESS</dt>
+<dd style="margin-left: 8">
+<br> This is the IPv6 address of the router advertising this prefix.</dd>
+</dl>
+
+<p> </p>
+<h1 id="rfc.section.8.11.5">
+<a href="#rfc.section.8.11.5">8.11.5.</a> <a href="#prop-ipv6-host-prefixes" id="prop-ipv6-host-prefixes">PROP XXXX: PROP_IPV6_HOST_PREFIXES</a>
 </h1>
 <p></p>
 
 <ul>
 <li>Type: Multiple-Value, Read-Write</li>
+<li>Has Item Length Prefix: Yes</li>
+<li>Asynchronous Updates: Yes</li>
+<li>Required: OPTIONAL</li>
+<li>Scope: NLI</li>
+<li>Item Type: Structure</li>
+<li>Post-Reset Value: Empty</li>
+</ul>
+
+<p> </p>
+<pre>
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++-                                                             -+
+|                                                               |
++-                        IPv6 PREFIX                          -+
+|                                                               |
++-                                                             -+
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PREFIX LENGTH |Rsv|PRF| SCOPE |H|M|O|L|A|D|     Reserved      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                        VALID LIFETIME (Little Endian)         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                      PREFERRED LIFETIME (Little Endian)       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</pre>
+<p class="figure">Structure of PROP_IPV6_HOST_PREFIXES </p>
+<p id="rfc.section.8.11.5.p.2">This property contains all prefixes that <em>this host</em> is advertising on this NLI's network. The structure is identical to that of <samp>PROP_IPV6_PREFIXES</samp>, witht he following exceptions: </p>
+<p></p>
+
+<ul>
+<li>The <samp>H</samp> flag is always set when read, and ignored when written.</li>
+<li>There is no <samp>ROUTER ADDRESS</samp> field, since it is implied.</li>
+</ul>
+
+<p> </p>
+<p id="rfc.section.8.11.5.p.4">When removing prefixes from the list, only the <samp>IPv6 PREFIX</samp> and <samp>PREFIX LENGTH</samp> are required to be specified.  </p>
+<p id="rfc.section.8.11.5.p.5">Some network technologies MAY limit which nodes have permission to add items to this list. In such a case, the following behaviors are acceptable (in order of behavior preference): </p>
+<p></p>
+
+<ol>
+<li>The command fails with <samp>STATUS_SECURITY_ERROR</samp>.</li>
+<li>The command initially appears to succeed, but a few moments later the prefix is asynchronously removed via either <samp>CMD_PROP_VALUE_IS</samp> or <samp>CMD_PROP_VALUE_REMOVED</samp>.</li>
+</ol>
+
+<p> </p>
+<h1 id="rfc.section.8.11.6">
+<a href="#rfc.section.8.11.6">8.11.6.</a> <a href="#prop-ipv6-ext-routes" id="prop-ipv6-ext-routes">PROP XXXX: PROP_IPV6_EXT_ROUTES</a>
+</h1>
+<p></p>
+
+<ul>
+<li>Type: Multiple-Value, Read-Only</li>
 <li>Has Item Length Prefix: Yes</li>
 <li>Asynchronous Updates: Yes</li>
 <li>Required: REQUIRED</li>
@@ -3935,17 +4019,103 @@
 +-                                                             -+
 |                                                               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-| PREFIX LENGTH |    (TODO: Likely needs more stuff here...)
-+-+-+-+-+-+-+-+-+
+| PREFIX LENGTH |Rsv|PRF| SCOPE |H|           Reserved          |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                        ROUTE LIFETIME (Little Endian)         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++-                                                             -+
+|                                                               |
++-                      ROUTER ADDRESS                         -+
+|                                                               |
++-                                                             -+
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </pre>
-<p class="figure">Structure of PROP_IPV6_HOST_ROUTES </p>
-<p id="rfc.section.8.11.8.p.2">This property contains all prefixes that the AP is willing to route traffic to on behalf of other nodes the current network. This property MUST NOT be populated automatically by the NCP. Routes added to this property will be advertised to other nodes on the network.  </p>
-<p id="rfc.section.8.11.8.p.3">Some network technologies may limit which nodes have permission to add items to this list. In such a case, the following behaviors are acceptable (in order of behavior preference): </p>
+<p class="figure">Structure of PROP_IPV6_EXT_ROUTES </p>
+<p id="rfc.section.8.11.6.p.2">This property contains all external routes that are being advertised by routers on this NLI's network, with the exception of routes listed in <samp>PROP_IPV6_HOST_EXT_ROUTES</samp>.  </p>
+<p id="rfc.section.8.11.6.p.3">The AP cannot directly manipulate this property. but it can add new on-link or on-mesh prefixes via the <samp>PROP_IPV6_HOST_EXT_ROUTES</samp> property, which uses the same structure.  </p>
+<p></p>
+
+<dl>
+<dt>PREFIX</dt>
+<dd style="margin-left: 8">
+<br> TODO: Write me</dd>
+<dt>PREFIX LENGTH</dt>
+<dd style="margin-left: 8">
+<br> The prefix length, in bits. See <a href="#RFC4191" class="xref">[RFC4191]</a>. If this is zero, then the entry represents a default route. Some network technologies (such as Thread(R)) only support values of 0 and 64.</dd>
+<dt>Rsv/Reserved</dt>
+<dd style="margin-left: 8">
+<br> Reserved bits. All bits in reserved fields SHOULD be set to zero by the AP and NCP and MUST be ignored by the AP and NCP.</dd>
+<dt>PRF</dt>
+<dd style="margin-left: 8">
+<br> Route preference. <a href="#RFC4191" class="xref">[RFC4191]</a>
+</dd>
+<dt>SCOPE</dt>
+<dd style="margin-left: 8">
+<br> 4-bit integer representing scope of prefix address. See <a href="#ipv6-scope" class="xref">Section 8.11.1.1</a>.</dd>
+<dt>H</dt>
+<dd style="margin-left: 8">
+<br> Host-added flag. If set, this prefix was added via <samp>PROP_IPV6_HOST_EXT_ROUTES</samp> and is currently being advertised to other nodes.</dd>
+<dt>ROUTE LIFETIME</dt>
+<dd style="margin-left: 8">
+<br> 32-bit unsigned integer.  The remaining amount of time (in seconds) that this external route is considered valid. A value of all one bits (0xffffffff) represents infinity.</dd>
+<dt>ROUTER ADDRESS</dt>
+<dd style="margin-left: 8">
+<br> This is the IPv6 address of the router advertising this external route.</dd>
+</dl>
+
+<p> </p>
+<h1 id="rfc.section.8.11.7">
+<a href="#rfc.section.8.11.7">8.11.7.</a> <a href="#prop-ipv6-host-ext-routes" id="prop-ipv6-host-ext-routes">PROP XXXX: PROP_IPV6_HOST_EXT_ROUTES</a>
+</h1>
+<p></p>
+
+<ul>
+<li>Type: Multiple-Value, Read-Write</li>
+<li>Has Item Length Prefix: Yes</li>
+<li>Asynchronous Updates: Yes</li>
+<li>Required: OPTIONAL</li>
+<li>Scope: NLI</li>
+<li>Item Type: Structure</li>
+<li>Post-Reset Value: Empty</li>
+</ul>
+
+<p> </p>
+<pre>
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++-                                                             -+
+|                                                               |
++-                        IPv6 PREFIX                          -+
+|                                                               |
++-                                                             -+
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PREFIX LENGTH |Rsv|PRF| SCOPE |H|           Reserved          |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                        ROUTE LIFETIME (Little Endian)         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</pre>
+<p class="figure">Structure of PROP_IPV6_HOST_EXT_ROUTES </p>
+<p id="rfc.section.8.11.7.p.2">This property contains all external routes that <em>this host</em> is advertising on this NLI's network. The structure is identical to that of <samp>PROP_IPV6_EXT_ROUTES</samp>, witht he following exceptions: </p>
+<p></p>
+
+<ul>
+<li>The <samp>H</samp> flag is always set when read, and ignored when written.</li>
+<li>There is no <samp>ROUTER ADDRESS</samp> field, since it is implied.</li>
+</ul>
+
+<p> </p>
+<p id="rfc.section.8.11.7.p.4">When removing prefixes from the list, only the <samp>IPv6 PREFIX</samp> and <samp>PREFIX LENGTH</samp> are required to be specified.  </p>
+<p id="rfc.section.8.11.7.p.5">Some network technologies MAY limit which nodes have permission to add items to this list. In such a case, the following behaviors are acceptable (in order of behavior preference): </p>
 <p></p>
 
 <ol>
 <li>The command fails with <samp>STATUS_SECURITY_ERROR</samp>.</li>
-<li>The command initially appears to succeed, but a few moments later the item is asynchronously removed via either <samp>CMD_PROP_VALUE_IS</samp> or <samp>CMD_PROP_VALUE_REMOVED</samp>.</li>
+<li>The command initially appears to succeed, but a few moments later the prefix is asynchronously removed via either <samp>CMD_PROP_VALUE_IS</samp> or <samp>CMD_PROP_VALUE_REMOVED</samp>.</li>
 </ol>
 
 <p> </p>
@@ -4050,6 +4220,11 @@
 <a>Scott, G.</a>, "<a href="http://tools.ietf.org/html/rfc2360">Guide for Internet Standards Writers</a>", BCP 22, RFC 2360, DOI 10.17487/RFC2360, June 1998.</td>
 </tr>
 <tr>
+<td class="reference"><b id="RFC4191">[RFC4191]</b></td>
+<td class="top">
+<a>Draves, R.</a> and <a>D. Thaler</a>, "<a href="http://tools.ietf.org/html/rfc4191">Default Router Preferences and More-Specific Routes</a>", RFC 4191, DOI 10.17487/RFC4191, November 2005.</td>
+</tr>
+<tr>
 <td class="reference"><b id="RFC4944">[RFC4944]</b></td>
 <td class="top">
 <a>Montenegro, G.</a>, <a>Kushalnagar, N.</a>, <a>Hui, J.</a> and <a>D. Culler</a>, "<a href="http://tools.ietf.org/html/rfc4944">Transmission of IPv6 Packets over IEEE 802.15.4 Networks</a>", RFC 4944, DOI 10.17487/RFC4944, September 2007.</td>
@@ -4058,11 +4233,6 @@
 <td class="reference"><b id="RFC5424">[RFC5424]</b></td>
 <td class="top">
 <a>Gerhards, R.</a>, "<a href="http://tools.ietf.org/html/rfc5424">The Syslog Protocol</a>", RFC 5424, DOI 10.17487/RFC5424, March 2009.</td>
-</tr>
-<tr>
-<td class="reference"><b id="RFC7217">[RFC7217]</b></td>
-<td class="top">
-<a>Gont, F.</a>, "<a href="http://tools.ietf.org/html/rfc7217">A Method for Generating Semantically Opaque Interface Identifiers with IPv6 Stateless Address Autoconfiguration (SLAAC)</a>", RFC 7217, DOI 10.17487/RFC7217, April 2014.</td>
 </tr>
 </tbody></table>
 <h1 id="rfc.appendix.A">
