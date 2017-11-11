@@ -94,13 +94,17 @@ section.
 
 ### PROP XXXX: PROP_IPV6_UCAST_ADDRS {#prop-ipv6-ucast-addrs}
 
-* Type: Multiple-Value, Read-Only
+* Type: Multiple-Value, Read-Write
 * Has Item Length Prefix: Yes
 * Asynchronous Updates: Yes
 * Required: **REQUIRED**
 * Scope: NLI
 * Item Type: Structure
 * Post-Reset Value: Empty
+
+This property contains all unicast IPv6 addresses currently assigned to this
+NLI. Addresses can be added automatically by the NCP or added manually
+by the AP.
 
 ~~~
   0                   1                   2                   3
@@ -114,140 +118,68 @@ section.
 +-                                                             -+
 |                                                               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|     SCOPE     |             FLAGS             |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PREFIX LENGTH | Rsrvd | SCOPE |V|S|N|F|O|D|T|    Reserved     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ~~~
 Figure: Structure of PROP_IPV6_UCAST_ADDRS
 
-This property contains all unicast IPv6 addresses currently assigned to this
-NLI. This includes both automatically assigned addresses and addresses manually
-added by the AP via `PROP_IPV6_HOST_UCAST_ADDRS`.
+ADDRESS
+: IPv6 Address.
 
-The AP cannot directly manipulate this property. but it can add new unicast
-IPv6 addresses via the `PROP_IPV6_HOST_ON_LINK_PREFIXES` property.
+PREFIX LENGTH
+: The prefix length, in bits. See [@RFC4191].
+
+Rsv/Reserved
+: Reserved bits. All bits in reserved fields **SHOULD** be set to zero by the AP and NCP and
+**MUST** be ignored by the AP and NCP.
 
 SCOPE
-: An enumeration describing the scope of the address. Can be link-local,
-mesh-local, site-local, or global. (TODO: Enumeration TBD)
+: 4-bit integer representing scope of prefix address. See (#ipv6-scope).
 
-FLAGS
-: Flags describing various properties of the address. Flags are dynamic/static,
-temporary, deprecated, secured [@RFC7217], etc. (TODO: Enumeration TBD)
+V
+: 1-bit "Address Valid" flag. Support for this flag is **REQUIRED**.
 
-### PROP XXXX: PROP_IPV6_HOST_UCAST_ADDRS {#prop-ipv6-host-ucast-addrs}
+S
+: 1-bit "Static Address" flag. Indicates that this address was manually added and will not
+be automatically removed or invalidated.  Support for this flag is **REQUIRED**.
 
-* Type: Multiple-Value, Read-Write
-* Has Item Length Prefix: Yes
-* Asynchronous Updates: Yes
-* Required: **REQUIRED**
-* Scope: NLI
-* Item Type: Structure
-* Post-Reset Value: Empty
+N
+: 1-bit "No-DAD" flag. Indicates that duplicate address detection should not be attempted
+on this address. Support for this flag is **OPTIONAL**.
 
-~~~
-  0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                                                               |
-+-                                                             -+
-|                                                               |
-+-                        IPv6 ADDRESS                         -+
-|                                                               |
-+-                                                             -+
-|                                                               |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-~~~
-Figure: Structure of PROP_IPV6_HOST_UCAST_ADDRS
+F
+: 1-bit "DAD Failed" flag. Indicates that another node on the mesh network is using this
+address.  The AP **MUST** support this flag.
 
-Addresses added to this list will be added to PROP_IPV6_UCAST_ADDRS as
-static addresses.
+O
+: 1-bit "Optimistic" flag.  Support for this flag is **OPTIONAL**.
 
-### PROP XXXX: PROP_IPV6_ON_LINK_PREFIXES {#prop-ipv6-on-link-prefixes}
+D
+: 1-bit "Deprecated" flag.  Support for this flag is **OPTIONAL**.
 
-* Type: Multiple-Value, Read-Only
-* Has Item Length Prefix: Yes
-* Asynchronous Updates: Yes
-* Required: **REQUIRED**
-* Scope: NLI
-* Item Type: Structure
-* Post-Reset Value: Empty
+T
+: 1-bit "Tentative" flag.  Support for this flag is **OPTIONAL**.
 
-~~~
-  0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                                                               |
-+-                                                             -+
-|                                                               |
-+-                        IPv6 PREFIX                          -+
-|                                                               |
-+-                                                             -+
-|                                                               |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-| PREFIX LENGTH |     SCOPE     |     FLAGS (Little Endian)     |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                        VALID LIFETIME (Little Endian)         |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                      PREFERRED LIFETIME (Little Endian)       |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-~~~
-Figure: Structure of PROP_IPV6_ON_LINK_PREFIXES
+The AP and NCP **SHOULD** ignore any set flags it does not support, and **MUST**
+clear flags it does not support.
 
-This property contains all on-link or on-mesh IPv6 prefixes that are being
-advertised by routers on this NLI's network, including all prefixes listed in
-`PROP_IPV6_HOST_ON_LINK_PREFIXES`.
+TODO: Consider adding a property that is a bitmask of supported flags?
 
-The AP cannot directly manipulate this property. but it can add new on-link or on-mesh
-prefixes via the `PROP_IPV6_HOST_ON_LINK_PREFIXES` property.
+#### IPv6 Scope {#ipv6-scope}
+An enumeration describing the scope of the address, value between 0 and 15.
 
-### PROP XXXX: PROP_IPV6_HOST_ON_LINK_PREFIXES {#prop-ipv6-host-on-link-prefixes}
+Value | Names
+----|--------
+1    | IPV6_SCOPE_IFACE
+2    | IPV6_SCOPE_LINK
+3    | IPV6_SCOPE_REALM
+4    | IPV6_SCOPE_ADMIN
+5    | IPV6_SCOPE_SITE
+8    | IPV6_SCOPE_ORG
+14    | IPV6_SCOPE_GLOBAL
+Figure: Interpretation of SCOPE field
 
-* Type: Multiple-Value, Read-Write
-* Has Item Length Prefix: Yes
-* Asynchronous Updates: Yes
-* Required: **REQUIRED**
-* Scope: NLI
-* Item Type: Structure
-* Post-Reset Value: Empty
-
-~~~
-  0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                                                               |
-+-                                                             -+
-|                                                               |
-+-                        IPv6 PREFIX                          -+
-|                                                               |
-+-                                                             -+
-|                                                               |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-| PREFIX LENGTH |     SCOPE     |     FLAGS (Little Endian)     |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                        VALID LIFETIME (Little Endian)         |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                      PREFERRED LIFETIME (Little Endian)       |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-~~~
-Figure: Structure of PROP_IPV6_HOST_ON_LINK_PREFIXES
-
-This property contains all on-link or on-mesh IPv6 prefixes that *this host* is
-advertising on this NLI's network.
-
-The AP cannot directly manipulate this property. but it can add new on-link or on-mesh
-prefixes via the `PROP_IPV6_HOST_ON_LINK_PREFIXES` property.
-
-When removing prefixes from the list, only the `IPv6 PREFIX` and `PREFIX LENGTH`
-are required.
-
-Some network technologies may limit which nodes have permission to add items
-to this list. In such a case, the following behaviors are acceptable (in order of
-behavior preference):
-
-1. The command fails with `STATUS_SECURITY_ERROR`.
-2. The command initially appears to succeed, but a few moments later
-the prefix is asynchronously removed via either `CMD_PROP_VALUE_IS` or
-`CMD_PROP_VALUE_REMOVED`.
+All unspecified values are RESERVED.
 
 
 ### PROP XXXX: PROP_IPV6_MCAST_ADDRS {#prop-ipv6-mcast-addrs}
@@ -284,7 +216,7 @@ the NLI to new groups via the `PROP_IPV6_HOST_MCAST_ADDRS` property.
 * Type: Multiple-Value, Read-Write
 * Has Item Length Prefix: Yes
 * Asynchronous Updates: No
-* Required: **REQUIRED**
+* Required: **OPTIONAL**
 * Scope: NLI
 * Item Type: IPv6
 * Post-Reset Value: Empty
@@ -321,7 +253,7 @@ behavior preference):
 the item is asynchronously removed via either `CMD_PROP_VALUE_IS` or
 `CMD_PROP_VALUE_REMOVED`.
 
-### PROP XXXX: PROP_IPV6_ROUTES {#prop-ipv6-routes}
+### PROP XXXX: PROP_IPV6_PREFIXES {#prop-ipv6-prefixes}
 
 * Type: Multiple-Value, Read-Only
 * Has Item Length Prefix: Yes
@@ -343,18 +275,140 @@ the item is asynchronously removed via either `CMD_PROP_VALUE_IS` or
 +-                                                             -+
 |                                                               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-| PREFIX LENGTH |    (TODO: Likely needs more stuff here...)
-+-+-+-+-+-+-+-+-+
+| PREFIX LENGTH |Rsv|PRF| SCOPE |H|M|O|L|A|D|     Reserved      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                        VALID LIFETIME (Little Endian)         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                      PREFERRED LIFETIME (Little Endian)       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++-                                                             -+
+|                                                               |
++-                      ROUTER ADDRESS                         -+
+|                                                               |
++-                                                             -+
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ~~~
-Figure: Structure of PROP_IPV6_ROUTES
+Figure: Structure of PROP_IPV6_PREFIXES
 
-This property contains *all* prefixes that can be reached via this NLI, **both off-link and
-on-link**. This list **MUST NOT** include any prefixes listed in `PROP_IPV6_HOST_ROUTES`
-**UNLESS** that route is being advertised by some other node.
+This property contains all IPv6 prefixes that are being
+advertised by routers on this NLI's network, with the exception of prefixes listed
+in `PROP_IPV6_HOST_PREFIXES` with the
 
-### PROP XXXX: PROP_IPV6_HOST_ROUTES {#prop-ipv6-host-routes}
+The AP cannot directly manipulate this property. but it can add new on-link or on-mesh
+prefixes via the `PROP_IPV6_HOST_PREFIXES` property, which uses the
+same structure.
+
+PREFIX
+: IPv6 Address Prefix.
+
+PREFIX LENGTH
+: The prefix length, in bits. See [@RFC4191]. If this is zero, then the entry represents a default
+route. Some network technologies (such as Thread(R)) only support values of 0 and 64.
+
+Rsv/Reserved
+: Reserved bits. All bits in reserved fields **SHOULD** be set to zero by the AP and NCP and
+**MUST** be ignored by the AP and NCP.
+
+PRF
+: Route preference. [@RFC4191]
+
+SCOPE
+: 4-bit integer representing scope of prefix address. See (#ipv6-scope).
+
+H
+: Host-added flag. If set, this prefix was added via `PROP_IPV6_HOST_PREFIXES` and is
+currently being advertised to other nodes.
+
+M
+: 1-bit "Managed Address" flag.  When set indicates that ROUTER ADDRESS runs
+a DHCPv6 server for assigning and configuring addresses for this prefix.
+
+O
+: 1-bit "Other Configuration" flag. When set, it indicates that other configuration information is
+available via DHCPv6.  Examples of such information are DNS-related information or
+information on other  servers within the network.
+
+L
+: 1-bit On-Link flag. If set, this prefix is considered to be on-link/on-mesh. If clear, this
+router is advertising that they can
+
+A
+: 1-bit autonomous address-configuration flag.  When set indicates that nodes
+**SHOULD** automatically configure addresses for this prefix using SLAAC. [TODO:Cite]
+
+D
+: 1-bit "default route" flag. When set, it indicates that this NLI is a default route for packets
+with a source address in PREFIX.
+
+VALID LIFETIME
+: 32-bit unsigned integer.  The remaining amount of time (in seconds) that the prefix is
+entry is considered valid. A value of all one bits (0xffffffff) represents infinity.
+
+PREFERRED LIFETIME
+: 32-bit unsigned integer.  The remaining amount of time (in seconds) that that addresses
+generated from the prefix via stateless address autoconfiguration remain preferred.
+A value of all one bits (0xffffffff) represents infinity. This is ignored unless the `A` flag is set.
+
+ROUTER ADDRESS
+: This is the IPv6 address of the router advertising this prefix.
+
+### PROP XXXX: PROP_IPV6_HOST_PREFIXES {#prop-ipv6-host-prefixes}
 
 * Type: Multiple-Value, Read-Write
+* Has Item Length Prefix: Yes
+* Asynchronous Updates: Yes
+* Required: **OPTIONAL**
+* Scope: NLI
+* Item Type: Structure
+* Post-Reset Value: Empty
+
+~~~
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++-                                                             -+
+|                                                               |
++-                        IPv6 PREFIX                          -+
+|                                                               |
++-                                                             -+
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PREFIX LENGTH |Rsv|PRF| SCOPE |H|M|O|L|A|D|     Reserved      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                        VALID LIFETIME (Little Endian)         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                      PREFERRED LIFETIME (Little Endian)       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+~~~
+Figure: Structure of PROP_IPV6_HOST_PREFIXES
+
+This property contains all prefixes that *this host* is
+advertising on this NLI's network. The structure is identical to that of
+`PROP_IPV6_PREFIXES`, witht he following exceptions:
+
+* The `H` flag is always set when read, and ignored when written.
+* There is no `ROUTER ADDRESS` field, since it is implied.
+
+When removing prefixes from the list, only the `IPv6 PREFIX` and `PREFIX LENGTH`
+are required to be specified.
+
+Some network technologies **MAY** limit which nodes have permission to add items
+to this list. In such a case, the following behaviors are acceptable (in order of
+behavior preference):
+
+1. The command fails with `STATUS_SECURITY_ERROR`.
+2. The command initially appears to succeed, but a few moments later
+the prefix is asynchronously removed via either `CMD_PROP_VALUE_IS` or
+`CMD_PROP_VALUE_REMOVED`.
+
+
+
+### PROP XXXX: PROP_IPV6_EXT_ROUTES {#prop-ipv6-ext-routes}
+
+* Type: Multiple-Value, Read-Only
 * Has Item Length Prefix: Yes
 * Asynchronous Updates: Yes
 * Required: **REQUIRED**
@@ -374,21 +428,101 @@ on-link**. This list **MUST NOT** include any prefixes listed in `PROP_IPV6_HOST
 +-                                                             -+
 |                                                               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-| PREFIX LENGTH |    (TODO: Likely needs more stuff here...)
-+-+-+-+-+-+-+-+-+
+| PREFIX LENGTH |Rsv|PRF| SCOPE |H|           Reserved          |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                        ROUTE LIFETIME (Little Endian)         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++-                                                             -+
+|                                                               |
++-                      ROUTER ADDRESS                         -+
+|                                                               |
++-                                                             -+
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ~~~
-Figure: Structure of PROP_IPV6_HOST_ROUTES
+Figure: Structure of PROP_IPV6_EXT_ROUTES
 
-This property contains all prefixes that the AP is willing to route traffic to on behalf
-of other nodes the current network. This property **MUST NOT** be populated
-automatically by the NCP. Routes added to this property will be advertised to
-other nodes on the network.
+This property contains all external routes that are being
+advertised by routers on this NLI's network, with the exception of routes listed
+in `PROP_IPV6_HOST_EXT_ROUTES`.
 
-Some network technologies may limit which nodes have permission to add items
+The AP cannot directly manipulate this property. but it can add new on-link or on-mesh
+prefixes via the `PROP_IPV6_HOST_EXT_ROUTES` property, which uses the
+same structure.
+
+PREFIX
+: TODO: Write me
+
+PREFIX LENGTH
+: The prefix length, in bits. See [@RFC4191]. If this is zero, then the entry represents a default
+route. Some network technologies (such as Thread(R)) only support values of 0 and 64.
+
+Rsv/Reserved
+: Reserved bits. All bits in reserved fields **SHOULD** be set to zero by the AP and NCP and
+**MUST** be ignored by the AP and NCP.
+
+PRF
+: Route preference. [@RFC4191]
+
+SCOPE
+: 4-bit integer representing scope of prefix address. See (#ipv6-scope).
+
+H
+: Host-added flag. If set, this prefix was added via `PROP_IPV6_HOST_EXT_ROUTES` and is
+currently being advertised to other nodes.
+
+ROUTE LIFETIME
+: 32-bit unsigned integer.  The remaining amount of time (in seconds) that this external
+route is considered valid. A value of all one bits (0xffffffff) represents infinity.
+
+ROUTER ADDRESS
+: This is the IPv6 address of the router advertising this external route.
+
+### PROP XXXX: PROP_IPV6_HOST_EXT_ROUTES {#prop-ipv6-host-ext-routes}
+
+* Type: Multiple-Value, Read-Write
+* Has Item Length Prefix: Yes
+* Asynchronous Updates: Yes
+* Required: **OPTIONAL**
+* Scope: NLI
+* Item Type: Structure
+* Post-Reset Value: Empty
+
+~~~
+  0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
++-                                                             -+
+|                                                               |
++-                        IPv6 PREFIX                          -+
+|                                                               |
++-                                                             -+
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| PREFIX LENGTH |Rsv|PRF| SCOPE |H|           Reserved          |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                        ROUTE LIFETIME (Little Endian)         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+~~~
+Figure: Structure of PROP_IPV6_HOST_EXT_ROUTES
+
+This property contains all external routes that *this host* is
+advertising on this NLI's network. The structure is identical to that of
+`PROP_IPV6_EXT_ROUTES`, witht he following exceptions:
+
+* The `H` flag is always set when read, and ignored when written.
+* There is no `ROUTER ADDRESS` field, since it is implied.
+
+When removing prefixes from the list, only the `IPv6 PREFIX` and `PREFIX LENGTH`
+are required to be specified.
+
+Some network technologies **MAY** limit which nodes have permission to add items
 to this list. In such a case, the following behaviors are acceptable (in order of
 behavior preference):
 
 1. The command fails with `STATUS_SECURITY_ERROR`.
 2. The command initially appears to succeed, but a few moments later
-the item is asynchronously removed via either `CMD_PROP_VALUE_IS` or
+the prefix is asynchronously removed via either `CMD_PROP_VALUE_IS` or
 `CMD_PROP_VALUE_REMOVED`.
