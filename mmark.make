@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2017, Nest Labs, Inc.
+#  Copyright (c) 2019, Google Inc.
 #  All rights reserved.
 #
 #  Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@ SED               ?= sed
 RM_F		      ?= rm -f
 MKDIR_P		      ?= mkdir -p
 
+DEPDIR            := .d
 SOURCE_DATE       := $(shell (TZ=UTC git log -n 1 --date=iso-strict-local --pretty=format:%ad 2> /dev/null || date -u +"%Y-%m-%dT%H:%M:%SZ" ) | sed 's/+00:00$$/Z/')
 SOURCE_VERSION    ?= $(shell git describe --dirty --always --match "--PoIsOn--" 2> /dev/null)
 
@@ -48,12 +49,14 @@ XML   := $(patsubst %.md,%.xml,$(patsubst %.md.in,%.xml,$(SRC)))
 TXT   := $(patsubst %.md,%.txt,$(patsubst %.md.in,%.txt,$(SRC)))
 HTML  := $(patsubst %.md,%.html,$(patsubst %.md.in,%.html,$(SRC)))
 
+DEPENDENCIES = $(wildcard $(patsubst %,$(DEPDIR)/%.d,$(basename $(patsubst %.md.in,%.md,$(SRC)))))
+
 OUTPUT_DIR ?= ../output
 
 all: $(XML) $(TXT) $(HTML)
 
 clean:
-	$(RM_F) $(XML) $(TXT) $(HTML) $(patsubst %.md.in,%.md,$(wildcard draft-*.md.in))
+	$(RM_F) $(XML) $(TXT) $(HTML) $(patsubst %.md.in,%.md,$(wildcard draft-*.md.in)) $(DEPENDENCIES)
 
 update: $(XML) $(TXT) $(HTML)
 	mkdir -p $(OUTPUT_DIR)
@@ -66,8 +69,8 @@ $(XML2RFC_CACHE_DIR):
 	$(SED) 's/@SOURCE_VERSION@/$(SOURCE_VERSION)/g;s/@SOURCE_DATE@/$(SOURCE_DATE)/g' < $< > $@
 
 %.xml: %.md
-	cd `dirname $@` && $(MMARK) -xml2 -page `basename $<` `basename $@`
-	#$(SED) -i "" -e 's/fullname="$(EDITOR_NAME_HACK)"/fullname="$(EDITOR_NAME_HACK)" role="editor"/' $@
+%.xml: %.md $(DEPDIR)/%.d
+	cd `dirname $@` && $(MMARK) -2 `basename $<` > `basename $@`
 
 %.html: %.xml $(XML2RFC_CACHE_DIR)
 	$(XML2RFC) --html $<
@@ -75,3 +78,13 @@ $(XML2RFC_CACHE_DIR):
 %.txt: %.xml $(XML2RFC_CACHE_DIR)
 	$(XML2RFC) --text $<
 
+# Dependenty Generation
+
+$(DEPDIR)/%.d: %.md
+	mkdir -p `dirname $@`
+	echo "$<:" `$(SED) '/{{.*}}/!d;s/{{\(.*\)}}/\1/' < $<` > $@
+
+$(DEPDIR)/%.d: ;
+.PRECIOUS: $(DEPDIR)/%.d
+
+include $(DEPENDENCIES)
